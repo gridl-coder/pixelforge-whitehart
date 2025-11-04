@@ -1,0 +1,48 @@
+{
+  "name": "pixelforge/pixelforge",
+  "type": "wordpress-theme",
+  "license": "MIT",
+  "description": "PixelForge base theme with a modern development workflow",
+  "homepage": "https://pixelforge.example",
+  "authors": [
+    {
+      "name": "PixelForge",
+      "homepage": "https://pixelforge.example"
+    }
+  ],
+  "keywords": [
+    "wordpress"
+  ],
+  "support": {
+    "issues": "https://github.com/pixelforgehq/pixelforge/issues",
+    "forum": "https://pixelforge.example/support"
+  },
+  "autoload": {
+    "psr-4": {
+      "PixelForge\\": "app/"
+    }
+  },
+  "require": {
+    "php": ">=8.2",
+    "cmb2/cmb2": "^2.11",
+    "roots/acorn": "^5.0"
+  },
+  "require-dev": {
+    "laravel/pint": "^1.20"
+  },
+  "suggest": {
+    "log1x/sage-directives": "A collection of useful Blade directives for WordPress and PixelForge (^1.0)."
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "preferred-install": "dist",
+    "sort-packages": true
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "scripts": {
+    "post-autoload-dump": [
+      "Roots\\Acorn\\ComposerScripts::postAutoloadDump"
+    ]
+  }
+}
