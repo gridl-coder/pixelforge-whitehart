@@ -23,10 +23,16 @@
         font-size: 3.5rem;
         line-height: 1.4;
       }
+    }
 
-      span {
-        font-size: 1.3rem;
-      }
+    .stage-intro__heading-prefix,
+    .stage-intro__location {
+      display: block;
+      font-size: 1.3rem;
+    }
+
+    .stage-intro__heading-prefix {
+      padding-top: 30px;
     }
 
     &-image {
@@ -58,73 +64,13 @@
   }
 
   &-pods {
-
-    background: url("images/hart-bg.png") no-repeat -95% -7%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px 30px;
+    background: url("../../images/hart-bg.png") no-repeat -95% -7%;
 
     @include media-breakpoint-up(md) {
-      background: url("images/hart-bg.png") no-repeat right 13%;
-    }
-
-
-    .inner {
-
-      @extend .clearfix;
-    }
-
-    .icon {
-      color: $brand_yellow;
-      background: $brand_dark;
-      border-radius: 50%;
-      display: inline-block;
-      position: relative;
-      //float: left;
-      margin-bottom: 15px;
-      width: 70px;
-      height: 70px;
-      line-height: 70px;
-      //margin-right: 5px;
-      @include media-breakpoint-up(md) {
-
-      }
-
-      &:before {
-        content: "";
-        position: absolute;
-        top: 5px;
-        left: 5px;
-        bottom: 5px;
-        right: 5px;
-        border-radius: 100px;
-        //background: #090904;
-        z-index: 1;
-        border: 1px dashed rgba(255, 255, 255, 0.5);
-      }
-
-      i {
-        font-size: 30px;
-        position: relative;
-        top: 6px;
-      }
-    }
-
-    h3 {
-      font-weight: bolder;
-      text-transform: uppercase;
-      font-size: 11px;
-      @include media-breakpoint-up(md) {
-        font-size: 16px;
-        font-weight: 800;
-      }
-
-      letter-spacing: 0.1em;
-      margin-bottom: 20px;
-      @include media-breakpoint-up(md) {
-
-      }
-
-      a {
-        color: white;
-      }
+      background: url("../../images/hart-bg.png") no-repeat right 13%;
     }
   }
 
@@ -144,18 +90,40 @@
   }
 
   li {
-    display: inline-block;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
     margin: 0 10px 20px 10px;
     font-size: 14px;
+
     @include media-breakpoint-up(md) {
       width: 25%;
       margin: 15px;
       font-size: 16px;
     }
 
-    i {
-      color: $brand_yellow;
-      margin-right: 8px;
+    span:last-child {
+      margin-top: 8px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
     }
+  }
+}
+
+.amenities-list__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 70px;
+  height: 70px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: $brand_dark;
+  color: $brand_yellow;
+  border: 1px dashed rgba(255, 255, 255, 0.5);
+
+  i {
+    font-size: 30px;
   }
 }

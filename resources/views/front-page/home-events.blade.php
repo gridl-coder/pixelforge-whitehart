@@ -1,175 +1,88 @@
-<div id="events" class="event stage-menu pt-5" style="background:white;">
+<section id="events" class="stage-menu pt-5 home-events-hero">
+  <div class="home-events-hero__inner">
+    @if ($highlightEvent)
+      <h1>
+        <span class="subtitle">{{ __('Our Next Event is...', 'pixelforge') }}</span>
+        {{ $highlightEvent['title'] }}!
+      </h1>
 
-  <div style="max-width: 900px; margin: 0 auto;">
+      <div class="section-separator">
+        <span><x-section-divider /></span>
+      </div>
 
-    <?php
-    $today = time();
-
-    $args = [
-      'post_type' => 'events',
-      'meta_key' => 'events_date',
-      'posts_per_page' => 1,
-      'orderby' => 'meta_value',
-      'order' => 'ASC',
-      'meta_query' => array(
-        array(         // restrict posts based on meta values
-          'key' => 'events_date',  // which meta to query
-          'value' => $today,  // value for comparison
-          'compare' => '>=',          // method of comparison
-          'type' => 'NUMERIC'
-        )
-      )
-
-    ];
-
-    $events = new WP_Query($args);
-
-    if ($events->have_posts()) :
-
-    while ($events->have_posts()) :
-      $events->the_post();
-
-      $id = get_the_ID();
-      $events_name = get_the_title();
-      $events_date = get_post_meta($id, 'events_date', true);
-      $events_url = get_post_meta($id, 'events_url', true);
-      $events_image = get_the_post_thumbnail_url($id);
-
-    if (!empty($events_name)) : ?>
-
-    <h1>
-      <span class="subtitle">Our Next Event is...</span>
-        <?= $events_name; ?>!
-    </h1>
-
-    <div class="section-separator">
-          <span>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 75" x="0px" y="0px" width="60" height="60">
-                <g data-name="Layer 1">
-                    <path
-                      d="M51,29H42.3103C52.32666,21.657,56,9.986,56,1a1,1,0,0,0-2,0,34.41553,34.41553,0,0,1-.727,6.89282A11.40928,11.40928,0,0,0,50.457,3.293.99989.99989,0,0,0,49.043,4.707a10.35162,10.35162,0,0,1,2.92578,7.82422c0,.00952.00519.0174.00543.02686a33.85354,33.85354,0,0,1-1.45154,3.49377A10.39416,10.39416,0,0,0,47.457,10.293.99989.99989,0,0,0,46.043,11.707c1.623,1.623,2.73669,3.65424,2.7644,7.407a29.90475,29.90475,0,0,1-8.32874,8.7569,13.13361,13.13361,0,0,0-.52991-7.18732,1.0001,1.0001,0,1,0-1.89746.63281c.871,2.61285.9176,4.3855.15521,7.68359h-16.413c-.76239-3.2981-.71576-5.07074.15521-7.68359a1.0001,1.0001,0,0,0-1.89746-.63281,13.13361,13.13361,0,0,0-.52991,7.18732,29.93606,29.93606,0,0,1-8.51465-9.06006c.03571-3.68231,1.05841-5.46191,2.70032-7.10382A.99989.99989,0,0,0,12.293,10.293a10.29142,10.29142,0,0,0-2.97528,5.4057,34.01378,34.01378,0,0,1-1.32245-3.222c.00018-.0083.00476-.0152.00476-.02356,0-3.48486.835-5.874,2.707-7.74609A.99989.99989,0,0,0,9.293,3.293a10.498,10.498,0,0,0-2.6156,4.34076A34.37234,34.37234,0,0,1,6,1,1,1,0,0,0,4,1C4,9.986,7.67334,21.657,17.6897,29H9a.99959.99959,0,0,0-.98633,1.16455c.50342,3.022,1.74854,5.12549,3.70068,6.252,2.20605,1.27344,5.20313,1.28906,9.13135.04248-.81348,8.76807.54053,10.43359,2.09521,12.34717,1.09326,1.34521,2.22363,2.73633,2.81592,7.54395A4.17888,4.17888,0,0,0,29.91113,60h.17773a4.17888,4.17888,0,0,0,4.1543-3.6499c.59229-4.80762,1.72266-6.19873,2.81592-7.54395,1.55469-1.91357,2.90869-3.5791,2.09521-12.34717,3.92871,1.24707,6.92676,1.23193,9.13135-.04248,1.95215-1.12646,3.19727-3.23,3.70068-6.252A.99959.99959,0,0,0,51,29Zm-3.71387,5.68457c-1.90088,1.09814-4.9082.88965-8.93506-.62109a1,1,0,0,0-1.34473,1.04688c1.03467,9.31543-.0835,10.69189-1.49951,12.43457-1.15234,1.418-2.58594,3.18262-3.249,8.561A2.1761,2.1761,0,0,1,30.08887,58h-.17773a2.17611,2.17611,0,0,1-2.16895-1.89453c-.66309-5.37793-2.09668-7.14258-3.249-8.56055-1.416-1.74268-2.53418-3.11914-1.49951-12.43457a1.00018,1.00018,0,0,0-1.34473-1.04687c-4.02637,1.50977-7.03271,1.71875-8.93506.62109A5.63748,5.63748,0,0,1,10.23438,31H49.76563A5.63748,5.63748,0,0,1,47.28613,34.68457Z"/>
-                </g>
-            </svg>
-          </span>
-    </div>
-
-    <a href="<?= get_the_permalink(); ?> " class="event-link">
-      <img src="<?= $events_image; ?>"
-           class="event-thumbnail img-fluid img-thumbnail img-rounded mb-4"
-           alt="image of <?= $events_name; ?>?>"
-           style="width:100%;max-width: 500px; display: block; margin: 0 auto">
-    </a>
-
-
-    <?php
-    endif;
-    endwhile;
-    endif;
-    wp_reset_postdata();
-    ?>
+      @if (!empty($highlightEvent['image']['url']))
+        @php($highlightTarget = !empty($highlightEvent['externalUrl']))
+        <a href="{{ esc_url($highlightEvent['externalUrl'] ?? $highlightEvent['permalink']) }}"
+           class="event-link"
+           @if($highlightTarget) target="_blank" rel="noopener" @endif>
+          <img src="{{ esc_url($highlightEvent['image']['url']) }}"
+               class="event-thumbnail img-fluid img-thumbnail img-rounded"
+               alt="{{ esc_attr($highlightEvent['title']) }}"
+               loading="lazy">
+        </a>
+      @endif
+    @else
+      <h1>
+        <span class="subtitle">{{ __('Stay tuned', 'pixelforge') }}</span>
+        {{ __('New events coming soon', 'pixelforge') }}
+      </h1>
+    @endif
   </div>
-
-</div>
+</section>
 
 <div class="brush-dec2"></div>
 
 <section class="stage-events">
-
   <div class="container">
-
     <h1>
-      <span class="subtitle">Live Music, Sport, DJ's & More.</span>
-      Upcoming Events
+      <span class="subtitle">{{ __('Live Music, Sport, DJ’s & More.', 'pixelforge') }}</span>
+      {{ __('Upcoming Events', 'pixelforge') }}
     </h1>
 
     <div class="section-separator">
-    <span>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 75" x="0px" y="0px" width="60" height="60">
-    <g data-name="Layer 1">
-        <path
-          d="M51,29H42.3103C52.32666,21.657,56,9.986,56,1a1,1,0,0,0-2,0,34.41553,34.41553,0,0,1-.727,6.89282A11.40928,11.40928,0,0,0,50.457,3.293.99989.99989,0,0,0,49.043,4.707a10.35162,10.35162,0,0,1,2.92578,7.82422c0,.00952.00519.0174.00543.02686a33.85354,33.85354,0,0,1-1.45154,3.49377A10.39416,10.39416,0,0,0,47.457,10.293.99989.99989,0,0,0,46.043,11.707c1.623,1.623,2.73669,3.65424,2.7644,7.407a29.90475,29.90475,0,0,1-8.32874,8.7569,13.13361,13.13361,0,0,0-.52991-7.18732,1.0001,1.0001,0,1,0-1.89746.63281c.871,2.61285.9176,4.3855.15521,7.68359h-16.413c-.76239-3.2981-.71576-5.07074.15521-7.68359a1.0001,1.0001,0,0,0-1.89746-.63281,13.13361,13.13361,0,0,0-.52991,7.18732,29.93606,29.93606,0,0,1-8.51465-9.06006c.03571-3.68231,1.05841-5.46191,2.70032-7.10382A.99989.99989,0,0,0,12.293,10.293a10.29142,10.29142,0,0,0-2.97528,5.4057,34.01378,34.01378,0,0,1-1.32245-3.222c.00018-.0083.00476-.0152.00476-.02356,0-3.48486.835-5.874,2.707-7.74609A.99989.99989,0,0,0,9.293,3.293a10.498,10.498,0,0,0-2.6156,4.34076A34.37234,34.37234,0,0,1,6,1,1,1,0,0,0,4,1C4,9.986,7.67334,21.657,17.6897,29H9a.99959.99959,0,0,0-.98633,1.16455c.50342,3.022,1.74854,5.12549,3.70068,6.252,2.20605,1.27344,5.20313,1.28906,9.13135.04248-.81348,8.76807.54053,10.43359,2.09521,12.34717,1.09326,1.34521,2.22363,2.73633,2.81592,7.54395A4.17888,4.17888,0,0,0,29.91113,60h.17773a4.17888,4.17888,0,0,0,4.1543-3.6499c.59229-4.80762,1.72266-6.19873,2.81592-7.54395,1.55469-1.91357,2.90869-3.5791,2.09521-12.34717,3.92871,1.24707,6.92676,1.23193,9.13135-.04248,1.95215-1.12646,3.19727-3.23,3.70068-6.252A.99959.99959,0,0,0,51,29Zm-3.71387,5.68457c-1.90088,1.09814-4.9082.88965-8.93506-.62109a1,1,0,0,0-1.34473,1.04688c1.03467,9.31543-.0835,10.69189-1.49951,12.43457-1.15234,1.418-2.58594,3.18262-3.249,8.561A2.1761,2.1761,0,0,1,30.08887,58h-.17773a2.17611,2.17611,0,0,1-2.16895-1.89453c-.66309-5.37793-2.09668-7.14258-3.249-8.56055-1.416-1.74268-2.53418-3.11914-1.49951-12.43457a1.00018,1.00018,0,0,0-1.34473-1.04687c-4.02637,1.50977-7.03271,1.71875-8.93506.62109A5.63748,5.63748,0,0,1,10.23438,31H49.76563A5.63748,5.63748,0,0,1,47.28613,34.68457Z"/>
-    </g>
-</svg>
-    </span>
+      <span><x-section-divider /></span>
     </div>
-    <p class="lead mb-3" style="max-width: 800px; display: block; margin: 0 auto">At The White Hart Inn we believe
-      in bringing people together. Whether it’s live music nights, pool tournaments, or simply good company over a
-      pint, we maintain a lively and welcoming vibe. The single-bar layout, pool room and big screen TV make us
-      popular for sports viewings, group meet-ups and more.</p>
+
+    <p class="lead mb-3 stage-events__copy">
+      {{ __('At The White Hart Inn we believe in bringing people together. Whether it’s live music nights, pool tournaments, or simply good company over a pint, we maintain a lively and welcoming vibe.', 'pixelforge') }}
+    </p>
 
     <div class="nav_dec"><span></span></div>
 
     <div class="row events-container justify-content-center">
+      @forelse ($upcomingEvents as $event)
+        <div class="col-md-4 col-sm-6 col-6 event">
+          @if (!empty($event['image']['url']))
+            @php($isExternal = !empty($event['externalUrl']))
+            <a href="{{ esc_url($event['externalUrl'] ?? $event['permalink']) }}" class="event-link" @if($isExternal) target="_blank" rel="noopener" @endif>
+              <img src="{{ esc_url($event['image']['url']) }}"
+                   class="event-thumbnail img-fluid img-thumbnail img-rounded"
+                   alt="{{ esc_attr($event['title']) }}"
+                   loading="lazy">
+            </a>
+          @endif
 
-      <?php
-      $today = time();
-      $args = [
-        'post_type' => 'events',
-        'meta_key' => 'events_date',
-        'posts_per_page' => 3,
-        'orderby' => 'meta_value',
-        'order' => 'ASC',
-        'meta_query' => array(
-          array(         // restrict posts based on meta values
-            'key' => 'events_date',  // which meta to query
-            'value' => $today,  // value for comparison
-            'compare' => '>=',          // method of comparison
-            'type' => 'NUMERIC'
-          )
-        )
+          <div class="event-info">
+            @if (!empty($event['formattedDate']))
+              <span class="event-date"><i class="fa-solid fa-calendar-days"></i> {{ $event['formattedDate'] }}</span>
+            @endif
+            <h3>{{ $event['title'] }}</h3>
+          </div>
 
-
-      ];
-      $count = 0;
-      $current_url = home_url(add_query_arg(array(), $wp->request));
-
-      $events = new WP_Query($args);
-
-      if ($events->have_posts()) :
-
-      while ($events->have_posts()) : $events->the_post();
-
-      if ($count !== 0) :
-
-        $id = get_the_ID();
-        $events_name = get_the_title();
-        $events_date = get_post_meta($id, 'events_date', true);
-        $events_url = get_post_meta($id, 'events_url', true);
-        $events_image = get_the_post_thumbnail_url($id);
-      if (isset($events_name) && !empty($events_name)) { ?>
-
-      <div class="col-md-4 col-sm-6 col-6 event">
-        <a href="<?= $events_url; ?> " target="_blank" class="event-link">
-          <img src="<?= $events_image; ?>"
-               class="event-thumbnail img-fluid img-thumbnail img-rounded"
-               style="max-width: 360px; width: 100%; height: auto">
-        </a>
-
-
-        <div class="event-info">
-                    <span class="event-date"><i
-                        class="fa-solid fa-calendar-days"></i>  <?= date('d/n/Y', $events_date); ?>
-                    </span>
-          <h3><?= $events_name; ?></h3>
+          <div class="nav_dec"><span></span></div>
         </div>
-        <div class="nav_dec"><span></span></div>
-      </div>
-        <?php
-      }
+      @empty
+        <div class="col-12">
+          <p class="text-center">{{ __('There are no upcoming events right now. Please check back soon!', 'pixelforge') }}</p>
+        </div>
+      @endforelse
 
-        ?>
-
-      <?php endif;
-        $count++; endwhile;
-      endif;
-      wp_reset_postdata();
-      ?>
-      <div class="p-4">
-        <p><a href="<?= $current_url; ?>/events/" class="btn btn-lg"><i class="fa-regular fa-calendar-star"></i>
-            View All Events</a></p>
+      <div class="p-4 text-center">
+        <a href="{{ esc_url($eventsArchiveUrl) }}" class="btn btn-lg">
+          <i class="fa-regular fa-calendar-star"></i>
+          {{ __('View All Events', 'pixelforge') }}
+        </a>
       </div>
     </div>
-
   </div>
-
 </section>
