@@ -1,8 +1,24 @@
-.home .stage-events {
-  background-image: url(https://theh.art/bodmin/wp-content/themes/whitehart/assets/images/events-header-image.jpg);
-  background-size: cover;
-  background-repeat: no-repeat;
+.home-events-hero {
+  background: #fff url('../../images/events-header-image.jpg') center/cover no-repeat;
+  text-align: center;
   text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+  padding: 40px 15px 60px;
+
+  @include media-breakpoint-up(md) {
+    padding: 80px 15px 120px;
+  }
+
+  &__inner {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .event-thumbnail {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    display: block;
+  }
 
   .btn {
     text-shadow: none;
@@ -13,6 +29,11 @@
   padding: 30px 15px;
   @include media-breakpoint-up(md) {
     padding: 60px;
+  }
+
+  &__copy {
+    max-width: 800px;
+    margin: 0 auto;
   }
 
   .event {

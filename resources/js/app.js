@@ -1,27 +1,34 @@
 import.meta.glob([
   '../images/**',
   '../fonts/**',
-]);
+], { eager: true });
 
-$('#navButton').on('click', function (e) {
+const navButton = document.getElementById('navButton');
+const mainNav = document.getElementById('mainNav');
 
-  var menu = $('#mainNav');
-
-  if (menu.hasClass('open')) {
-    $(menu).removeClass('open');
-  } else {
-    $(menu).addClass('open');
+const toggleNavigation = (force) => {
+  if (!mainNav || !navButton) {
+    return;
   }
 
+  const shouldOpen = typeof force === 'boolean'
+    ? force
+    : !mainNav.classList.contains('open');
 
-  e.preventDefault();
-  return false;
-});
+  mainNav.classList.toggle('open', shouldOpen);
+  navButton.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+};
 
-$('.main-nav a').on('click', function (e) {
-  $('#mainNav').removeClass('open');
-});
+if (navButton && mainNav) {
+  navButton.addEventListener('click', (event) => {
+    event.preventDefault();
+    toggleNavigation();
+  });
 
+  document.querySelectorAll('.main-nav a').forEach((link) => {
+    link.addEventListener('click', () => toggleNavigation(false));
+  });
+}
 
 const enableJsClass = () => {
   const html = document.documentElement;
