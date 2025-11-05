@@ -1,65 +1,18 @@
 // Auto-generated file. Update fonts in resources/fonts instead.
 
 @font-face {
-  font-family: 'fa 100';
-  font-style: normal;
-  font-weight: 100;
-  src: url('../fonts/fa-thin-100.woff2') format('woff2'),
-       url('../fonts/fa-thin-100.ttf') format('truetype');
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'fa 300';
-  font-style: normal;
-  font-weight: 300;
-  src: url('../fonts/fa-light-300.woff2') format('woff2'),
-       url('../fonts/fa-light-300.ttf') format('truetype');
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'fa 400';
+  font-family: 'Cormorant Garamond';
   font-style: normal;
   font-weight: 400;
-  src: url('../fonts/fa-regular-400.woff2') format('woff2'),
-       url('../fonts/fa-regular-400.ttf') format('truetype');
+  src: url('../fonts/CormorantGaramond-Regular.ttf') format('truetype');
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'fa brands 400';
+  font-family: 'Cormorant Garamond';
   font-style: normal;
-  font-weight: 400;
-  src: url('../fonts/fa-brands-400.woff2') format('woff2'),
-       url('../fonts/fa-brands-400.ttf') format('truetype');
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'fa duotone 900';
-  font-style: normal;
-  font-weight: 900;
-  src: url('../fonts/fa-duotone-900.woff2') format('woff2'),
-       url('../fonts/fa-duotone-900.ttf') format('truetype');
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'fa solid 900';
-  font-style: normal;
-  font-weight: 900;
-  src: url('../fonts/fa-solid-900.woff2') format('woff2'),
-       url('../fonts/fa-solid-900.ttf') format('truetype');
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'fa v4compatibility';
-  font-style: normal;
-  font-weight: 400;
-  src: url('../fonts/fa-v4compatibility.woff2') format('woff2'),
-       url('../fonts/fa-v4compatibility.ttf') format('truetype');
+  font-weight: 700;
+  src: url('../fonts/CormorantGaramond-Bold.ttf') format('truetype');
   font-display: swap;
 }
 
@@ -76,6 +29,22 @@
   font-style: normal;
   font-weight: 700;
   src: url('../fonts/Montserrat-Bold.ttf') format('truetype');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Raleway';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../fonts/Raleway-Regular.ttf') format('truetype');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Raleway';
+  font-style: normal;
+  font-weight: 700;
+  src: url('../fonts/Raleway-Bold.ttf') format('truetype');
   font-display: swap;
 }
 

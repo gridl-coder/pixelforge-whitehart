@@ -1,0 +1,161 @@
+
+.stage-intro {
+  //padding:30px;
+
+  &-header {
+    position: relative;
+    padding: 260px 10px 0 10px;
+    margin-bottom: 30px;
+
+    @include media-breakpoint-up(md) {
+      padding: 20% 0 0 0;
+      margin-bottom: 60px;
+
+    }
+
+    h1 {
+      letter-spacing: 4px;
+      font-weight: 500;
+      text-transform: uppercase;
+
+      @include media-breakpoint-up(md) {
+        margin-bottom: 1rem;
+        font-size: 3.5rem;
+        line-height: 1.4;
+      }
+
+      span {
+        font-size: 1.3rem;
+      }
+    }
+
+    &-image {
+      position: absolute;
+      top: 60px;
+      right: 0;
+      left: 0;
+      width: 100%;
+      @include media-breakpoint-up(md) {
+        top: -250px;
+
+      }
+    }
+
+    &-inner {
+      margin: 0 auto;
+      max-width: 620px;
+      position: relative;
+      z-index: 101;
+      border-radius: 10px;
+      background: rgba(9, 9, 4, 0.9);
+      border: 1px dashed rgba(255, 255, 255, 0.5);
+      padding: 15px;
+
+      p {
+        font-size: 0.9rem;
+      }
+    }
+  }
+
+  &-pods {
+
+    background: url("images/hart-bg.png") no-repeat -95% -7%;
+
+    @include media-breakpoint-up(md) {
+      background: url("images/hart-bg.png") no-repeat right 13%;
+    }
+
+
+    .inner {
+
+      @extend .clearfix;
+    }
+
+    .icon {
+      color: $brand_yellow;
+      background: $brand_dark;
+      border-radius: 50%;
+      display: inline-block;
+      position: relative;
+      //float: left;
+      margin-bottom: 15px;
+      width: 70px;
+      height: 70px;
+      line-height: 70px;
+      //margin-right: 5px;
+      @include media-breakpoint-up(md) {
+
+      }
+
+      &:before {
+        content: "";
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        bottom: 5px;
+        right: 5px;
+        border-radius: 100px;
+        //background: #090904;
+        z-index: 1;
+        border: 1px dashed rgba(255, 255, 255, 0.5);
+      }
+
+      i {
+        font-size: 30px;
+        position: relative;
+        top: 6px;
+      }
+    }
+
+    h3 {
+      font-weight: bolder;
+      text-transform: uppercase;
+      font-size: 11px;
+      @include media-breakpoint-up(md) {
+        font-size: 16px;
+        font-weight: 800;
+      }
+
+      letter-spacing: 0.1em;
+      margin-bottom: 20px;
+      @include media-breakpoint-up(md) {
+
+      }
+
+      a {
+        color: white;
+      }
+    }
+  }
+
+}
+
+.amenities-list {
+  margin: 0 0 0 0;
+  padding: 0;
+  list-style: none;
+  text-align: center;
+
+
+  @include media-breakpoint-up(md) {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  li {
+    display: inline-block;
+    margin: 0 10px 20px 10px;
+    font-size: 14px;
+    @include media-breakpoint-up(md) {
+      width: 25%;
+      margin: 15px;
+      font-size: 16px;
+    }
+
+    i {
+      color: $brand_yellow;
+      margin-right: 8px;
+    }
+  }
+}

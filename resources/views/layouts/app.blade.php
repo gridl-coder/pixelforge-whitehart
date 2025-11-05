@@ -6,6 +6,16 @@
     @php(do_action('get_header'))
     @php(wp_head())
 
+    <meta name="google-site-verification" content="g4mpPHu3-MnbzKZuVELoHVfvQx5eO6xkHl3VAGdhxjY"/>
+    <link rel="apple-touch-icon" sizes="180x180"
+          href="<?= get_template_directory_uri(); ?>/resources/images/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32"
+          href="<?= get_template_directory_uri(); ?>/resources/images/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16"
+          href="<?= get_template_directory_uri(); ?>/resources/images/favicons/favicon-16x16.png">
+    <link rel="manifest" href="<?= get_template_directory_uri(); ?>/resources/images/favicons/site.webmanifest">
+
+
     @vite(['resources/css/app.scss', 'resources/js/app.js'])
   </head>
 

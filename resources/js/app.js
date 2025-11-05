@@ -3,6 +3,26 @@ import.meta.glob([
   '../fonts/**',
 ]);
 
+$('#navButton').on('click', function (e) {
+
+  var menu = $('#mainNav');
+
+  if (menu.hasClass('open')) {
+    $(menu).removeClass('open');
+  } else {
+    $(menu).addClass('open');
+  }
+
+
+  e.preventDefault();
+  return false;
+});
+
+$('.main-nav a').on('click', function (e) {
+  $('#mainNav').removeClass('open');
+});
+
+
 const enableJsClass = () => {
   const html = document.documentElement;
 
