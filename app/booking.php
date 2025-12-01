@@ -430,9 +430,15 @@ function get_section_tables(int $sectionId): array
     $tables = [];
 
     foreach ($query->posts as $table) {
+        $seats = (int) get_post_meta((int) $table->ID, 'booking_table_seats', true);
+
+        if ($seats < 1) {
+            continue;
+        }
+
         $tables[] = [
             'id' => (int) $table->ID,
-            'seats' => (int) get_post_meta((int) $table->ID, 'booking_table_seats', true),
+            'seats' => $seats,
         ];
     }
 
@@ -524,6 +530,14 @@ function send_booking_emails(int $bookingId, array $data, array $tableIds, int $
 
 function check_table_availability(): void
 {
+    if (! (bool) get_theme_option('enable_bookings', 1)) {
+        wp_send_json([
+            'unavailableDate' => true,
+            'availableSections' => [],
+            'availableSlots' => [],
+        ]);
+    }
+
     $menuId = absint($_GET['menu'] ?? 0);
     $partySize = max(1, absint($_GET['party_size'] ?? 0));
     $dateValue = sanitize_text_field(wp_unslash($_GET['date'] ?? ''));
