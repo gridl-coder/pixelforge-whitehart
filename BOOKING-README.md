@@ -20,6 +20,7 @@ This theme ships with a reservation workflow built around custom post types and 
 - Add the shortcode `[pixelforge_table_booking]` to any page or post (use the *Shortcode* block in the block editor if needed).
 - In Blade templates you can render the form with `@shortcode('pixelforge_table_booking')`.
 - The form reads all published Sections, Tables, and Booking Menus to present selectable areas and menu-specific time slots.
+- Disable public bookings anytime by unchecking **Enable Table Bookings** in **PixelForge Options**; this hides the form and availability calendar from visitors.
 
 ## 4) How bookings are processed
 - Customers choose a menu, date, section, party size, and an hourly slot within the menu's availability window.
@@ -28,6 +29,7 @@ This theme ships with a reservation workflow built around custom post types and 
   - The admin/business email configured under *PixelForge Options* (falls back to the site admin email).
   - The customer email entered in the form.
 - Booked tables are blocked for their hour, preventing double bookings of the same table and time.
+- The booking form displays a live availability calendar under the date field; unavailable days (menu closed or fully booked) are marked and cannot be selected.
 
 ## 5) Managing bookings
 - View the **Table Bookings** list in the WordPress admin to see confirmed reservations.
