@@ -15,6 +15,10 @@
           href="{{ asset('images/favicons/favicon-16x16.png') }}">
     <link rel="manifest" href="{{ asset('images/favicons/site.webmanifest') }}">
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
 
     @vite(['resources/css/app.scss', 'resources/js/app.js'])
   </head>

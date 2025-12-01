@@ -460,7 +460,7 @@ const createCssEntryAliasPlugin = () => {
 
 export default defineConfig({
   // Base path should match where WordPress serves the built assets
-  base: '/wp-content/themes/pixelforge/public/build/',
+  base: '/wp-content/themes/dev/public/build/',
   plugins: [
     fontFaceGeneratorPlugin(),
     createCssEntryAliasPlugin(),

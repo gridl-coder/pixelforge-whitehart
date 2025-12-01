@@ -1,4 +1,4 @@
-.table-booking {
+.table-booking, .home {
   .page-header {
     margin-top: 80px;
 
@@ -9,11 +9,14 @@
     padding: 5px;
     margin-bottom: 25px;
     margin-top: 25px;
+
     &--success {
       background: #0c4128;
     }
+
     &--error {
       background: darkred;
+
       p, ul {
         margin: 0;
       }
@@ -22,8 +25,11 @@
 
   .booking-form {
     max-width: 820px;
-    margin: 0 auto 80px auto;
+    margin: 30px auto 80px auto;
+    padding: 40px;
     text-align: left;
+    background: rgba(255, 255, 225, 0.1);
+
 
     .card {
       border: none;

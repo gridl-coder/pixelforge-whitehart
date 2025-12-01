@@ -1,5 +1,3 @@
-<div class="brush-dec"></div>
-
 <section class="food-banner">
 
   <div class="container food-banner__container">
@@ -180,13 +178,13 @@
                 <h4> BLT <span class="price"> £5.95 </span></h4>
               </div>
               <div class="menu-item">
-                <h4> Bacon, Brie & amp; Cranberry <span class="price"> £5.95 </span></h4>
+                <h4> Bacon, Brie &amp; Cranberry <span class="price"> £5.95 </span></h4>
               </div>
               <div class="menu-item">
                 <h4> Breakfast Club <span class="price"> £5.95 </span></h4>
               </div>
               <div class="menu-item">
-                <h4> Ham & amp; Cheese <span class="price"> £5.95 </span></h4>
+                <h4> Ham &amp; Cheese <span class="price"> £5.95 </span></h4>
               </div>
 
             </div>
