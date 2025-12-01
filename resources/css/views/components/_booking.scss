@@ -1,0 +1,72 @@
+.booking-form {
+  .card {
+    border: none;
+    border-radius: 12px;
+  }
+
+  .form-label {
+    font-weight: 600;
+    color: var(--brand-dark);
+  }
+
+  .form-control,
+  .form-select {
+    border-radius: 10px;
+    border-color: lighten($brand_dark, 40%);
+    box-shadow: none;
+
+    &:focus {
+      border-color: $brand_yellow;
+      box-shadow: 0 0 0 0.25rem rgba($brand_yellow, 0.35);
+    }
+  }
+
+  .btn-primary {
+    background-color: $brand_yellow;
+    border-color: $brand_yellow;
+    color: $brand_dark;
+    font-weight: 700;
+
+    &:hover,
+    &:focus {
+      background-color: darken($brand_yellow, 10%);
+      border-color: darken($brand_yellow, 10%);
+      color: $brand_dark;
+    }
+  }
+}
+
+.bg-availability-open {
+  background-color: $brand_yellow;
+  color: $brand_dark;
+  font-weight: 700;
+}
+
+.bg-availability-limited {
+  background-color: darken($brand_yellow, 12%);
+  color: $brand_dark;
+  font-weight: 700;
+}
+
+.bg-availability-full {
+  background-color: #dc3545;
+  color: #fff;
+  font-weight: 700;
+}
+
+.booking-calendar {
+  .card-header {
+    border-bottom: 1px solid rgba($brand_dark, 0.08);
+  }
+
+  .list-group-item {
+    border-color: rgba($brand_dark, 0.08);
+    background: linear-gradient(90deg, rgba($brand_yellow, 0.05) 0%, #fff 40%);
+    border-radius: 0;
+  }
+
+  &__day {
+    border-radius: 12px;
+    overflow: hidden;
+  }
+}
