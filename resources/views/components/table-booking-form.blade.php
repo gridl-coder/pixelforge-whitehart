@@ -29,68 +29,68 @@
       <input type="hidden" name="pixelforge_booking_form" value="1">
       @php(wp_nonce_field(\PixelForge\Bookings\NONCE_ACTION, 'pixelforge_booking_nonce'))
 
-      <div class="booking-form__grid">
-        <label class="booking-form__field">
-          <span class="booking-form__label">{{ __('Name', 'pixelforge') }}</span>
-          <input class="booking-form__input" type="text" name="pixelforge_booking_name" value="{{ $old['name'] ?? '' }}" required>
+      <div class="booking-form__grid row g-3">
+        <label class="booking-form__field col-md-6">
+          <span class="booking-form__label form-label">{{ __('Name', 'pixelforge') }}</span>
+          <input class="booking-form__input form-control" type="text" name="pixelforge_booking_name" value="{{ $old['name'] ?? '' }}" required>
         </label>
 
-        <label class="booking-form__field">
-          <span class="booking-form__label">{{ __('Email', 'pixelforge') }}</span>
-          <input class="booking-form__input" type="email" name="pixelforge_booking_email" value="{{ $old['email'] ?? '' }}" required>
+        <label class="booking-form__field col-md-6">
+          <span class="booking-form__label form-label">{{ __('Email', 'pixelforge') }}</span>
+          <input class="booking-form__input form-control" type="email" name="pixelforge_booking_email" value="{{ $old['email'] ?? '' }}" required>
         </label>
 
-        <label class="booking-form__field">
-          <span class="booking-form__label">{{ __('Phone', 'pixelforge') }}</span>
-          <input class="booking-form__input" type="tel" name="pixelforge_booking_phone" value="{{ $old['phone'] ?? '' }}" required>
+        <label class="booking-form__field col-md-6">
+          <span class="booking-form__label form-label">{{ __('Phone', 'pixelforge') }}</span>
+          <input class="booking-form__input form-control" type="tel" name="pixelforge_booking_phone" value="{{ $old['phone'] ?? '' }}" required>
         </label>
 
-        <label class="booking-form__field">
-          <span class="booking-form__label">{{ __('Party Size', 'pixelforge') }}</span>
-          <input class="booking-form__input" type="number" min="1" step="1" name="pixelforge_booking_party_size" value="{{ $old['party_size'] ?? '' }}" required>
+        <label class="booking-form__field col-md-6">
+          <span class="booking-form__label form-label">{{ __('Party Size', 'pixelforge') }}</span>
+          <input class="booking-form__input form-control" type="number" min="1" step="1" name="pixelforge_booking_party_size" value="{{ $old['party_size'] ?? '' }}" required>
         </label>
 
-        <label class="booking-form__field">
-          <span class="booking-form__label">{{ __('Menu', 'pixelforge') }}</span>
-          <select class="booking-form__input" name="pixelforge_booking_menu" id="pixelforge_booking_menu" required>
+        <label class="booking-form__field col-md-6">
+          <span class="booking-form__label form-label">{{ __('Menu', 'pixelforge') }}</span>
+          <select class="booking-form__input form-select" name="pixelforge_booking_menu" id="pixelforge_booking_menu" required>
             @foreach($menus as $menu)
               <option value="{{ $menu->ID }}" @selected(($old['menu'] ?? $menus[0]->ID ?? null) === $menu->ID)>{{ $menu->post_title }}</option>
             @endforeach
           </select>
         </label>
 
-        <label class="booking-form__field">
-          <span class="booking-form__label">{{ __('Area', 'pixelforge') }}</span>
-          <select class="booking-form__input" name="pixelforge_booking_section" required>
+        <label class="booking-form__field col-md-6">
+          <span class="booking-form__label form-label">{{ __('Area', 'pixelforge') }}</span>
+          <select class="booking-form__input form-select" name="pixelforge_booking_section" required>
             @foreach($sections as $section)
               <option value="{{ $section->ID }}" @selected(($old['section'] ?? null) === $section->ID)>{{ $section->post_title }}</option>
             @endforeach
           </select>
         </label>
 
-        <label class="booking-form__field">
-          <span class="booking-form__label">{{ __('Date', 'pixelforge') }}</span>
-          <input class="booking-form__input" type="date" name="pixelforge_booking_date" value="{{ $old['date'] ?? '' }}" min="{{ $minDate }}" required>
+        <label class="booking-form__field col-md-6">
+          <span class="booking-form__label form-label">{{ __('Date', 'pixelforge') }}</span>
+          <input class="booking-form__input form-control" type="date" name="pixelforge_booking_date" value="{{ $old['date'] ?? '' }}" min="{{ $minDate }}" required>
         </label>
 
-        <label class="booking-form__field">
-          <span class="booking-form__label">{{ __('Time', 'pixelforge') }}</span>
-          <select class="booking-form__input" name="pixelforge_booking_time" id="pixelforge_booking_time" required>
+        <label class="booking-form__field col-md-6">
+          <span class="booking-form__label form-label">{{ __('Time', 'pixelforge') }}</span>
+          <select class="booking-form__input form-select" name="pixelforge_booking_time" id="pixelforge_booking_time" required>
             @foreach($initialSlots as $slot)
               <option value="{{ $slot }}" @selected(($old['time'] ?? null) === $slot)>{{ $slot }}</option>
             @endforeach
           </select>
         </label>
+
+        <label class="booking-form__field col-12">
+          <span class="booking-form__label form-label">{{ __('Notes (optional)', 'pixelforge') }}</span>
+          <textarea class="booking-form__input form-control" name="pixelforge_booking_notes" rows="4">{{ $old['notes'] ?? '' }}</textarea>
+        </label>
       </div>
 
-      <label class="booking-form__field">
-        <span class="booking-form__label">{{ __('Notes (optional)', 'pixelforge') }}</span>
-        <textarea class="booking-form__input" name="pixelforge_booking_notes" rows="4">{{ $old['notes'] ?? '' }}</textarea>
-      </label>
+      <p class="booking-form__notice booking-form__notice--availability mt-2" id="booking_availability_notice" aria-live="polite"></p>
 
-      <p class="booking-form__notice booking-form__notice--availability" id="booking_availability_notice" aria-live="polite"></p>
-
-      <button class="booking-form__submit" type="submit">{{ __('Book Table', 'pixelforge') }}</button>
+      <button class="booking-form__submit btn btn-primary mt-2" type="submit">{{ __('Book Table', 'pixelforge') }}</button>
     </form>
 
     <script>
