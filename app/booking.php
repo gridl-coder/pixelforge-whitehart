@@ -1,0 +1,380 @@
+<?php
+
+namespace PixelForge\Bookings;
+
+use DateInterval;
+use DateTimeImmutable;
+use PixelForge\PostTypes\BookingMenu;
+use PixelForge\PostTypes\BookingSection;
+use PixelForge\PostTypes\BookingTable;
+use PixelForge\PostTypes\TableBooking;
+use WP_Query;
+use function PixelForge\CMB2\get_theme_option;
+
+const NONCE_ACTION = 'pixelforge_table_booking';
+
+add_action('init', __NAMESPACE__ . '\\register_booking_shortcodes');
+add_action('init', __NAMESPACE__ . '\\handle_booking_submission');
+
+function register_booking_shortcodes(): void
+{
+    add_shortcode('pixelforge_table_booking', __NAMESPACE__ . '\\render_booking_form_shortcode');
+}
+
+function render_booking_form_shortcode(): string
+{
+    $sections = get_posts([
+        'post_type' => BookingSection::KEY,
+        'post_status' => 'publish',
+        'numberposts' => -1,
+        'orderby' => 'title',
+        'order' => 'ASC',
+    ]);
+
+    $menus = get_posts([
+        'post_type' => BookingMenu::KEY,
+        'post_status' => 'publish',
+        'numberposts' => -1,
+        'orderby' => 'title',
+        'order' => 'ASC',
+    ]);
+
+    $menuSlots = [];
+
+    foreach ($menus as $menu) {
+        $menuSlots[$menu->ID] = build_menu_slots((int) $menu->ID);
+    }
+
+    $feedback = get_feedback();
+
+    $today = new DateTimeImmutable('today', wp_timezone());
+
+    return \Roots\view('components.table-booking-form', [
+        'sections' => $sections,
+        'menus' => $menus,
+        'menuSlots' => $menuSlots,
+        'feedback' => $feedback,
+        'minDate' => $today->format('Y-m-d'),
+    ])->render();
+}
+
+function handle_booking_submission(): void
+{
+    if (! isset($_POST['pixelforge_booking_form']) || $_POST['pixelforge_booking_form'] !== '1') {
+        return;
+    }
+
+    if (! isset($_POST['pixelforge_booking_nonce']) || ! wp_verify_nonce(
+        sanitize_text_field(wp_unslash($_POST['pixelforge_booking_nonce'])),
+        NONCE_ACTION
+    )) {
+        return;
+    }
+
+    $data = [
+        'name' => sanitize_text_field(wp_unslash($_POST['pixelforge_booking_name'] ?? '')),
+        'email' => sanitize_email(wp_unslash($_POST['pixelforge_booking_email'] ?? '')),
+        'phone' => sanitize_text_field(wp_unslash($_POST['pixelforge_booking_phone'] ?? '')),
+        'party_size' => absint(wp_unslash($_POST['pixelforge_booking_party_size'] ?? 0)),
+        'menu' => absint(wp_unslash($_POST['pixelforge_booking_menu'] ?? 0)),
+        'section' => absint(wp_unslash($_POST['pixelforge_booking_section'] ?? 0)),
+        'date' => sanitize_text_field(wp_unslash($_POST['pixelforge_booking_date'] ?? '')),
+        'time' => sanitize_text_field(wp_unslash($_POST['pixelforge_booking_time'] ?? '')),
+        'notes' => sanitize_textarea_field(wp_unslash($_POST['pixelforge_booking_notes'] ?? '')),
+    ];
+
+    $feedback = [
+        'errors' => [],
+        'success' => null,
+        'old' => $data,
+    ];
+
+    if ($data['name'] === '') {
+        $feedback['errors'][] = __('Please enter your name.', 'pixelforge');
+    }
+
+    if ($data['email'] === '' || ! is_email($data['email'])) {
+        $feedback['errors'][] = __('Please enter a valid email address.', 'pixelforge');
+    }
+
+    if ($data['phone'] === '') {
+        $feedback['errors'][] = __('Please enter a contact phone number.', 'pixelforge');
+    }
+
+    if ($data['party_size'] < 1) {
+        $feedback['errors'][] = __('Please choose how many seats you need.', 'pixelforge');
+    }
+
+    if ($data['menu'] === 0 || get_post_type($data['menu']) !== BookingMenu::KEY) {
+        $feedback['errors'][] = __('Please pick a menu to book.', 'pixelforge');
+    }
+
+    if ($data['section'] === 0 || get_post_type($data['section']) !== BookingSection::KEY) {
+        $feedback['errors'][] = __('Please select an area.', 'pixelforge');
+    }
+
+    $bookingDate = DateTimeImmutable::createFromFormat('Y-m-d H:i', sprintf('%s %s', $data['date'], $data['time']), wp_timezone());
+
+    if (! $bookingDate) {
+        $feedback['errors'][] = __('Please choose a valid date and time.', 'pixelforge');
+    }
+
+    $timeWindow = get_menu_time_window($data['menu']);
+
+    if (! $timeWindow) {
+        $feedback['errors'][] = __('This menu is missing booking hours.', 'pixelforge');
+    }
+
+    $now = new DateTimeImmutable('now', wp_timezone());
+
+    if ($bookingDate && $bookingDate < $now) {
+        $feedback['errors'][] = __('Please choose a time in the future.', 'pixelforge');
+    }
+
+    if ($bookingDate && $timeWindow) {
+        $slotStart = time_from_string($data['time']);
+
+        if (! $slotStart) {
+            $feedback['errors'][] = __('Please choose a valid time slot.', 'pixelforge');
+        } else {
+            if ((int) $slotStart->format('i') !== 0) {
+                $feedback['errors'][] = __('Bookings are limited to hourly slots.', 'pixelforge');
+            }
+
+            if ($slotStart < $timeWindow['start'] || $slotStart >= $timeWindow['end']) {
+                $feedback['errors'][] = __('Selected time is outside the menu availability.', 'pixelforge');
+            }
+
+            if (! menu_allows_day($data['menu'], $bookingDate)) {
+                $feedback['errors'][] = __('Selected day is not available for this menu.', 'pixelforge');
+            }
+        }
+    }
+
+    if (! empty($feedback['errors'])) {
+        set_feedback($feedback);
+        return;
+    }
+
+    $timestamp = $bookingDate ? $bookingDate->getTimestamp() : 0;
+
+    $tableId = find_available_table($data['section'], $data['party_size'], $timestamp);
+
+    if (! $tableId) {
+        $feedback['errors'][] = __('No tables are available for that area and time. Please try another slot.', 'pixelforge');
+        set_feedback($feedback);
+        return;
+    }
+
+    $bookingTitle = sprintf(
+        __('Booking for %1$s on %2$s', 'pixelforge'),
+        $data['name'],
+        wp_date('M j, Y H:i', $timestamp, wp_timezone())
+    );
+
+    $bookingId = wp_insert_post([
+        'post_type' => TableBooking::KEY,
+        'post_status' => 'publish',
+        'post_title' => $bookingTitle,
+    ]);
+
+    if (is_wp_error($bookingId) || ! $bookingId) {
+        $feedback['errors'][] = __('Unable to save your booking right now. Please try again later.', 'pixelforge');
+        set_feedback($feedback);
+        return;
+    }
+
+    update_post_meta($bookingId, 'table_booking_customer_name', $data['name']);
+    update_post_meta($bookingId, 'table_booking_customer_email', $data['email']);
+    update_post_meta($bookingId, 'table_booking_customer_phone', $data['phone']);
+    update_post_meta($bookingId, 'table_booking_party_size', $data['party_size']);
+    update_post_meta($bookingId, 'table_booking_menu_id', $data['menu']);
+    update_post_meta($bookingId, 'table_booking_section_id', $data['section']);
+    update_post_meta($bookingId, 'table_booking_table_id', $tableId);
+    update_post_meta($bookingId, 'table_booking_datetime', $timestamp);
+    update_post_meta($bookingId, 'table_booking_notes', $data['notes']);
+
+    send_booking_emails($bookingId, $data, $tableId, $timestamp);
+
+    $feedback['success'] = __('Your table is reserved! We have emailed confirmation to you and the team.', 'pixelforge');
+    $feedback['old'] = [];
+
+    set_feedback($feedback);
+}
+
+function get_feedback(): array
+{
+    global $pixelforge_booking_feedback;
+
+    if (! isset($pixelforge_booking_feedback)) {
+        return [
+            'errors' => [],
+            'success' => null,
+            'old' => [],
+        ];
+    }
+
+    return $pixelforge_booking_feedback;
+}
+
+function set_feedback(array $feedback): void
+{
+    global $pixelforge_booking_feedback;
+
+    $pixelforge_booking_feedback = $feedback;
+}
+
+function get_menu_time_window(int $menuId): ?array
+{
+    $start = time_from_string(get_post_meta($menuId, 'booking_menu_start_time', true));
+    $end = time_from_string(get_post_meta($menuId, 'booking_menu_end_time', true));
+
+    if (! $start || ! $end || $end <= $start) {
+        return null;
+    }
+
+    return [
+        'start' => $start,
+        'end' => $end,
+    ];
+}
+
+function time_from_string(string $time): ?DateTimeImmutable
+{
+    $time = trim($time);
+
+    if ($time === '') {
+        return null;
+    }
+
+    $parsed = DateTimeImmutable::createFromFormat('!H:i', $time, wp_timezone());
+
+    if (! $parsed) {
+        return null;
+    }
+
+    return $parsed;
+}
+
+function menu_allows_day(int $menuId, DateTimeImmutable $date): bool
+{
+    $days = get_post_meta($menuId, 'booking_menu_days', true);
+
+    if (! is_array($days) || $days === []) {
+        return true;
+    }
+
+    $dayKey = strtolower($date->format('l'));
+
+    return in_array($dayKey, $days, true);
+}
+
+function build_menu_slots(int $menuId): array
+{
+    $window = get_menu_time_window($menuId);
+
+    if (! $window) {
+        return [];
+    }
+
+    $slots = [];
+    $cursor = $window['start'];
+
+    while ($cursor < $window['end']) {
+        $slots[] = $cursor->format('H:i');
+        $cursor = $cursor->add(new DateInterval('PT1H'));
+    }
+
+    return $slots;
+}
+
+function find_available_table(int $sectionId, int $partySize, int $timestamp): ?int
+{
+    $tables = new WP_Query([
+        'post_type' => BookingTable::KEY,
+        'post_status' => 'publish',
+        'posts_per_page' => -1,
+        'orderby' => 'meta_value_num',
+        'meta_key' => 'booking_table_seats',
+        'order' => 'ASC',
+        'meta_query' => [
+            [
+                'key' => 'booking_table_section',
+                'value' => $sectionId,
+                'compare' => '=',
+            ],
+            [
+                'key' => 'booking_table_seats',
+                'value' => $partySize,
+                'type' => 'NUMERIC',
+                'compare' => '>=',
+            ],
+        ],
+    ]);
+
+    foreach ($tables->posts as $table) {
+        if (! table_has_conflict((int) $table->ID, $timestamp)) {
+            return (int) $table->ID;
+        }
+    }
+
+    return null;
+}
+
+function table_has_conflict(int $tableId, int $timestamp): bool
+{
+    $slotStart = $timestamp;
+    $slotEnd = $timestamp + HOUR_IN_SECONDS - 1;
+
+    $conflict = new WP_Query([
+        'post_type' => TableBooking::KEY,
+        'post_status' => ['publish', 'pending', 'draft', 'private'],
+        'posts_per_page' => 1,
+        'fields' => 'ids',
+        'meta_query' => [
+            [
+                'key' => 'table_booking_table_id',
+                'value' => $tableId,
+                'compare' => '=',
+            ],
+            [
+                'key' => 'table_booking_datetime',
+                'value' => [$slotStart, $slotEnd],
+                'compare' => 'BETWEEN',
+                'type' => 'NUMERIC',
+            ],
+        ],
+    ]);
+
+    return ! empty($conflict->posts);
+}
+
+function send_booking_emails(int $bookingId, array $data, int $tableId, int $timestamp): void
+{
+    $adminEmail = get_theme_option('business_email', get_option('admin_email'));
+
+    $tableName = get_the_title($tableId);
+    $menuName = get_the_title($data['menu']);
+    $sectionName = get_the_title($data['section']);
+    $datetime = wp_date(get_option('date_format') . ' ' . get_option('time_format'), $timestamp, wp_timezone());
+
+    $message = sprintf(
+        "%s\n\n%s\n%s\n%s\n%s",
+        sprintf(__('Booking reference: #%d', 'pixelforge'), $bookingId),
+        sprintf(__('Name: %s', 'pixelforge'), $data['name']),
+        sprintf(__('Party Size: %d', 'pixelforge'), $data['party_size']),
+        sprintf(__('Menu: %s', 'pixelforge'), $menuName ?: __('Unknown menu', 'pixelforge')),
+        sprintf(__('Table: %s (%s)', 'pixelforge'), $tableName ?: __('Unknown table', 'pixelforge'), $sectionName ?: __('No section', 'pixelforge'))
+    );
+
+    $message .= sprintf("\n%s", sprintf(__('Date & Time: %s', 'pixelforge'), $datetime));
+    $message .= sprintf("\n%s", sprintf(__('Email: %s', 'pixelforge'), $data['email']));
+    $message .= sprintf("\n%s", sprintf(__('Phone: %s', 'pixelforge'), $data['phone']));
+
+    if ($data['notes'] !== '') {
+        $message .= sprintf("\n%s", sprintf(__('Notes: %s', 'pixelforge'), $data['notes']));
+    }
+
+    wp_mail($adminEmail, __('New table booking received', 'pixelforge'), $message);
+    wp_mail($data['email'], __('Your table booking confirmation', 'pixelforge'), $message);
+}
