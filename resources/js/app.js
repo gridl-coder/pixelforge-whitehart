@@ -73,7 +73,7 @@ const initCarouselSliders = async () => {
     arrows: false,
     adaptiveHeight: true,
     autoplay: true,
-    autoplaySpeed: 4000,
+    autoplaySpeed: 2000,
     slidesToShow: 1,
     slidesToScroll: 1,
   });

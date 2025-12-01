@@ -46,6 +46,28 @@ function register_home_metabox(): void
         'preview_size' => 'large',
     ]);
 
+    $cmb_home->add_field([
+        'name' => esc_html__('Guest Food Image', 'pixelforge'),
+        'desc' => esc_html__('Upload the graphic for the guest food popup.', 'pixelforge'),
+        'id' => 'home_guestpopup_image',
+        'type' => 'file',
+        'options' => [
+            'url' => false,
+        ],
+        'text' => [
+            'add_upload_file_text' => __('Add Image', 'pixelforge'),
+        ],
+        'query_args' => [
+            'type' => [
+                'image/gif',
+                'image/jpg',
+                'image/png',
+                'image/jpeg',
+            ],
+        ],
+        'preview_size' => 'medium',
+    ]);
+
     $image_group_id = $cmb_home->add_field(array(
         'id' => 'home_menu_carousel',
         'type' => 'group',
