@@ -524,12 +524,6 @@ function send_booking_emails(int $bookingId, array $data, array $tableIds, int $
 
 function check_table_availability(): void
 {
-    if (! (bool) get_theme_option('enable_bookings', 1)) {
-        wp_send_json([
-            'bookingsDisabled' => true,
-        ]);
-    }
-
     $menuId = absint($_GET['menu'] ?? 0);
     $partySize = max(1, absint($_GET['party_size'] ?? 0));
     $dateValue = sanitize_text_field(wp_unslash($_GET['date'] ?? ''));
@@ -575,63 +569,6 @@ function check_table_availability(): void
         'availableSections' => $availableSections,
         'availableSlots' => $availableSlots,
         'date' => $date->format('Y-m-d'),
-    ]);
-}
-
-add_action('wp_ajax_pixelforge_get_booking_calendar', __NAMESPACE__ . '\\get_booking_calendar');
-add_action('wp_ajax_nopriv_pixelforge_get_booking_calendar', __NAMESPACE__ . '\\get_booking_calendar');
-
-function get_booking_calendar(): void
-{
-    if (! (bool) get_theme_option('enable_bookings', 1)) {
-        wp_send_json([
-            'bookingsDisabled' => true,
-        ]);
-    }
-
-    $menuId = absint($_GET['menu'] ?? 0);
-    $partySize = max(1, absint($_GET['party_size'] ?? 1));
-    $days = absint($_GET['days'] ?? 60);
-    $days = max(1, min(120, $days));
-
-    if ($menuId === 0) {
-        wp_send_json([
-            'dates' => [],
-        ]);
-    }
-
-    $startDate = new DateTimeImmutable('today', wp_timezone());
-    $sections = get_posts([
-        'post_type' => BookingSection::KEY,
-        'post_status' => 'publish',
-        'numberposts' => -1,
-    ]);
-
-    $dates = [];
-
-    for ($dayOffset = 0; $dayOffset < $days; $dayOffset++) {
-        $date = $startDate->modify(sprintf('+%d day', $dayOffset));
-        $isAvailable = false;
-
-        if (menu_allows_day($menuId, $date)) {
-            foreach ($sections as $section) {
-                $slots = get_available_slots_for_section((int) $section->ID, $partySize, $menuId, $date);
-
-                if ($slots !== []) {
-                    $isAvailable = true;
-                    break;
-                }
-            }
-        }
-
-        $dates[] = [
-            'date' => $date->format('Y-m-d'),
-            'available' => $isAvailable,
-        ];
-    }
-
-    wp_send_json([
-        'dates' => $dates,
     ]);
 }
 

@@ -29,73 +29,68 @@
       <input type="hidden" name="pixelforge_booking_form" value="1">
       @php(wp_nonce_field(\PixelForge\Bookings\NONCE_ACTION, 'pixelforge_booking_nonce'))
 
-      <div class="booking-form__grid">
-        <label class="booking-form__field">
-          <span class="booking-form__label">{{ __('Name', 'pixelforge') }}</span>
-          <input class="booking-form__input" type="text" name="pixelforge_booking_name" value="{{ $old['name'] ?? '' }}" required>
+      <div class="booking-form__grid row g-3">
+        <label class="booking-form__field col-md-6">
+          <span class="booking-form__label form-label">{{ __('Name', 'pixelforge') }}</span>
+          <input class="booking-form__input form-control" type="text" name="pixelforge_booking_name" value="{{ $old['name'] ?? '' }}" required>
         </label>
 
-        <label class="booking-form__field">
-          <span class="booking-form__label">{{ __('Email', 'pixelforge') }}</span>
-          <input class="booking-form__input" type="email" name="pixelforge_booking_email" value="{{ $old['email'] ?? '' }}" required>
+        <label class="booking-form__field col-md-6">
+          <span class="booking-form__label form-label">{{ __('Email', 'pixelforge') }}</span>
+          <input class="booking-form__input form-control" type="email" name="pixelforge_booking_email" value="{{ $old['email'] ?? '' }}" required>
         </label>
 
-        <label class="booking-form__field">
-          <span class="booking-form__label">{{ __('Phone', 'pixelforge') }}</span>
-          <input class="booking-form__input" type="tel" name="pixelforge_booking_phone" value="{{ $old['phone'] ?? '' }}" required>
+        <label class="booking-form__field col-md-6">
+          <span class="booking-form__label form-label">{{ __('Phone', 'pixelforge') }}</span>
+          <input class="booking-form__input form-control" type="tel" name="pixelforge_booking_phone" value="{{ $old['phone'] ?? '' }}" required>
         </label>
 
-        <label class="booking-form__field">
-          <span class="booking-form__label">{{ __('Party Size', 'pixelforge') }}</span>
-          <input class="booking-form__input" type="number" min="1" step="1" name="pixelforge_booking_party_size" value="{{ $old['party_size'] ?? '' }}" required>
+        <label class="booking-form__field col-md-6">
+          <span class="booking-form__label form-label">{{ __('Party Size', 'pixelforge') }}</span>
+          <input class="booking-form__input form-control" type="number" min="1" step="1" name="pixelforge_booking_party_size" value="{{ $old['party_size'] ?? '' }}" required>
         </label>
 
-        <label class="booking-form__field">
-          <span class="booking-form__label">{{ __('Menu', 'pixelforge') }}</span>
-          <select class="booking-form__input" name="pixelforge_booking_menu" id="pixelforge_booking_menu" required>
+        <label class="booking-form__field col-md-6">
+          <span class="booking-form__label form-label">{{ __('Menu', 'pixelforge') }}</span>
+          <select class="booking-form__input form-select" name="pixelforge_booking_menu" id="pixelforge_booking_menu" required>
             @foreach($menus as $menu)
               <option value="{{ $menu->ID }}" @selected(($old['menu'] ?? $menus[0]->ID ?? null) === $menu->ID)>{{ $menu->post_title }}</option>
             @endforeach
           </select>
         </label>
 
-        <label class="booking-form__field">
-          <span class="booking-form__label">{{ __('Area', 'pixelforge') }}</span>
-          <select class="booking-form__input" name="pixelforge_booking_section" required>
+        <label class="booking-form__field col-md-6">
+          <span class="booking-form__label form-label">{{ __('Area', 'pixelforge') }}</span>
+          <select class="booking-form__input form-select" name="pixelforge_booking_section" required>
             @foreach($sections as $section)
               <option value="{{ $section->ID }}" @selected(($old['section'] ?? null) === $section->ID)>{{ $section->post_title }}</option>
             @endforeach
           </select>
         </label>
 
-        <label class="booking-form__field">
-          <span class="booking-form__label">{{ __('Date', 'pixelforge') }}</span>
-          <input class="booking-form__input" type="date" name="pixelforge_booking_date" value="{{ $old['date'] ?? '' }}" min="{{ $minDate }}" required>
+        <label class="booking-form__field col-md-6">
+          <span class="booking-form__label form-label">{{ __('Date', 'pixelforge') }}</span>
+          <input class="booking-form__input form-control" type="date" name="pixelforge_booking_date" value="{{ $old['date'] ?? '' }}" min="{{ $minDate }}" required>
         </label>
 
-        <label class="booking-form__field">
-          <span class="booking-form__label">{{ __('Time', 'pixelforge') }}</span>
-          <select class="booking-form__input" name="pixelforge_booking_time" id="pixelforge_booking_time" required>
+        <label class="booking-form__field col-md-6">
+          <span class="booking-form__label form-label">{{ __('Time', 'pixelforge') }}</span>
+          <select class="booking-form__input form-select" name="pixelforge_booking_time" id="pixelforge_booking_time" required>
             @foreach($initialSlots as $slot)
               <option value="{{ $slot }}" @selected(($old['time'] ?? null) === $slot)>{{ $slot }}</option>
             @endforeach
           </select>
         </label>
+
+        <label class="booking-form__field col-12">
+          <span class="booking-form__label form-label">{{ __('Notes (optional)', 'pixelforge') }}</span>
+          <textarea class="booking-form__input form-control" name="pixelforge_booking_notes" rows="4">{{ $old['notes'] ?? '' }}</textarea>
+        </label>
       </div>
 
-      <label class="booking-form__field">
-        <span class="booking-form__label">{{ __('Notes (optional)', 'pixelforge') }}</span>
-        <textarea class="booking-form__input" name="pixelforge_booking_notes" rows="4">{{ $old['notes'] ?? '' }}</textarea>
-      </label>
+      <p class="booking-form__notice booking-form__notice--availability mt-2" id="booking_availability_notice" aria-live="polite"></p>
 
-      <p class="booking-form__notice booking-form__notice--availability" id="booking_availability_notice" aria-live="polite"></p>
-
-      <div class="booking-form__calendar" aria-live="polite">
-        <p class="booking-form__label">{{ __('Availability calendar', 'pixelforge') }}</p>
-        <div id="booking_calendar" class="booking-form__calendar-grid" role="grid" aria-label="{{ __('Booking availability calendar', 'pixelforge') }}"></div>
-      </div>
-
-      <button class="booking-form__submit" type="submit">{{ __('Book Table', 'pixelforge') }}</button>
+      <button class="booking-form__submit btn btn-primary mt-2" type="submit">{{ __('Book Table', 'pixelforge') }}</button>
     </form>
 
     <script>
@@ -106,13 +101,10 @@
         const dateInput = document.querySelector('input[name="pixelforge_booking_date"]');
         const partyInput = document.querySelector('input[name="pixelforge_booking_party_size"]');
         const notice = document.getElementById('booking_availability_notice');
-        const calendar = document.getElementById('booking_calendar');
         const slots = @json($menuSlots);
         const ajaxUrl = @json(admin_url('admin-ajax.php'));
         const unavailableDateMessage = @json(__('Selected date is unavailable for this menu.', 'pixelforge'));
         const unavailableSectionMessage = @json(__('Selected area is fully booked for this date.', 'pixelforge'));
-        const bookingsDisabledMessage = @json(__('Bookings are currently unavailable.', 'pixelforge'));
-        let unavailableDates = new Set();
 
         const setNotice = (text) => {
           notice.textContent = text || '';
@@ -166,12 +158,6 @@
             return;
           }
 
-          if (data.bookingsDisabled) {
-            setNotice(bookingsDisabledMessage);
-            rebuildTimes();
-            return;
-          }
-
           if (data.unavailableDate) {
             dateInput.classList.add('booking-form__input--unavailable');
             dateInput.setCustomValidity(unavailableDateMessage);
@@ -200,48 +186,6 @@
           }
         };
 
-        const applyCalendar = (dates = []) => {
-          unavailableDates = new Set(dates.filter((entry) => ! entry.available).map((entry) => entry.date));
-
-          if (! calendar) {
-            return;
-          }
-
-          calendar.innerHTML = '';
-
-          if (dates.length === 0) {
-            calendar.textContent = @json(__('No calendar data available.', 'pixelforge'));
-            return;
-          }
-
-          dates.forEach((entry) => {
-            const dayButton = document.createElement('button');
-            dayButton.type = 'button';
-            dayButton.className = 'booking-form__calendar-day';
-            dayButton.textContent = new Date(entry.date).getDate();
-            dayButton.title = entry.date;
-            dayButton.setAttribute('aria-label', `${entry.date}${entry.available ? '' : ' - {{ __('Unavailable', 'pixelforge') }}'}`);
-
-            if (! entry.available) {
-              dayButton.disabled = true;
-              dayButton.classList.add('booking-form__calendar-day--unavailable');
-            }
-
-            if (dateInput.value === entry.date) {
-              dayButton.classList.add('booking-form__calendar-day--selected');
-            }
-
-            dayButton.addEventListener('click', () => {
-              if (entry.available) {
-                dateInput.value = entry.date;
-                dateInput.dispatchEvent(new Event('change'));
-              }
-            });
-
-            calendar.appendChild(dayButton);
-          });
-        };
-
         const fetchAvailability = () => {
           const menuId = menuSelect.value;
           const date = dateInput.value;
@@ -268,64 +212,13 @@
             });
         };
 
-        const fetchCalendar = () => {
-          const menuId = menuSelect.value;
-          const partySize = partyInput.value;
-
-          if (! menuId || ! partySize) {
-            applyCalendar([]);
-            return;
-          }
-
-          const params = new URLSearchParams({
-            action: 'pixelforge_get_booking_calendar',
-            menu: menuId,
-            party_size: partySize,
-          });
-
-          fetch(`${ajaxUrl}?${params.toString()}`, { credentials: 'same-origin' })
-            .then((response) => response.json())
-            .then((data) => {
-              if (data.bookingsDisabled) {
-                setNotice(bookingsDisabledMessage);
-                applyCalendar([]);
-                return;
-              }
-
-              applyCalendar(data.dates || []);
-            })
-            .catch(() => {
-              applyCalendar([]);
-            });
-        };
-
-        const enforceDateValidity = () => {
-          const value = dateInput.value;
-
-          if (value && unavailableDates.has(value)) {
-            dateInput.classList.add('booking-form__input--unavailable');
-            dateInput.setCustomValidity(unavailableDateMessage);
-            setNotice(unavailableDateMessage);
-            return;
-          }
-
-          dateInput.classList.remove('booking-form__input--unavailable');
-          dateInput.setCustomValidity('');
-        };
-
         menuSelect.addEventListener('change', fetchAvailability);
         sectionSelect.addEventListener('change', fetchAvailability);
-        dateInput.addEventListener('change', () => {
-          enforceDateValidity();
-          fetchAvailability();
-        });
+        dateInput.addEventListener('change', fetchAvailability);
         partyInput.addEventListener('input', fetchAvailability);
-        menuSelect.addEventListener('change', fetchCalendar);
-        partyInput.addEventListener('input', fetchCalendar);
 
         rebuildTimes();
         fetchAvailability();
-        fetchCalendar();
       })();
     </script>
   @endif
