@@ -19,28 +19,22 @@ This theme ships with a reservation workflow built around custom post types and 
 ## 3) Place the booking form on a page
 - Add the shortcode `[pixelforge_table_booking]` to any page or post (use the *Shortcode* block in the block editor if needed).
 - In Blade templates you can render the form with `@shortcode('pixelforge_table_booking')`.
-- The shortcode outputs a Bootstrap-styled form plus a live availability calendar that shows hourly slots and whether they are available, limited, booked, or closed for your chosen menu/area/party size.
+- The form reads all published Sections, Tables, and Booking Menus to present selectable areas and menu-specific time slots.
 
 ## 4) How bookings are processed
-- Customers choose a menu, date, section, party size (up to 12 online), and an hourly slot within the menu's availability window.
-- On submission the system finds enough free tables in the chosen section to seat the party (e.g., 7 guests will reserve two 4-seaters). If no tables are free for that combination, the user is prompted to try another time.
+- Customers choose a menu, date, section, party size, and an hourly slot within the menu's availability window.
+- On submission the system finds the first table in the chosen section with enough seats that is free for that hour. If no table is free, the user is prompted to try another time.
 - Successful submissions create a **Table Booking** entry and automatically send a confirmation email to:
   - The admin/business email configured under *PixelForge Options* (falls back to the site admin email).
   - The customer email entered in the form.
 - Booked tables are blocked for their hour, preventing double bookings of the same table and time.
-- A reminder email is scheduled to reach the customer 24 hours before the reservation.
 
 ## 5) Managing bookings
 - View the **Table Bookings** list in the WordPress admin to see confirmed reservations.
 - Booking details (customer info, menu, section, table, date/time, notes) are stored as read-only fields for staff reference.
 - To free a slot, trash or delete the relevant Table Booking entry.
 
-## 6) Booking controls and maintenance
-- Visit **PixelForge Options** to toggle *Enable Table Bookings*. Disabling this hides the shortcode output and availability tools from visitors.
-- The same options page includes a **Delete all booking data** button to wipe every booking record, table, section, and menu (useful for resets or staging sites).
-- The availability calendar derives its data from the same rules as the booking form; if you change menu hours or areas, the calendar updates automatically.
-
 ## Notes & tips
 - The availability checker uses the site's timezone (`Settings → General`).
 - Menus without valid start/end times or without any published tables/sections will not present usable slots.
-- If confirmation or reminder emails are not received, verify the *PixelForge Options → Business Email* address and your WordPress mail transport configuration.
+- If confirmation emails are not received, verify the *PixelForge Options → Business Email* address and your WordPress mail transport configuration.

@@ -160,11 +160,12 @@ function register_booking_metaboxes(): void
     ]);
 
     $bookingBox->add_field([
-        'name' => esc_html__('Tables', 'pixelforge'),
+        'name' => esc_html__('Table', 'pixelforge'),
         'id' => 'table_booking_table_id',
-        'type' => 'text',
-        'attributes' => ['readonly' => 'readonly'],
-        'escape_cb' => __NAMESPACE__ . '\\format_booking_tables',
+        'type' => 'select',
+        'options_cb' => __NAMESPACE__ . '\\get_table_options',
+        'attributes' => ['disabled' => 'disabled'],
+        'escape_cb' => __NAMESPACE__ . '\\format_post_label',
     ]);
 
     $bookingBox->add_field([
@@ -281,29 +282,4 @@ function format_booking_datetime($value): string
     $format = sprintf('%s %s', get_option('date_format'), get_option('time_format'));
 
     return wp_date($format, $timestamp, wp_timezone());
-}
-
-function format_booking_tables($value, $field, $objectId): string
-{
-    $ids = get_post_meta($objectId, 'table_booking_table_ids', true);
-
-    if (! is_array($ids)) {
-        $legacyId = absint(get_post_meta($objectId, 'table_booking_table_id', true));
-
-        if ($legacyId > 0) {
-            $ids = [$legacyId];
-        }
-    }
-
-    if (! is_array($ids) || $ids === []) {
-        return '';
-    }
-
-    $titles = array_map(static function ($id) {
-        $title = get_the_title((int) $id);
-
-        return $title ?: __('Table', 'pixelforge');
-    }, $ids);
-
-    return implode(', ', $titles);
 }
