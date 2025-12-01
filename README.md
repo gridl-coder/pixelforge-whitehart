@@ -36,6 +36,7 @@ Navigate to **PixelForge Options** in the WordPress dashboard to manage global, 
 - Company address
 - Company email
 - Company phone number
+- Table booking toggle (uncheck **Enable Table Bookings** to hide the public booking form and calendar)
 
 These values are surfaced in theme templates so they can be reused across the header, footer, and other global components.
 

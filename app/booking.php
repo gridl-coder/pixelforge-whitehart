@@ -27,6 +27,10 @@ function register_booking_shortcodes(): void
 
 function render_booking_form_shortcode(): string
 {
+    if (! (bool) get_theme_option('enable_bookings', 1)) {
+        return '<p class="booking-form__notice">' . esc_html__('Table bookings are currently unavailable.', 'pixelforge') . '</p>';
+    }
+
     $sections = get_posts([
         'post_type' => BookingSection::KEY,
         'post_status' => 'publish',
@@ -64,6 +68,10 @@ function render_booking_form_shortcode(): string
 
 function handle_booking_submission(): void
 {
+    if (! (bool) get_theme_option('enable_bookings', 1)) {
+        return;
+    }
+
     if (! isset($_POST['pixelforge_booking_form']) || $_POST['pixelforge_booking_form'] !== '1') {
         return;
     }
