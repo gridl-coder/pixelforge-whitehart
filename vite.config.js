@@ -501,6 +501,14 @@ export default defineConfig({
       ),
     },
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        quietDeps: true,
+        silenceDeprecations: ['import', 'global-builtin', 'function-units', 'color-functions', 'abs-percent'],
+      },
+    },
+  },
   build: {
     outDir: 'public/build',
     assetsDir: 'assets',

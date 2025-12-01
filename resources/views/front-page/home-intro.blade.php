@@ -2,7 +2,8 @@
   @if (!empty($homeIntro['headerImage']['url']))
     <img class="home-intro-image"
          src="{{ esc_url($homeIntro['headerImage']['url']) }}"
-         alt="{{ esc_attr($homeIntro['headerImage']['alt']) }}"/>
+         alt="{{ esc_attr($homeIntro['headerImage']['alt']) }}"
+         loading="lazy"/>
   @endif
 
   <div class="home-intro-inner">
@@ -24,10 +25,13 @@
       <ul class="amenities-list">
         @foreach ($homeIntro['features'] as $feature)
           <li>
-          <span class="amenities-list__icon" aria-hidden="true">
-            <img width="30" src="<?= get_template_directory_uri();?>/resources/icons/{{ $feature['icon'] }}.svg"
-                 class="img-fluid">
-          </span>
+            <span class="amenities-list__icon" aria-hidden="true">
+              <img width="30"
+                   src="{{ $feature['path'] }}"
+                   class="img-fluid"
+                   alt=""
+                   loading="lazy">
+            </span>
             <span>{{ $feature['label'] }}</span>
           </li>
         @endforeach

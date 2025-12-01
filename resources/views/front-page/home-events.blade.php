@@ -12,10 +12,9 @@
       </div>
 
       @if (!empty($highlightEvent['image']['url']))
-        @php($highlightTarget = !empty($highlightEvent['externalUrl']))
-        <a href="{{ esc_url($highlightEvent['externalUrl'] ?? $highlightEvent['permalink']) }}"
+        <a href="{{ esc_url($highlightEvent['link']) }}"
            class="event-link"
-           @if($highlightTarget) target="_blank" rel="noopener" @endif>
+           @if(!empty($highlightEvent['isExternal'])) target="_blank" rel="noopener" @endif>
           <img src="{{ esc_url($highlightEvent['image']['url']) }}"
                class="event-thumbnail img-fluid img-thumbnail img-rounded"
                alt="{{ esc_attr($highlightEvent['title']) }}"
@@ -52,9 +51,8 @@
       @forelse ($upcomingEvents as $event)
         <div class="col-md-4 col-sm-6 col-6 event">
           @if (!empty($event['image']['url']))
-            @php($isExternal = !empty($event['externalUrl']))
-            <a href="{{ esc_url($event['externalUrl'] ?? $event['permalink']) }}" class="event-link"
-               @if($isExternal) target="_blank" rel="noopener" @endif>
+            <a href="{{ esc_url($event['link']) }}" class="event-link"
+               @if(!empty($event['isExternal'])) target="_blank" rel="noopener" @endif>
               <img src="{{ esc_url($event['image']['url']) }}"
                    class="event-thumbnail img-fluid img-thumbnail img-rounded"
                    alt="{{ esc_attr($event['title']) }}"

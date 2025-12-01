@@ -10,13 +10,27 @@ use function get_option;
 use function get_post_field;
 use function get_post_meta;
 use function get_queried_object_id;
+use function get_theme_file_uri;
 use function get_the_title;
 use function is_front_page;
 use function sprintf;
 use function wp_get_attachment_image_url;
+use function esc_url;
 
 class HomeIntro extends Composer
 {
+    private const FEATURES = [
+        ['icon' => 'guitars', 'label' => 'Live Music'],
+        ['icon' => 'tv-retro', 'label' => 'Live Sports'],
+        ['icon' => 'game-board', 'label' => 'Pool Table'],
+        ['icon' => 'bullseye-arrow', 'label' => 'Dart Board'],
+        ['icon' => 'family', 'label' => 'Family Friendly'],
+        ['icon' => 'dog-leashed', 'label' => 'Dog Friendly'],
+        ['icon' => 'square-parking', 'label' => 'Parking'],
+        ['icon' => 'burger-soda', 'label' => 'Pub Food'],
+        ['icon' => 'sun-cloud', 'label' => 'Beer Garden'],
+    ];
+
     protected static $views = [
         'front-page.home-intro',
     ];
@@ -92,16 +106,14 @@ class HomeIntro extends Composer
 
     private function features(): array
     {
-        return [
-            ['icon' => 'guitars', 'label' => __('Live Music', 'pixelforge')],
-            ['icon' => 'tv-retro', 'label' => __('Live Sports', 'pixelforge')],
-            ['icon' => 'game-board', 'label' => __('Pool Table', 'pixelforge')],
-            ['icon' => 'bullseye-arrow', 'label' => __('Dart Board', 'pixelforge')],
-            ['icon' => 'family', 'label' => __('Family Friendly', 'pixelforge')],
-            ['icon' => 'dog-leashed', 'label' => __('Dog Friendly', 'pixelforge')],
-            ['icon' => 'square-parking', 'label' => __('Parking', 'pixelforge')],
-            ['icon' => 'burger-soda', 'label' => __('Pub Food', 'pixelforge')],
-            ['icon' => 'sun-cloud', 'label' => __('Beer Garden', 'pixelforge')],
-        ];
+        return array_map(function (array $feature): array {
+            $icon = $feature['icon'];
+
+            return [
+                'icon' => $icon,
+                'label' => __($feature['label'], 'pixelforge'),
+                'path' => esc_url(get_theme_file_uri("resources/icons/{$icon}.svg")),
+            ];
+        }, self::FEATURES);
     }
 }

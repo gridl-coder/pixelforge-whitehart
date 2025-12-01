@@ -18,19 +18,24 @@
 @import "./views/front-page/home-events";
 @import "./views/front-page/home-menu";
 
+:root {
+  --brand-dark: #{$brand_dark};
+  --brand-yellow: #{$brand_yellow};
+}
+
 body {
   font-family: 'Montserrat', sans-serif;
 }
 
 .btn {
-  background-color: $brand_yellow !important;
-  border-color: $brand_yellow !important;
-  color: $brand_dark !important;
+  background-color: var(--brand-yellow);
+  border-color: var(--brand-yellow);
+  color: var(--brand-dark);
   font-weight: bold;
 
   &:hover {
-    background-color: darken($brand_yellow, 15%) !important;
-    color: $brand_dark !important;
+    background-color: darken($brand_yellow, 15%);
+    color: var(--brand-dark);
   }
 }
 .amenities-list svg {

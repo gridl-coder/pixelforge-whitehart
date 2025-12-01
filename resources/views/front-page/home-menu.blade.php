@@ -2,50 +2,49 @@
 
 <section class="food-banner">
 
-  <div class="container" style="max-width: 1090px;">
+  <div class="container food-banner__container">
 
     <div class="row">
 
       <div class="col-md-5 food-banner-image text-center">
 
-        <div class="carousel-slider">
+        @if (!empty($menuCarousel))
+          <div class="carousel-slider">
+            @foreach ($menuCarousel as $slide)
+              <div class="carousel-slider__slide">
+                <img class="img-fluid" src="{{ esc_url($slide['url']) }}" alt="{{ esc_attr($slide['title']) }}" loading="lazy"/>
+                @if (!empty($slide['title']))
+                  <span>{{ $slide['title'] }}</span>
+                @endif
+              </div>
+            @endforeach
+          </div>
+        @endif
 
-          <?php
-          $post_image_data = get_post_meta(get_the_ID());
-          if (isset($post_image_data['home_menu_carousel'][0])) {
-            $blog_list = maybe_unserialize($post_image_data['home_menu_carousel'][0]);
-            $posts_list = '';
-            foreach ($blog_list as $post_info) {
-              $posts_list .= sprintf('<div><img class="img-fluid" src="%s"/> <span>%s</span></div>', $post_info['menu_image'], $post_info['menu_image_title']);
-            }
-            echo($posts_list);
-          }
-          ?>
-        </div>
-
-        <?php
-        $popup_food = get_post_meta(get_the_ID(), 'home_guestpopup_image', true);
-        echo '<img class="img-fluid" src="' . $popup_food . '" alt="popup foood events at the white hart"/>'
-        ?>
+        @if (!empty($guestPopup['url']))
+          <img class="img-fluid food-banner__poster" src="{{ esc_url($guestPopup['url']) }}"
+               alt="{{ esc_attr($guestPopup['alt']) }}" loading="lazy"/>
+        @endif
 
       </div>
       <div class="col-md-7 food-banner-content">
 
-        <div class="boxed-container">
+        <div class="boxed-container boxed-container--muted">
 
           <div class="boxed-content-item text-start">
-            <h1> Food Service Times </h1>
-            <p><strong> White Hart Breakfast </strong><br/>Mon / Tue / Wed / Thur: 09:00 - 13:00 </p>
-            <p><strong> GRIDL Breakfast Takeover </strong><br/>Fri / Sat: 09:00 - 14:00 </p>
-            <p><strong> Sunday Lunch </strong><br/>Sun: 12:00 - 15:00 </p>
-            <p><strong> Guest Food Evening </strong><br/>Tues: 17:00 - 20:00 </p>
+            <h1>{{ __('Food Service Times', 'pixelforge') }}</h1>
+            @foreach ($serviceTimes as $time)
+              <p><strong>{{ $time['label'] }}</strong><br/>{{ $time['hours'] }}</p>
+            @endforeach
           </div>
 
 
         </div>
         <div class="nav_dec"><span></span></div>
-        <img src="<?= get_template_directory_uri(); ?>/resources/images/new-ales.jpg" class="img-fluid"
-             alt="">
+        @if (!empty($alesImage['url']))
+          <img src="{{ esc_url($alesImage['url']) }}" class="img-fluid"
+               alt="{{ esc_attr($alesImage['alt']) }}" loading="lazy">
+        @endif
         <div class="nav_dec"><span></span></div>
 
 
@@ -59,7 +58,7 @@
 
   <br id="menu" class="stage-anchor"/>
 
-  <div class="boxed-container" style="max-width: 900px; margin: 0 auto;">
+  <div class="boxed-container boxed-container--menu">
 
     <div class="boxed-content-item">
 
