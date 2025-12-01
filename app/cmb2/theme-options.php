@@ -52,6 +52,26 @@ function register_theme_options_metabox(): void
     ]);
 
     $cmb_options->add_field([
+        'name' => esc_html__('Enable Table Bookings', 'pixelforge'),
+        'id' => 'enable_bookings',
+        'type' => 'checkbox',
+        'desc' => esc_html__('Uncheck to disable the booking form and availability calendar on the front end.', 'pixelforge'),
+        'default' => 1,
+    ]);
+
+    $cmb_options->add_field([
+        'name' => esc_html__('Booking Data Tools', 'pixelforge'),
+        'id' => 'booking_tools',
+        'type' => 'title',
+        'desc' => esc_html__('Use the button below to permanently delete all booking records, tables, sections, and menus.', 'pixelforge'),
+        'after_row' => function () {
+            $url = wp_nonce_url(admin_url('admin-post.php?action=pixelforge_delete_booking_data'), 'pixelforge_delete_booking_data');
+
+            echo '<p><a class="button button-secondary" href="' . esc_url($url) . '" onclick="return confirm(\'' . esc_js(__('This will permanently delete all booking data. Continue?', 'pixelforge')) . '\');">' . esc_html__('Delete all booking data', 'pixelforge') . '</a></p>';
+        },
+    ]);
+
+    $cmb_options->add_field([
         'name' => esc_html__('SEO & Social Defaults', 'cmb2'),
         'id' => 'seo_defaults_title',
         'type' => 'title',
