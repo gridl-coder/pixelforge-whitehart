@@ -1,6 +1,5 @@
 
 html {
-  overflow-x: hidden !important;
   height: 100%;
   min-height: 100%;
 }
@@ -40,16 +39,6 @@ blockquote {
 .main-stage {
   h2, h3, h4 {
     font-family: $brand_font;
-  }
-
-  /* beasties:include */
-  @include media-breakpoint-up(md) {
-    left: 350px;
-    top: 0;
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    padding-top: 0px;
   }
 }
 
@@ -123,4 +112,8 @@ a {
     background: darken($brand_yellow, 20%);
     color: white;
   }
+}
+
+.sr-only {
+  display: none;
 }

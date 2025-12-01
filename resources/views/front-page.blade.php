@@ -10,7 +10,5 @@
   @include('front-page.home-menu')
 
 
-
-
 @endwhile
 @endsection

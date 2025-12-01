@@ -45,4 +45,44 @@ function register_home_metabox(): void
         ],
         'preview_size' => 'large',
     ]);
+
+    $image_group_id = $cmb_home->add_field(array(
+        'id' => 'home_menu_carousel',
+        'type' => 'group',
+        'repeatable' => true,
+        'options' => array(
+            'group_title' => 'Image {#}',
+            'add_button' => 'Add Another Image',
+            'remove_button' => 'Remove Image',
+            'closed' => true,  // Repeater fields closed by default - neat & compact.
+            'sortable' => true,  // Allow changing the order of repeated groups.
+        ),
+    ));
+    $cmb_home->add_group_field($image_group_id, array(
+        'name' => 'Image Title',
+        'desc' => 'Enter the image title.',
+        'id' => 'menu_image_title',
+        'type' => 'text',
+    ));
+    $cmb_home->add_group_field($image_group_id, array(
+        'name' => 'Image File',
+        'desc' => 'Upload an image',
+        'id' => 'menu_image',
+        'type' => 'file',
+        // Optional:
+        'options' => array(
+            'url' => false, // Hide the text input for the url
+        ),
+        'text' => array(
+            'add_upload_file_text' => 'Add Image' // Change upload button text. Default: "Add or Upload File"
+        ),
+        'query_args' => array(
+            'type' => array(
+                'image/gif',
+                'image/jpeg',
+                'image/png',
+            ),
+        ),
+        'preview_size' => 'medium',
+    ));
 }

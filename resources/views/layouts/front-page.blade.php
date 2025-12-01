@@ -29,11 +29,13 @@
 
   @include('sections.header')
 
-  <main id="main" class="main">
+  <main id="main" class="main main-stage">
     @yield('content')
+
+    @include('sections.footer')
   </main>
 
-  @include('sections.footer')
+
 </div>
 
 @php(do_action('get_footer'))

@@ -3,6 +3,21 @@ import.meta.glob([
   '../fonts/**',
 ], { eager: true });
 
+import jQuery from 'jquery';
+
+const $ = jQuery;
+// Ensure slick can find the global jQuery instance before loading the plugin
+window.jQuery = window.jQuery || $;
+window.$ = window.$ || $;
+
+const loadSlick = async () => {
+  if (typeof $.fn.slick === 'function') {
+    return;
+  }
+
+  await import('slick-carousel');
+};
+
 const navButton = document.getElementById('navButton');
 const mainNav = document.getElementById('mainNav');
 
@@ -42,4 +57,32 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', enableJsClass);
 } else {
   enableJsClass();
+}
+
+const initCarouselSliders = async () => {
+  await loadSlick();
+
+  const $carousels = $('.carousel-slider');
+
+  if (!$carousels.length || typeof $carousels.slick !== 'function') {
+    return;
+  }
+
+  $carousels.slick({
+    dots: true,
+    arrows: false,
+    adaptiveHeight: true,
+    autoplay: true,
+    autoplaySpeed: 4000,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+  });
+};
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    initCarouselSliders().catch((error) => console.error('Failed to init carousel', error));
+  });
+} else {
+  initCarouselSliders().catch((error) => console.error('Failed to init carousel', error));
 }

@@ -26,11 +26,7 @@ function register_events_metabox(): void
         'name' => esc_html__('Event Date', 'pixelforge'),
         'desc' => esc_html__('Choose the date the event takes place.', 'pixelforge'),
         'id' => 'events_date',
-        'type' => 'text_date_timestamp',
-        'date_format' => 'Y-m-d',
-        'sanitization_cb' => static function ($timestamp) {
-            return $timestamp ? absint($timestamp) : null;
-        },
+        'type' => 'text_date_timestamp'
     ]);
 
     $eventsBox->add_field([
@@ -38,7 +34,5 @@ function register_events_metabox(): void
         'desc' => esc_html__('Optional URL for more information or ticket sales.', 'pixelforge'),
         'id' => 'events_url',
         'type' => 'text_url',
-        'sanitization_cb' => 'esc_url_raw',
-        'escape_cb' => 'esc_url',
     ]);
 }

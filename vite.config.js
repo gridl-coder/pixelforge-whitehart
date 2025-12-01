@@ -459,7 +459,8 @@ const createCssEntryAliasPlugin = () => {
 }
 
 export default defineConfig({
-  base: '/app/public/wp-content/themes/pixelforge/',
+  // Base path should match where WordPress serves the built assets
+  base: '/wp-content/themes/pixelforge/public/build/',
   plugins: [
     fontFaceGeneratorPlugin(),
     createCssEntryAliasPlugin(),
@@ -501,6 +502,8 @@ export default defineConfig({
     },
   },
   build: {
+    outDir: 'public/build',
+    assetsDir: 'assets',
     minify: 'esbuild',
     target: 'es2019',
   },

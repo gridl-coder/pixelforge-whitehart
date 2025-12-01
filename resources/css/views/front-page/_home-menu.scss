@@ -29,10 +29,10 @@
   }
 
   .boxed-content-item {
-    background: white url("images/hart-bg.png") no-repeat -50% 97%;
+    background: white url("@images/hart-bg.png") no-repeat -50% 97%;
 
     @include media-breakpoint-up(md) {
-      background: white url("images/hart-bg.png") no-repeat right bottom;
+      background: white url("@images/hart-bg.png") no-repeat right bottom;
     }
   }
 

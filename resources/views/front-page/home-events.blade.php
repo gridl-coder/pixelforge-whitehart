@@ -1,5 +1,6 @@
-<section id="events" class="stage-menu pt-5 home-events-hero">
+<section id="events" class="home-events-hero">
   <div class="home-events-hero__inner">
+
     @if ($highlightEvent)
       <h1>
         <span class="subtitle">{{ __('Our Next Event is...', 'pixelforge') }}</span>
@@ -7,7 +8,7 @@
       </h1>
 
       <div class="section-separator">
-        <span><x-section-divider /></span>
+        <span><x-section-divider/></span>
       </div>
 
       @if (!empty($highlightEvent['image']['url']))
@@ -30,8 +31,6 @@
   </div>
 </section>
 
-<div class="brush-dec2"></div>
-
 <section class="stage-events">
   <div class="container">
     <h1>
@@ -40,7 +39,7 @@
     </h1>
 
     <div class="section-separator">
-      <span><x-section-divider /></span>
+      <span><x-section-divider/></span>
     </div>
 
     <p class="lead mb-3 stage-events__copy">
@@ -54,7 +53,8 @@
         <div class="col-md-4 col-sm-6 col-6 event">
           @if (!empty($event['image']['url']))
             @php($isExternal = !empty($event['externalUrl']))
-            <a href="{{ esc_url($event['externalUrl'] ?? $event['permalink']) }}" class="event-link" @if($isExternal) target="_blank" rel="noopener" @endif>
+            <a href="{{ esc_url($event['externalUrl'] ?? $event['permalink']) }}" class="event-link"
+               @if($isExternal) target="_blank" rel="noopener" @endif>
               <img src="{{ esc_url($event['image']['url']) }}"
                    class="event-thumbnail img-fluid img-thumbnail img-rounded"
                    alt="{{ esc_attr($event['title']) }}"
@@ -73,13 +73,15 @@
         </div>
       @empty
         <div class="col-12">
-          <p class="text-center">{{ __('There are no upcoming events right now. Please check back soon!', 'pixelforge') }}</p>
+          <p
+            class="text-center">{{ __('There are no upcoming events right now. Please check back soon!', 'pixelforge') }}</p>
         </div>
       @endforelse
 
       <div class="p-4 text-center">
         <a href="{{ esc_url($eventsArchiveUrl) }}" class="btn btn-lg">
-          <i class="fa-regular fa-calendar-star"></i>
+          <svg width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Pro 6.0.0-alpha3 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) --><path d="M.0002 464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48L448 192H0L.0002 464zM134.1 304.3l54.63-8l24.5-49.5c4.5-9 17.12-8.875 21.5 0l24.5 49.5l54.75 8c9.751 1.5 13.75 13.5 6.626 20.5L281 363.4l9.375 54.63c1.75 9.875-8.625 17.25-17.38 12.62L224 404.8l-48.88 25.88C166.4 435.3 156 427.7 157.8 418l9.375-54.63L127.5 324.8C120.3 317.8 124.3 305.8 134.1 304.3zM400 64H352V31.1C352 14.4 337.6 0 320 0C302.4 0 288 14.4 288 31.1V64H160V31.1C160 14.4 145.6 0 128 0S96 14.4 96 31.1V64H48c-26.51 0-48 21.49-48 48L0 160h448l.0002-48C448 85.49 426.5 64 400 64z"/></svg>
+
           {{ __('View All Events', 'pixelforge') }}
         </a>
       </div>

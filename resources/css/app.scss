@@ -2,10 +2,13 @@
 @source "../views/";
 @source "../../app/";
 
+@import '../js/slick/slick';
+@import '../js/slick/slick-theme';
+
 @import "./bootstrap-custom";
 @import "./variables";
 @import "./fonts";
-@import "./icons";
+@import "./modules";
 
 @import "./views/base";
 
@@ -29,4 +32,7 @@ body {
     background-color: darken($brand_yellow, 15%) !important;
     color: $brand_dark !important;
   }
+}
+.amenities-list svg {
+  fill: $brand_yellow;
 }

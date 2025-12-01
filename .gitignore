@@ -1,6 +1,8 @@
 /node_modules
 /vendor
 /public/*
+/resources/icons/*
 !/public/.gitkeep
 .env
 npm-debug.log
+2

@@ -93,15 +93,15 @@ class HomeIntro extends Composer
     private function features(): array
     {
         return [
-            ['icon' => 'fa-solid fa-guitars', 'label' => __('Live Music', 'pixelforge')],
-            ['icon' => 'fa-solid fa-tv-retro', 'label' => __('Live Sports', 'pixelforge')],
-            ['icon' => 'fa-solid fa-pool-8-ball', 'label' => __('Pool Table', 'pixelforge')],
-            ['icon' => 'fa-solid fa-bullseye-arrow', 'label' => __('Dart Board', 'pixelforge')],
-            ['icon' => 'fa-solid fa-family', 'label' => __('Family Friendly', 'pixelforge')],
-            ['icon' => 'fa-solid fa-dog-leashed', 'label' => __('Dog Friendly', 'pixelforge')],
-            ['icon' => 'fa-solid fa-square-parking', 'label' => __('Parking', 'pixelforge')],
-            ['icon' => 'fa-solid fa-burger-soda', 'label' => __('Pub Food', 'pixelforge')],
-            ['icon' => 'fa-solid fa-sun-cloud', 'label' => __('Beer Garden', 'pixelforge')],
+            ['icon' => 'guitars', 'label' => __('Live Music', 'pixelforge')],
+            ['icon' => 'tv-retro', 'label' => __('Live Sports', 'pixelforge')],
+            ['icon' => 'game-board', 'label' => __('Pool Table', 'pixelforge')],
+            ['icon' => 'bullseye-arrow', 'label' => __('Dart Board', 'pixelforge')],
+            ['icon' => 'family', 'label' => __('Family Friendly', 'pixelforge')],
+            ['icon' => 'dog-leashed', 'label' => __('Dog Friendly', 'pixelforge')],
+            ['icon' => 'square-parking', 'label' => __('Parking', 'pixelforge')],
+            ['icon' => 'burger-soda', 'label' => __('Pub Food', 'pixelforge')],
+            ['icon' => 'sun-cloud', 'label' => __('Beer Garden', 'pixelforge')],
         ];
     }
 }

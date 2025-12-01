@@ -1,42 +1,38 @@
-<br id="home" class="stage-anchor"/>
+<section class="home-intro">
+  @if (!empty($homeIntro['headerImage']['url']))
+    <img class="home-intro-image"
+         src="{{ esc_url($homeIntro['headerImage']['url']) }}"
+         alt="{{ esc_attr($homeIntro['headerImage']['alt']) }}"/>
+  @endif
 
-<section class="stage-intro">
-  <header class="stage-intro-header">
-    @if (!empty($homeIntro['headerImage']['url']))
-      <img class="stage-intro-header-image"
-           src="{{ esc_url($homeIntro['headerImage']['url']) }}"
-           alt="{{ esc_attr($homeIntro['headerImage']['alt']) }}"/>
+  <div class="home-intro-inner">
+    <h1>
+      <span class="home-intro__heading-prefix">{{ __('Welcome to', 'pixelforge') }}</span>
+      The White Hart
+      @if (!empty($homeIntro['location']))
+        <span class="home-intro__location">{{ $homeIntro['location'] }}</span>
+      @endif
+    </h1>
+
+    <div class="nav_dec"><span></span></div>
+
+    @if (!empty($homeIntro['content']))
+      {!! $homeIntro['content'] !!}
     @endif
 
-    <div class="stage-intro-header-inner">
-      <h1>
-        <span class="stage-intro__heading-prefix">{{ __('Welcome to', 'pixelforge') }}</span>
-        {{ $homeIntro['title'] }}
-        @if (!empty($homeIntro['location']))
-          <span class="stage-intro__location">{{ $homeIntro['location'] }}</span>
-        @endif
-      </h1>
-
-      <div class="nav_dec"><span></span></div>
-
-      @if (!empty($homeIntro['content']))
-        {!! $homeIntro['content'] !!}
-      @endif
-    </div>
-  </header>
-
-  <div class="stage-intro-pods">
-    <ul class="amenities-list">
-      @foreach ($homeIntro['features'] as $feature)
-        <li>
+    <div class="home-intro-pods">
+      <ul class="amenities-list">
+        @foreach ($homeIntro['features'] as $feature)
+          <li>
           <span class="amenities-list__icon" aria-hidden="true">
-            <i class="{{ $feature['icon'] }}"></i>
+            <img width="30" src="<?= get_template_directory_uri();?>/resources/icons/{{ $feature['icon'] }}.svg"
+                 class="img-fluid">
           </span>
-          <span>{{ $feature['label'] }}</span>
-        </li>
-      @endforeach
-    </ul>
+            <span>{{ $feature['label'] }}</span>
+          </li>
+        @endforeach
+      </ul>
+    </div>
   </div>
-</section>
 
-<div class="brush-dec"></div>
+</section>
