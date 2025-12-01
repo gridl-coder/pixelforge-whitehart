@@ -69,11 +69,15 @@ class HomeEvents extends Composer
         $externalUrl = $this->sanitizeUrl(get_post_meta($post->ID, 'events_url', true));
         $imageUrl = $this->resolveImageUrl($post->ID);
 
+        $permalink = get_permalink($post);
+        $isExternal = (bool) $externalUrl;
+
         return [
             'id' => $post->ID,
             'title' => get_the_title($post),
-            'permalink' => get_permalink($post),
-            'externalUrl' => $externalUrl,
+            'permalink' => $permalink,
+            'link' => $externalUrl ?: $permalink,
+            'isExternal' => $isExternal,
             'date' => $date,
             'formattedDate' => $date instanceof DateTimeInterface ? $date->format(get_option('date_format')) : null,
             'image' => $imageUrl,

@@ -12,6 +12,15 @@
   }
 }
 
+.boxed-container--muted {
+  background: #f9f9f9;
+}
+
+.boxed-container--menu {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
 .boxed-content-item {
   border-radius: 10px;
   border: 1px dashed #ddd;
@@ -90,6 +99,27 @@
   border-radius: 50%;
   background: $brand_yellow;
   display: inline-block;
+}
+
+.food-banner__container {
+  max-width: 1090px;
+}
+
+.food-banner__poster {
+  margin-top: 15px;
+}
+
+.carousel-slider__slide {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+
+  span {
+    color: $brand_dark;
+    font-weight: 600;
+    font-size: .95rem;
+  }
 }
 
 /**
