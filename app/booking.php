@@ -15,6 +15,10 @@ const NONCE_ACTION = 'pixelforge_table_booking';
 
 add_action('init', __NAMESPACE__ . '\\register_booking_shortcodes');
 add_action('init', __NAMESPACE__ . '\\handle_booking_submission');
+add_action('wp_ajax_pixelforge_check_table_availability', __NAMESPACE__ . '\\check_table_availability');
+add_action('wp_ajax_nopriv_pixelforge_check_table_availability', __NAMESPACE__ . '\\check_table_availability');
+add_filter('manage_table_booking_posts_columns', __NAMESPACE__ . '\\register_table_booking_columns');
+add_action('manage_table_booking_posts_custom_column', __NAMESPACE__ . '\\render_table_booking_columns', 10, 2);
 
 function register_booking_shortcodes(): void
 {
@@ -158,10 +162,20 @@ function handle_booking_submission(): void
 
     $timestamp = $bookingDate ? $bookingDate->getTimestamp() : 0;
 
-    $tableId = find_available_table($data['section'], $data['party_size'], $timestamp);
+    $tableIds = find_available_tables($data['section'], $data['party_size'], $timestamp);
 
-    if (! $tableId) {
-        $feedback['errors'][] = __('No tables are available for that area and time. Please try another slot.', 'pixelforge');
+    if (! $tableIds) {
+        $suggestion = find_next_available_slot($data['section'], $data['party_size'], $data['menu'], $bookingDate ?: new DateTimeImmutable('now', wp_timezone()));
+
+        if ($suggestion) {
+            $feedback['errors'][] = sprintf(
+                __('No tables are available for that area and time. The next available slot is %s.', 'pixelforge'),
+                wp_date('M j, Y H:i', $suggestion->getTimestamp(), wp_timezone())
+            );
+        } else {
+            $feedback['errors'][] = __('No tables are available for that area and time. Please try another slot.', 'pixelforge');
+        }
+
         set_feedback($feedback);
         return;
     }
@@ -190,11 +204,11 @@ function handle_booking_submission(): void
     update_post_meta($bookingId, 'table_booking_party_size', $data['party_size']);
     update_post_meta($bookingId, 'table_booking_menu_id', $data['menu']);
     update_post_meta($bookingId, 'table_booking_section_id', $data['section']);
-    update_post_meta($bookingId, 'table_booking_table_id', $tableId);
+    update_post_meta($bookingId, 'table_booking_table_id', $tableIds);
     update_post_meta($bookingId, 'table_booking_datetime', $timestamp);
     update_post_meta($bookingId, 'table_booking_notes', $data['notes']);
 
-    send_booking_emails($bookingId, $data, $tableId, $timestamp);
+    send_booking_emails($bookingId, $data, $tableIds, $timestamp);
 
     $feedback['success'] = __('Your table is reserved! We have emailed confirmation to you and the team.', 'pixelforge');
     $feedback['old'] = [];
@@ -288,53 +302,149 @@ function build_menu_slots(int $menuId): array
     return $slots;
 }
 
-function find_available_table(int $sectionId, int $partySize, int $timestamp): ?int
+function find_available_tables(int $sectionId, int $partySize, int $timestamp): ?array
 {
-    $tables = new WP_Query([
-        'post_type' => BookingTable::KEY,
-        'post_status' => 'publish',
-        'posts_per_page' => -1,
-        'orderby' => 'meta_value_num',
-        'meta_key' => 'booking_table_seats',
-        'order' => 'ASC',
-        'meta_query' => [
-            [
-                'key' => 'booking_table_section',
-                'value' => $sectionId,
-                'compare' => '=',
-            ],
-            [
-                'key' => 'booking_table_seats',
-                'value' => $partySize,
-                'type' => 'NUMERIC',
-                'compare' => '>=',
-            ],
-        ],
-    ]);
+    $tables = get_section_tables($sectionId);
 
-    foreach ($tables->posts as $table) {
-        if (! table_has_conflict((int) $table->ID, $timestamp)) {
-            return (int) $table->ID;
+    $bookedTables = get_booked_tables_for_section($sectionId, $timestamp);
+
+    $availableTables = array_values(array_filter($tables, static function (array $table) use ($bookedTables) {
+        return ! in_array($table['id'], $bookedTables, true);
+    }));
+
+    if ($availableTables === []) {
+        return null;
+    }
+
+    usort($availableTables, static function (array $a, array $b) {
+        return $b['seats'] <=> $a['seats'];
+    });
+
+    $selected = [];
+    $remaining = $partySize;
+
+    foreach ($availableTables as $table) {
+        $selected[] = $table['id'];
+        $remaining -= $table['seats'];
+
+        if ($remaining <= 0) {
+            return $selected;
         }
     }
 
     return null;
 }
 
-function table_has_conflict(int $tableId, int $timestamp): bool
+function find_next_available_slot(int $sectionId, int $partySize, int $menuId, DateTimeImmutable $from): ?DateTimeImmutable
+{
+    $slots = build_menu_slots($menuId);
+
+    if ($slots === []) {
+        return null;
+    }
+
+    $now = new DateTimeImmutable('now', wp_timezone());
+
+    for ($dayOffset = 0; $dayOffset < 7; $dayOffset++) {
+        $date = $from->modify(sprintf('+%d day', $dayOffset));
+
+        if (! menu_allows_day($menuId, $date)) {
+            continue;
+        }
+
+        foreach ($slots as $slot) {
+            $slotDate = DateTimeImmutable::createFromFormat(
+                'Y-m-d H:i',
+                sprintf('%s %s', $date->format('Y-m-d'), $slot),
+                wp_timezone()
+            );
+
+            if (! $slotDate) {
+                continue;
+            }
+
+            if ($slotDate <= $from || $slotDate <= $now) {
+                continue;
+            }
+
+            if (find_available_tables($sectionId, $partySize, $slotDate->getTimestamp())) {
+                return $slotDate;
+            }
+        }
+    }
+
+    return null;
+}
+
+function get_available_slots_for_section(int $sectionId, int $partySize, int $menuId, DateTimeImmutable $date): array
+{
+    $slots = build_menu_slots($menuId);
+    $now = new DateTimeImmutable('now', wp_timezone());
+    $available = [];
+
+    foreach ($slots as $slot) {
+        $slotDate = DateTimeImmutable::createFromFormat(
+            'Y-m-d H:i',
+            sprintf('%s %s', $date->format('Y-m-d'), $slot),
+            wp_timezone()
+        );
+
+        if (! $slotDate || $slotDate <= $now) {
+            continue;
+        }
+
+        if (find_available_tables($sectionId, $partySize, $slotDate->getTimestamp())) {
+            $available[] = $slot;
+        }
+    }
+
+    return $available;
+}
+
+function get_section_tables(int $sectionId): array
+{
+    $query = new WP_Query([
+        'post_type' => BookingTable::KEY,
+        'post_status' => 'publish',
+        'posts_per_page' => -1,
+        'orderby' => 'meta_value_num',
+        'meta_key' => 'booking_table_seats',
+        'order' => 'DESC',
+        'meta_query' => [
+            [
+                'key' => 'booking_table_section',
+                'value' => $sectionId,
+                'compare' => '=',
+            ],
+        ],
+    ]);
+
+    $tables = [];
+
+    foreach ($query->posts as $table) {
+        $tables[] = [
+            'id' => (int) $table->ID,
+            'seats' => (int) get_post_meta((int) $table->ID, 'booking_table_seats', true),
+        ];
+    }
+
+    return $tables;
+}
+
+function get_booked_tables_for_section(int $sectionId, int $timestamp): array
 {
     $slotStart = $timestamp;
     $slotEnd = $timestamp + HOUR_IN_SECONDS - 1;
 
-    $conflict = new WP_Query([
+    $bookings = new WP_Query([
         'post_type' => TableBooking::KEY,
         'post_status' => ['publish', 'pending', 'draft', 'private'],
-        'posts_per_page' => 1,
+        'posts_per_page' => -1,
         'fields' => 'ids',
         'meta_query' => [
             [
-                'key' => 'table_booking_table_id',
-                'value' => $tableId,
+                'key' => 'table_booking_section_id',
+                'value' => $sectionId,
                 'compare' => '=',
             ],
             [
@@ -346,14 +456,35 @@ function table_has_conflict(int $tableId, int $timestamp): bool
         ],
     ]);
 
-    return ! empty($conflict->posts);
+    $tables = [];
+
+    foreach ($bookings->posts as $bookingId) {
+        $tables = array_merge($tables, normalize_table_ids(get_post_meta((int) $bookingId, 'table_booking_table_id', true)));
+    }
+
+    return array_values(array_unique(array_filter($tables)));
 }
 
-function send_booking_emails(int $bookingId, array $data, int $tableId, int $timestamp): void
+function normalize_table_ids($value): array
+{
+    if (is_array($value)) {
+        return array_values(array_filter(array_map('absint', $value)));
+    }
+
+    $id = absint($value);
+
+    if ($id === 0) {
+        return [];
+    }
+
+    return [$id];
+}
+
+function send_booking_emails(int $bookingId, array $data, array $tableIds, int $timestamp): void
 {
     $adminEmail = get_theme_option('business_email', get_option('admin_email'));
 
-    $tableName = get_the_title($tableId);
+    $tableNames = array_map('get_the_title', normalize_table_ids($tableIds));
     $menuName = get_the_title($data['menu']);
     $sectionName = get_the_title($data['section']);
     $datetime = wp_date(get_option('date_format') . ' ' . get_option('time_format'), $timestamp, wp_timezone());
@@ -364,7 +495,11 @@ function send_booking_emails(int $bookingId, array $data, int $tableId, int $tim
         sprintf(__('Name: %s', 'pixelforge'), $data['name']),
         sprintf(__('Party Size: %d', 'pixelforge'), $data['party_size']),
         sprintf(__('Menu: %s', 'pixelforge'), $menuName ?: __('Unknown menu', 'pixelforge')),
-        sprintf(__('Table: %s (%s)', 'pixelforge'), $tableName ?: __('Unknown table', 'pixelforge'), $sectionName ?: __('No section', 'pixelforge'))
+        sprintf(
+            __('Table: %s (%s)', 'pixelforge'),
+            $tableNames ? implode(', ', $tableNames) : __('Unknown table', 'pixelforge'),
+            $sectionName ?: __('No section', 'pixelforge')
+        )
     );
 
     $message .= sprintf("\n%s", sprintf(__('Date & Time: %s', 'pixelforge'), $datetime));
@@ -377,4 +512,105 @@ function send_booking_emails(int $bookingId, array $data, int $tableId, int $tim
 
     wp_mail($adminEmail, __('New table booking received', 'pixelforge'), $message);
     wp_mail($data['email'], __('Your table booking confirmation', 'pixelforge'), $message);
+}
+
+function check_table_availability(): void
+{
+    $menuId = absint($_GET['menu'] ?? 0);
+    $partySize = max(1, absint($_GET['party_size'] ?? 0));
+    $dateValue = sanitize_text_field(wp_unslash($_GET['date'] ?? ''));
+
+    $date = DateTimeImmutable::createFromFormat('Y-m-d', $dateValue, wp_timezone());
+
+    if ($menuId === 0 || ! $date) {
+        wp_send_json([
+            'unavailableDate' => true,
+            'availableSections' => [],
+            'availableSlots' => [],
+        ]);
+    }
+
+    if (! menu_allows_day($menuId, $date)) {
+        wp_send_json([
+            'unavailableDate' => true,
+            'availableSections' => [],
+            'availableSlots' => [],
+        ]);
+    }
+
+    $sections = get_posts([
+        'post_type' => BookingSection::KEY,
+        'post_status' => 'publish',
+        'numberposts' => -1,
+    ]);
+
+    $availableSlots = [];
+    $availableSections = [];
+
+    foreach ($sections as $section) {
+        $slots = get_available_slots_for_section((int) $section->ID, $partySize, $menuId, $date);
+
+        if ($slots !== []) {
+            $availableSlots[$section->ID] = $slots;
+            $availableSections[] = $section->ID;
+        }
+    }
+
+    wp_send_json([
+        'unavailableDate' => $availableSections === [],
+        'availableSections' => $availableSections,
+        'availableSlots' => $availableSlots,
+        'date' => $date->format('Y-m-d'),
+    ]);
+}
+
+function register_table_booking_columns(array $columns): array
+{
+    $newColumns = [];
+
+    foreach ($columns as $key => $label) {
+        $newColumns[$key] = $label;
+
+        if ($key === 'title') {
+            $newColumns['booking_details'] = __('Menu & Tables', 'pixelforge');
+        }
+    }
+
+    return $newColumns;
+}
+
+function render_table_booking_columns(string $column, int $postId): void
+{
+    if ($column !== 'booking_details') {
+        return;
+    }
+
+    $menuId = absint(get_post_meta($postId, 'table_booking_menu_id', true));
+    $tableIds = get_post_meta($postId, 'table_booking_table_id', true);
+
+    $menu = $menuId ? get_the_title($menuId) : '';
+    $tables = get_table_labels($tableIds);
+
+    $parts = [];
+
+    if ($menu) {
+        $parts[] = sprintf(__('Menu: %s', 'pixelforge'), $menu);
+    }
+
+    if ($tables) {
+        $parts[] = sprintf(__('Table: %s', 'pixelforge'), $tables);
+    }
+
+    echo esc_html(implode(' | ', $parts));
+}
+
+function get_table_labels($tableIds): string
+{
+    $tables = array_filter(array_map('get_the_title', normalize_table_ids($tableIds)));
+
+    if ($tables === []) {
+        return '';
+    }
+
+    return implode(', ', $tables);
 }
