@@ -162,10 +162,9 @@ function register_booking_metaboxes(): void
     $bookingBox->add_field([
         'name' => esc_html__('Table', 'pixelforge'),
         'id' => 'table_booking_table_id',
-        'type' => 'select',
-        'options_cb' => __NAMESPACE__ . '\\get_table_options',
-        'attributes' => ['disabled' => 'disabled'],
-        'escape_cb' => __NAMESPACE__ . '\\format_post_label',
+        'type' => 'text',
+        'attributes' => ['readonly' => 'readonly'],
+        'escape_cb' => __NAMESPACE__ . '\\format_table_labels',
     ]);
 
     $bookingBox->add_field([
@@ -269,6 +268,31 @@ function format_post_label($value): string
     }
 
     return (string) $value;
+}
+
+function format_table_labels($value): string
+{
+    $ids = [];
+
+    if (is_array($value)) {
+        $ids = array_map('absint', $value);
+    } else {
+        $ids[] = absint($value);
+    }
+
+    $ids = array_filter($ids);
+
+    if ($ids === []) {
+        return '';
+    }
+
+    $titles = array_filter(array_map('get_the_title', $ids));
+
+    if ($titles === []) {
+        return '';
+    }
+
+    return implode(', ', $titles);
 }
 
 function format_booking_datetime($value): string
