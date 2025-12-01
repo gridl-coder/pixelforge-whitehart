@@ -81,15 +81,6 @@
             @endforeach
           </select>
         </label>
-        <label class="booking-form__field col-md-12">
-          <span class="booking-form__label form-label">{{ __('Verification method', 'pixelforge') }}</span>
-          <select class="booking-form__input form-select" name="pixelforge_booking_verification_method" required>
-            <option value="email" @selected(($old['verification_method'] ?? 'email') === 'email')>{{ __('Email', 'pixelforge') }}</option>
-            <!--<option value="sms" @selected(($old['verification_method'] ?? '') === 'sms')>{{ __('Text message', 'pixelforge') }}</option>-->
-          </select>
-          <small class="text-muted">{{ __('We will send a verification link. Unverified bookings are removed after 3 hours.', 'pixelforge') }}</small>
-        </label>
-
         <label class="booking-form__field col-12">
           <span class="booking-form__label form-label">{{ __('Notes (optional)', 'pixelforge') }}</span>
           <textarea class="booking-form__input form-control" name="pixelforge_booking_notes" rows="4">{{ $old['notes'] ?? '' }}</textarea>
