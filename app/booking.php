@@ -15,6 +15,8 @@ const NONCE_ACTION = 'pixelforge_table_booking';
 
 add_action('init', __NAMESPACE__ . '\\register_booking_shortcodes');
 add_action('init', __NAMESPACE__ . '\\handle_booking_submission');
+add_action('init', __NAMESPACE__ . '\\handle_verification_request');
+add_action('init', __NAMESPACE__ . '\\cleanup_expired_unverified_bookings');
 add_action('wp_ajax_pixelforge_check_table_availability', __NAMESPACE__ . '\\check_table_availability');
 add_action('wp_ajax_nopriv_pixelforge_check_table_availability', __NAMESPACE__ . '\\check_table_availability');
 add_filter('manage_table_booking_posts_columns', __NAMESPACE__ . '\\register_table_booking_columns');
@@ -93,6 +95,8 @@ function handle_booking_submission(): void
         'date' => sanitize_text_field(wp_unslash($_POST['pixelforge_booking_date'] ?? '')),
         'time' => sanitize_text_field(wp_unslash($_POST['pixelforge_booking_time'] ?? '')),
         'notes' => sanitize_textarea_field(wp_unslash($_POST['pixelforge_booking_notes'] ?? '')),
+        'verification_method' => sanitize_text_field(wp_unslash($_POST['pixelforge_booking_verification_method'] ?? 'email')),
+        'honeypot' => sanitize_text_field(wp_unslash($_POST['pixelforge_booking_hp'] ?? '')),
     ];
 
     $feedback = [
@@ -100,6 +104,10 @@ function handle_booking_submission(): void
         'success' => null,
         'old' => $data,
     ];
+
+    if ($data['honeypot'] !== '') {
+        $feedback['errors'][] = __('We could not process your booking. Please try again or contact us.', 'pixelforge');
+    }
 
     if ($data['name'] === '') {
         $feedback['errors'][] = __('Please enter your name.', 'pixelforge');
@@ -111,6 +119,10 @@ function handle_booking_submission(): void
 
     if ($data['phone'] === '') {
         $feedback['errors'][] = __('Please enter a contact phone number.', 'pixelforge');
+    }
+
+    if (! in_array($data['verification_method'], ['email', 'sms'], true)) {
+        $feedback['errors'][] = __('Please choose a verification method.', 'pixelforge');
     }
 
     if ($data['party_size'] < 1) {
@@ -170,6 +182,12 @@ function handle_booking_submission(): void
 
     $timestamp = $bookingDate ? $bookingDate->getTimestamp() : 0;
 
+    if (customer_has_active_booking($data['email'], $data['phone'], $timestamp)) {
+        $feedback['errors'][] = __('You already have a booking with us. Please call to arrange multiple bookings.', 'pixelforge');
+        set_feedback($feedback);
+        return;
+    }
+
     $tableIds = find_available_tables($data['section'], $data['party_size'], $timestamp);
 
     if (! $tableIds) {
@@ -196,7 +214,7 @@ function handle_booking_submission(): void
 
     $bookingId = wp_insert_post([
         'post_type' => TableBooking::KEY,
-        'post_status' => 'publish',
+        'post_status' => 'pending',
         'post_title' => $bookingTitle,
     ]);
 
@@ -216,11 +234,90 @@ function handle_booking_submission(): void
     update_post_meta($bookingId, 'table_booking_datetime', $timestamp);
     update_post_meta($bookingId, 'table_booking_notes', $data['notes']);
 
-    send_booking_emails($bookingId, $data, $tableIds, $timestamp);
+    $token = wp_generate_password(20, false, false);
+    $expiresAt = time() + (3 * HOUR_IN_SECONDS);
 
-    $feedback['success'] = __('Your table is reserved! We have emailed confirmation to you and the team.', 'pixelforge');
+    update_post_meta($bookingId, 'table_booking_verification_token', $token);
+    update_post_meta($bookingId, 'table_booking_verification_expires_at', $expiresAt);
+    update_post_meta($bookingId, 'table_booking_verified', 0);
+    update_post_meta($bookingId, 'table_booking_verification_method', $data['verification_method']);
+
+    send_verification_messages($bookingId, $data, $token);
+
+    $feedback['success'] = __('Please verify your booking using the link we sent. Unverified bookings are removed after 3 hours. If you need multiple bookings, call us and we will help.', 'pixelforge');
     $feedback['old'] = [];
 
+    set_feedback($feedback);
+}
+
+function handle_verification_request(): void
+{
+    if (! isset($_GET['pixelforge_booking_verify'], $_GET['booking_id'], $_GET['token'])) {
+        return;
+    }
+
+    $bookingId = absint($_GET['booking_id']);
+    $token = sanitize_text_field(wp_unslash($_GET['token']));
+
+    $feedback = [
+        'errors' => [],
+        'success' => null,
+        'old' => [],
+    ];
+
+    if (! $bookingId || ! $token) {
+        $feedback['errors'][] = __('Invalid booking verification link.', 'pixelforge');
+        set_feedback($feedback);
+        return;
+    }
+
+    $storedToken = get_post_meta($bookingId, 'table_booking_verification_token', true);
+    $expiresAt = (int) get_post_meta($bookingId, 'table_booking_verification_expires_at', true);
+    $alreadyVerified = (bool) get_post_meta($bookingId, 'table_booking_verified', true);
+
+    if ($alreadyVerified) {
+        $feedback['success'] = __('This booking is already verified.', 'pixelforge');
+        set_feedback($feedback);
+        return;
+    }
+
+    if (! $storedToken || hash_equals($storedToken, $token) === false) {
+        $feedback['errors'][] = __('Invalid booking verification link.', 'pixelforge');
+        set_feedback($feedback);
+        return;
+    }
+
+    if ($expiresAt && time() > $expiresAt) {
+        wp_trash_post($bookingId);
+        $feedback['errors'][] = __('This booking link has expired. Please book again.', 'pixelforge');
+        set_feedback($feedback);
+        return;
+    }
+
+    update_post_meta($bookingId, 'table_booking_verified', 1);
+    delete_post_meta($bookingId, 'table_booking_verification_token');
+
+    wp_update_post([
+        'ID' => $bookingId,
+        'post_status' => 'publish',
+    ]);
+
+    send_booking_emails(
+        $bookingId,
+        [
+            'name' => get_post_meta($bookingId, 'table_booking_customer_name', true),
+            'email' => get_post_meta($bookingId, 'table_booking_customer_email', true),
+            'phone' => get_post_meta($bookingId, 'table_booking_customer_phone', true),
+            'party_size' => (int) get_post_meta($bookingId, 'table_booking_party_size', true),
+            'menu' => (int) get_post_meta($bookingId, 'table_booking_menu_id', true),
+            'section' => (int) get_post_meta($bookingId, 'table_booking_section_id', true),
+            'notes' => get_post_meta($bookingId, 'table_booking_notes', true),
+        ],
+        (array) get_post_meta($bookingId, 'table_booking_table_id', true),
+        (int) get_post_meta($bookingId, 'table_booking_datetime', true)
+    );
+
+    $feedback['success'] = __('Booking verified! We look forward to seeing you.', 'pixelforge');
     set_feedback($feedback);
 }
 
@@ -409,6 +506,49 @@ function get_available_slots_for_section(int $sectionId, int $partySize, int $me
     return $available;
 }
 
+function customer_has_active_booking(string $email, string $phone, int $timestamp): bool
+{
+    $query = new WP_Query([
+        'post_type' => TableBooking::KEY,
+        'post_status' => ['publish', 'pending', 'draft', 'private'],
+        'posts_per_page' => 1,
+        'fields' => 'ids',
+        'meta_query' => [
+            'relation' => 'OR',
+            [
+                'key' => 'table_booking_customer_email',
+                'value' => $email,
+                'compare' => '=',
+            ],
+            [
+                'key' => 'table_booking_customer_phone',
+                'value' => $phone,
+                'compare' => '=',
+            ],
+        ],
+    ]);
+
+    if (! $query->posts) {
+        return false;
+    }
+
+    foreach ($query->posts as $bookingId) {
+        $bookingTime = (int) get_post_meta((int) $bookingId, 'table_booking_datetime', true);
+        $verified = (bool) get_post_meta((int) $bookingId, 'table_booking_verified', true);
+        $expiresAt = (int) get_post_meta((int) $bookingId, 'table_booking_verification_expires_at', true);
+
+        if ($bookingTime < $timestamp) {
+            continue;
+        }
+
+        if ($verified || ($expiresAt && time() <= $expiresAt)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 function get_section_tables(int $sectionId): array
 {
     $query = new WP_Query([
@@ -473,10 +613,30 @@ function get_booked_tables_for_section(int $sectionId, int $timestamp): array
     $tables = [];
 
     foreach ($bookings->posts as $bookingId) {
+        if (! is_booking_active((int) $bookingId)) {
+            continue;
+        }
+
         $tables = array_merge($tables, normalize_table_ids(get_post_meta((int) $bookingId, 'table_booking_table_id', true)));
     }
 
     return array_values(array_unique(array_filter($tables)));
+}
+
+function is_booking_active(int $bookingId): bool
+{
+    $verified = (bool) get_post_meta($bookingId, 'table_booking_verified', true);
+    $expiresAt = (int) get_post_meta($bookingId, 'table_booking_verification_expires_at', true);
+
+    if ($verified) {
+        return true;
+    }
+
+    if ($expiresAt === 0) {
+        return true;
+    }
+
+    return time() <= $expiresAt;
 }
 
 function normalize_table_ids($value): array
@@ -526,6 +686,70 @@ function send_booking_emails(int $bookingId, array $data, array $tableIds, int $
 
     wp_mail($adminEmail, __('New table booking received', 'pixelforge'), $message);
     wp_mail($data['email'], __('Your table booking confirmation', 'pixelforge'), $message);
+}
+
+function send_verification_messages(int $bookingId, array $data, string $token): void
+{
+    $verificationUrl = add_query_arg(
+        [
+            'pixelforge_booking_verify' => 1,
+            'booking_id' => $bookingId,
+            'token' => rawurlencode($token),
+        ],
+        home_url('/')
+    );
+
+    $message = sprintf(
+        "%s\n\n%s\n%s",
+        sprintf(__('Hi %s, please verify your booking.', 'pixelforge'), $data['name']),
+        sprintf(__('Click to verify: %s', 'pixelforge'), $verificationUrl),
+        __('Unverified bookings are removed after 3 hours.', 'pixelforge')
+    );
+
+    wp_mail($data['email'], __('Verify your table booking', 'pixelforge'), $message);
+
+    if ($data['verification_method'] === 'sms') {
+        /**
+         * Allow implementers to send booking verification via SMS providers.
+         */
+        do_action('pixelforge_send_booking_verification_sms', $data, $message, $verificationUrl);
+    }
+
+    $adminEmail = get_theme_option('business_email', get_option('admin_email'));
+
+    wp_mail(
+        $adminEmail,
+        __('New booking awaiting verification', 'pixelforge'),
+        sprintf(__('Booking #%d is awaiting customer verification.', 'pixelforge'), $bookingId)
+    );
+}
+
+function cleanup_expired_unverified_bookings(): void
+{
+    $expired = new WP_Query([
+        'post_type' => TableBooking::KEY,
+        'post_status' => ['pending', 'draft', 'private'],
+        'posts_per_page' => -1,
+        'fields' => 'ids',
+        'meta_query' => [
+            'relation' => 'AND',
+            [
+                'key' => 'table_booking_verification_expires_at',
+                'value' => time(),
+                'compare' => '<',
+                'type' => 'NUMERIC',
+            ],
+            [
+                'key' => 'table_booking_verified',
+                'value' => 1,
+                'compare' => '!=',
+            ],
+        ],
+    ]);
+
+    foreach ($expired->posts as $bookingId) {
+        wp_trash_post((int) $bookingId);
+    }
 }
 
 function check_table_availability(): void

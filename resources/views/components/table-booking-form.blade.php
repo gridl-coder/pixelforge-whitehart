@@ -51,6 +51,15 @@
         </label>
 
         <label class="booking-form__field col-md-6">
+          <span class="booking-form__label form-label">{{ __('Verification method', 'pixelforge') }}</span>
+          <select class="booking-form__input form-select" name="pixelforge_booking_verification_method" required>
+            <option value="email" @selected(($old['verification_method'] ?? 'email') === 'email')>{{ __('Email', 'pixelforge') }}</option>
+            <option value="sms" @selected(($old['verification_method'] ?? '') === 'sms')>{{ __('Text message', 'pixelforge') }}</option>
+          </select>
+          <small class="text-muted">{{ __('We will send a verification link. Unverified bookings are removed after 3 hours.', 'pixelforge') }}</small>
+        </label>
+
+        <label class="booking-form__field col-md-6">
           <span class="booking-form__label form-label">{{ __('Menu', 'pixelforge') }}</span>
           <select class="booking-form__input form-select" name="pixelforge_booking_menu" id="pixelforge_booking_menu" required>
             @foreach($menus as $menu)
@@ -89,6 +98,13 @@
       </div>
 
       <p class="booking-form__notice booking-form__notice--availability mt-2" id="booking_availability_notice" aria-live="polite"></p>
+
+      <p class="booking-form__notice mt-1">{{ __('Only one active booking is allowed per customer. If you need to arrange more than one booking, please call us.', 'pixelforge') }}</p>
+
+      <label class="booking-form__hp" style="position: absolute; left: -9999px;">
+        {{ __('Leave this field empty', 'pixelforge') }}
+        <input type="text" name="pixelforge_booking_hp" tabindex="-1" autocomplete="off">
+      </label>
 
       <button class="booking-form__submit btn btn-primary mt-2" type="submit">{{ __('Book Table', 'pixelforge') }}</button>
     </form>
