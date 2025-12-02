@@ -55,9 +55,13 @@ function render_booking_form_shortcode(): string
     ]);
 
     $menuSlots = [];
+    $menuDays = [];
 
     foreach ($menus as $menu) {
         $menuSlots[$menu->ID] = build_menu_slots((int)$menu->ID);
+
+        $days = get_post_meta((int)$menu->ID, 'booking_menu_days', true);
+        $menuDays[$menu->ID] = is_array($days) ? array_values(array_map('strtolower', $days)) : [];
     }
 
     $feedback = get_feedback();
@@ -76,6 +80,7 @@ function render_booking_form_shortcode(): string
         'sections' => $sections,
         'menus' => $menus,
         'menuSlots' => $menuSlots,
+        'menuDays' => $menuDays,
         'feedback' => $feedback,
         'minDate' => $today->format('Y-m-d'),
     ])->render();
