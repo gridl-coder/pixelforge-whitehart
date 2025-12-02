@@ -10,7 +10,6 @@ use PixelForge\PostTypes\BookingTable;
 use PixelForge\PostTypes\TableBooking;
 use WP_Query;
 use function PixelForge\Brevo\send_email;
-use function PixelForge\Seven\send_sms;
 use function PixelForge\CMB2\get_theme_option;
 
 const NONCE_ACTION = 'pixelforge_table_booking';
@@ -401,7 +400,7 @@ function process_booking_submission(array $data): array
 
     send_booking_notifications($bookingId, $data, $tableIds, $timestamp, $verificationToken);
 
-    $feedback['success'] = __('<p><strong>Thanks! We\'ve reserved this slot.</strong></p><p>Please confirm your booking from the link we sent via email/SMS so we can finalise it.</p>', 'pixelforge');
+    $feedback['success'] = __('<p><strong>Thanks! We\'ve reserved this slot.</strong></p><p>Please confirm your booking from the link we sent via email so we can finalise it.</p>', 'pixelforge');
     $feedback['old'] = [];
 
     return $feedback;
@@ -793,18 +792,6 @@ function send_booking_notifications(int $bookingId, array $data, array $tableIds
         wp_mail($details['email'], $customerSubject, $customerText);
     }
 
-    $smsMessage = sprintf(
-        __('Confirm your booking for %1$s at %2$s: %3$s', 'pixelforge'),
-        $details['date'] ?? '',
-        $details['time'] ?? '',
-        $confirmationLink
-    );
-
-    send_sms([
-        'to' => $details['phone'],
-        'message' => $smsMessage,
-    ]);
-
     $adminEmail = get_theme_option('business_email', get_option('admin_email'));
     $adminSubject = __('New table booking pending confirmation', 'pixelforge');
     $adminBody = build_booking_email_text([
@@ -836,13 +823,13 @@ function send_verified_notifications(int $bookingId, array $details): void
     $adminEmail = get_theme_option('business_email', get_option('admin_email'));
     $adminSubject = __('Booking verified by customer', 'pixelforge');
     $adminBody = build_booking_email_text([
-        'intro' => __('The customer confirmed their booking via email/SMS.', 'pixelforge'),
+        'intro' => __('The customer confirmed their booking via email.', 'pixelforge'),
         'summary' => $summary,
     ]);
 
     $adminHtml = build_booking_email_html([
         'title' => $adminSubject,
-        'intro' => __('The customer confirmed their booking via email/SMS.', 'pixelforge'),
+        'intro' => __('The customer confirmed their booking via email.', 'pixelforge'),
         'summary' => $summary,
     ]);
 
