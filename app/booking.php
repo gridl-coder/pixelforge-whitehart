@@ -658,19 +658,21 @@ function send_booking_notifications(int $bookingId, array $data, array $tableIds
     $confirmationLink = get_booking_confirmation_link($bookingId, $token);
 
     $customerSubject = __('Confirm your table booking', 'pixelforge');
-    $customerBody = sprintf(
-        "%s<br><br>%s<br><br>%s",
-        __('Please confirm your booking by clicking the link below. We will hold the slot while you verify.', 'pixelforge'),
-        sprintf('<a href="%1$s">%1$s</a>', esc_url($confirmationLink)),
-        nl2br(esc_html($summary))
-    );
+    $customerBody = build_booking_email_html([
+        'title' => $customerSubject,
+        'intro' => __('Please confirm your booking by clicking the link below. We will hold the slot while you verify.', 'pixelforge'),
+        'summary' => $summary,
+        'cta' => [
+            'label' => __('Confirm booking', 'pixelforge'),
+            'url' => $confirmationLink,
+        ],
+    ]);
 
-    $customerText = sprintf(
-        "%s\n\n%s\n\n%s",
-        __('Please confirm your booking by visiting this link:', 'pixelforge'),
-        $confirmationLink,
-        $summary
-    );
+    $customerText = build_booking_email_text([
+        'intro' => __('Please confirm your booking by visiting this link:', 'pixelforge'),
+        'summary' => $summary,
+        'cta' => $confirmationLink,
+    ]);
 
     $customerSent = send_email([
         'to' => $details['email'],
@@ -698,16 +700,22 @@ function send_booking_notifications(int $bookingId, array $data, array $tableIds
 
     $adminEmail = get_theme_option('business_email', get_option('admin_email'));
     $adminSubject = __('New table booking pending confirmation', 'pixelforge');
-    $adminBody = sprintf(
-        "%s\n\n%s",
-        __('A new booking was submitted and is awaiting customer verification.', 'pixelforge'),
-        $summary
-    );
+    $adminBody = build_booking_email_text([
+        'intro' => __('A new booking was submitted and is awaiting customer verification.', 'pixelforge'),
+        'summary' => $summary,
+    ]);
+
+    $adminHtml = build_booking_email_html([
+        'title' => $adminSubject,
+        'intro' => __('A new booking was submitted and is awaiting customer verification.', 'pixelforge'),
+        'summary' => $summary,
+    ]);
 
     $adminSent = send_email([
         'to' => $adminEmail,
         'subject' => $adminSubject,
         'text' => $adminBody,
+        'html' => $adminHtml,
     ]);
 
     if (!$adminSent) {
@@ -720,16 +728,22 @@ function send_verified_notifications(int $bookingId, array $details): void
     $summary = build_booking_summary($bookingId, $details);
     $adminEmail = get_theme_option('business_email', get_option('admin_email'));
     $adminSubject = __('Booking verified by customer', 'pixelforge');
-    $adminBody = sprintf(
-        "%s\n\n%s",
-        __('The customer confirmed their booking via email/SMS.', 'pixelforge'),
-        $summary
-    );
+    $adminBody = build_booking_email_text([
+        'intro' => __('The customer confirmed their booking via email/SMS.', 'pixelforge'),
+        'summary' => $summary,
+    ]);
+
+    $adminHtml = build_booking_email_html([
+        'title' => $adminSubject,
+        'intro' => __('The customer confirmed their booking via email/SMS.', 'pixelforge'),
+        'summary' => $summary,
+    ]);
 
     $adminSent = send_email([
         'to' => $adminEmail,
         'subject' => $adminSubject,
         'text' => $adminBody,
+        'html' => $adminHtml,
     ]);
 
     if (!$adminSent) {
@@ -737,17 +751,23 @@ function send_verified_notifications(int $bookingId, array $details): void
     }
 
     $customerSubject = __('Your table booking is confirmed', 'pixelforge');
-    $customerBody = sprintf(
-        "%s\n\n%s",
-        __('Thanks for confirming! Here are your booking details:', 'pixelforge'),
-        $summary
-    );
+    $customerBody = build_booking_email_text([
+        'intro' => __('Thanks for confirming! Here are your booking details:', 'pixelforge'),
+        'summary' => $summary,
+    ]);
+
+    $customerHtml = build_booking_email_html([
+        'title' => $customerSubject,
+        'intro' => __('Thanks for confirming! Here are your booking details:', 'pixelforge'),
+        'summary' => $summary,
+    ]);
 
     $customerSent = send_email([
         'to' => $details['email'],
         'toName' => $details['name'],
         'subject' => $customerSubject,
         'text' => $customerBody,
+        'html' => $customerHtml,
     ]);
 
     if (!$customerSent) {
@@ -781,6 +801,132 @@ function build_booking_summary(int $bookingId, array $details): string
     }
 
     return implode("\n", array_filter($lines));
+}
+
+function build_booking_email_html(array $args): string
+{
+    $title = (string)($args['title'] ?? '');
+    $intro = (string)($args['intro'] ?? '');
+    $summary = (string)($args['summary'] ?? '');
+    $cta = (array)($args['cta'] ?? []);
+
+    $summaryItems = array_filter(array_map('trim', explode("\n", $summary)));
+    $ctaLabel = (string)($cta['label'] ?? '');
+    $ctaUrl = (string)($cta['url'] ?? '');
+
+    $logoUrl = get_brand_logo_url();
+    $contact = get_contact_details();
+
+    $phoneHref = preg_replace('/\s+/', '', $contact['phone']);
+
+    $listItems = array_map(static function ($line) {
+        return sprintf('<li style="margin-bottom: 6px;">%s</li>', esc_html((string)$line));
+    }, $summaryItems);
+
+    $ctaHtml = '';
+
+    if ($ctaLabel !== '' && $ctaUrl !== '') {
+        $ctaHtml = sprintf(
+            '<div style="margin: 24px 0 12px; text-align: center;">'
+            . '<a href="%1$s" style="background:#cbba57; color:#080904; padding: 12px 20px; text-decoration: none; '
+            . 'font-weight: 700; letter-spacing: 0.02em; display: inline-block; border-radius: 4px;">%2$s</a>'
+            . '</div>',
+            esc_url($ctaUrl),
+            esc_html($ctaLabel)
+        );
+    }
+
+    return sprintf(
+        '<div style="background:#f8f8f2; padding: 28px; font-family: \"Raleway\", Arial, sans-serif; color:#080904;">
+            <div style="max-width: 620px; margin: 0 auto; background:#ffffff; border: 1px solid #e4e1d6; border-radius: 10px; overflow: hidden;">
+                <div style="background: #080904; padding: 18px 22px; text-align: center;">
+                    %1$s
+                </div>
+                <div style="padding: 26px 26px 10px;">
+                    <h1 style="font-family: \"Cormorant Garamond\", Georgia, serif; font-size: 28px; margin: 0 0 12px; color:#080904;">%2$s</h1>
+                    <p style="font-size: 16px; line-height: 1.6; margin: 0 0 18px;">%3$s</p>
+                    %4$s
+                    <div style="background: #f3f0e5; border-radius: 8px; padding: 18px 20px; margin: 8px 0 18px;">
+                        <h2 style="font-family: \"Cormorant Garamond\", Georgia, serif; font-size: 20px; margin: 0 0 10px; color:#080904;">%5$s</h2>
+                        <ul style="padding-left: 18px; margin: 0; list-style: disc;">%6$s</ul>
+                    </div>
+                    %7$s
+                    <div style="border-top: 1px solid #e4e1d6; margin-top: 18px; padding-top: 16px;">
+                        <p style="font-size: 14px; margin: 0 0 6px; font-weight: 700;">%8$s</p>
+                        <p style="font-size: 14px; margin: 0;">
+                            <a href="tel:%9$s" style="color:#cbba57; text-decoration: none; font-weight: 600;">%10$s</a><br>
+                            <a href="mailto:%11$s" style="color:#cbba57; text-decoration: none; font-weight: 600;">%11$s</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>',
+        $logoUrl !== ''
+            ? sprintf('<img src="%1$s" alt="%2$s" style="max-height: 64px; width: auto;">', esc_url($logoUrl), esc_attr(get_bloginfo('name')))
+            : '',
+        esc_html($title),
+        esc_html($intro),
+        $ctaHtml,
+        esc_html(__('Booking details', 'pixelforge')),
+        implode('', $listItems),
+        build_booking_note_html($ctaLabel, $ctaUrl),
+        esc_html(__('Contact us', 'pixelforge')),
+        esc_attr($phoneHref),
+        esc_html($contact['phone']),
+        esc_html($contact['email'])
+    );
+}
+
+function build_booking_note_html(string $ctaLabel, string $ctaUrl): string
+{
+    if ($ctaLabel === '' || $ctaUrl === '') {
+        return '';
+    }
+
+    return sprintf(
+        '<p style="font-size: 13px; color:#555; margin: 0 0 6px; text-align: center;">%s</p>',
+        esc_html(__('If the button above does not work, copy and paste the link into your browser.', 'pixelforge'))
+    );
+}
+
+function build_booking_email_text(array $args): string
+{
+    $intro = (string)($args['intro'] ?? '');
+    $summary = (string)($args['summary'] ?? '');
+    $cta = (string)($args['cta'] ?? '');
+    $contact = get_contact_details();
+
+    $sections = array_filter([
+        $intro,
+        $cta !== '' ? $cta : null,
+        $summary,
+        sprintf(
+            "%s\n%s: %s\n%s: %s",
+            __('Contact us', 'pixelforge'),
+            __('Phone', 'pixelforge'),
+            $contact['phone'],
+            __('Email', 'pixelforge'),
+            $contact['email']
+        ),
+    ]);
+
+    return implode("\n\n", $sections);
+}
+
+function get_brand_logo_url(): string
+{
+    $logoPath = 'resources/images/the-white-hart-bodmin-logo.png';
+    $logoUrl = get_theme_file_uri($logoPath);
+
+    return is_string($logoUrl) ? $logoUrl : '';
+}
+
+function get_contact_details(): array
+{
+    return [
+        'phone' => '07922 214361',
+        'email' => 'bodmin@theh.art',
+    ];
 }
 
 function get_booking_details(int $bookingId, array $data = [], array $tableIds = [], int $timestamp = 0): array

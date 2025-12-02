@@ -173,6 +173,16 @@
           success: $('.booking-form__alert--success'),
         };
 
+        const scrollToSuccess = () => {
+          if (!alerts.success.length || !alerts.success.hasClass('is-visible')) {
+            return;
+          }
+
+          const top = Math.max(alerts.success.offset().top - 16, 0);
+
+          $('html, body').animate({ scrollTop: top }, 300);
+        };
+
         let currentStep = 0;
 
         const hideAlerts = () => {
@@ -205,6 +215,10 @@
           }
 
           alerts[type].addClass('is-visible');
+
+          if (type === 'success') {
+            scrollToSuccess();
+          }
         };
 
         const setNotice = (text) => {
@@ -402,6 +416,7 @@
 
         rebuildTimes();
         fetchAvailability();
+        scrollToSuccess();
         });
       };
 

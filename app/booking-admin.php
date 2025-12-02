@@ -8,6 +8,7 @@ use PixelForge\PostTypes\BookingSection;
 use PixelForge\PostTypes\BookingTable;
 use PixelForge\PostTypes\TableBooking;
 use WP_Post;
+use WP_User;
 use function PixelForge\Bookings\get_booking_details;
 use function PixelForge\Bookings\get_table_labels;
 use function PixelForge\Bookings\normalize_table_ids;
@@ -19,6 +20,8 @@ add_action('admin_post_nopriv_pixelforge_booking_admin_login', __NAMESPACE__ . '
 add_action('admin_post_pixelforge_booking_admin_create', __NAMESPACE__ . '\\handle_create');
 add_action('admin_post_pixelforge_booking_admin_update', __NAMESPACE__ . '\\handle_update');
 add_action('admin_post_pixelforge_booking_admin_delete', __NAMESPACE__ . '\\handle_delete');
+add_action('admin_init', __NAMESPACE__ . '\\restrict_staff_admin_access');
+add_filter('login_redirect', __NAMESPACE__ . '\\redirect_staff_login', 10, 3);
 
 function handle_login(): void
 {
@@ -150,6 +153,41 @@ function handle_delete(): void
 
     wp_safe_redirect(add_query_arg('booking_admin_notice', 'deleted', $redirect));
     exit;
+}
+
+function restrict_staff_admin_access(): void
+{
+    if (!is_user_logged_in() || !is_admin()) {
+        return;
+    }
+
+    $user = wp_get_current_user();
+
+    if (!is_table_booking_staff($user)) {
+        return;
+    }
+
+    if (wp_doing_ajax()) {
+        return;
+    }
+
+    $script = isset($_SERVER['PHP_SELF']) ? basename((string)$_SERVER['PHP_SELF']) : '';
+
+    if ($script === 'admin-post.php') {
+        return;
+    }
+
+    wp_safe_redirect(get_booking_admin_page_url());
+    exit;
+}
+
+function redirect_staff_login($redirectTo, $requestedRedirect, $user)
+{
+    if ($user instanceof WP_User && is_table_booking_staff($user)) {
+        return get_booking_admin_page_url();
+    }
+
+    return $redirectTo;
 }
 
 function collect_booking_form_data(array $source): array
@@ -288,4 +326,34 @@ function get_redirect_target(string $value): string
     $validated = wp_validate_redirect($value, $fallback);
 
     return $validated ?: $fallback;
+}
+
+function get_booking_admin_page_url(): string
+{
+    $page = get_page_by_path('table-booking-admin');
+
+    if ($page) {
+        return get_permalink($page);
+    }
+
+    $templatePages = get_pages([
+        'number' => 1,
+        'meta_key' => '_wp_page_template',
+        'meta_value' => 'views/template-booking-admin.blade.php',
+    ]);
+
+    if ($templatePages !== []) {
+        return get_permalink($templatePages[0]);
+    }
+
+    return home_url('/table-booking-admin/');
+}
+
+function is_table_booking_staff(WP_User $user): bool
+{
+    if ($user->user_login === 'staff') {
+        return true;
+    }
+
+    return in_array('staff', (array)$user->roles, true);
 }
