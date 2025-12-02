@@ -155,6 +155,27 @@ function send_sms(array $args): bool
     }
 
     return false;
+    $payload = [
+        'sender' => $sender,
+        'recipient' => ltrim($recipient, '+'),
+        'content' => $args['message'] ?? '',
+        'type' => 'transactional',
+        'tag' => 'table_booking',
+    ];
+
+    error_log(sprintf('Brevo SMS sending to %s via %s', $recipient, $sender));
+
+    return brevo_request('transactionalSMS/sms', $payload, $apiKey, static function ($response) use ($recipient) {
+        $body = wp_remote_retrieve_body($response);
+        $parsed = json_decode($body, true);
+        $messageId = $parsed['messageId'] ?? ($parsed['messageIdString'] ?? null);
+
+        if ($messageId) {
+            error_log(sprintf('Brevo SMS sent to %s (messageId: %s)', $recipient, $messageId));
+        } else {
+            error_log(sprintf('Brevo SMS sent to %s (response: %s)', $recipient, $body));
+        }
+    });
 }
 
 function normalize_recipients($recipients): array
