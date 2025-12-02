@@ -25,6 +25,7 @@ add_action('wp_ajax_pixelforge_submit_booking', __NAMESPACE__ . '\\handle_bookin
 add_action('wp_ajax_nopriv_pixelforge_submit_booking', __NAMESPACE__ . '\\handle_booking_ajax_submission');
 add_filter('manage_table_booking_posts_columns', __NAMESPACE__ . '\\register_table_booking_columns');
 add_action('manage_table_booking_posts_custom_column', __NAMESPACE__ . '\\render_table_booking_columns', 10, 2);
+add_action('pixelforge_send_booking_reminder', __NAMESPACE__ . '\\send_booking_reminder');
 
 function register_booking_shortcodes(): void
 {
@@ -451,6 +452,8 @@ function maybe_confirm_booking(): void
 
     send_verified_notifications($bookingId, $details);
 
+    schedule_booking_reminder($bookingId, $details['timestamp']);
+
     wp_safe_redirect(add_query_arg('booking_confirmed', '1', home_url('/')));
     exit;
 }
@@ -867,6 +870,91 @@ function send_verified_notifications(int $bookingId, array $details): void
     if (!$customerSent) {
         wp_mail($details['email'], $customerSubject, $customerBody);
     }
+}
+
+function schedule_booking_reminder(int $bookingId, int $timestamp = 0): void
+{
+    if ((int)get_post_meta($bookingId, 'table_booking_verified', true) !== 1) {
+        return;
+    }
+
+    $timestamp = $timestamp ?: (int)get_post_meta($bookingId, 'table_booking_datetime', true);
+
+    if ($timestamp === 0) {
+        return;
+    }
+
+    $now = time();
+
+    if ($timestamp <= $now) {
+        return;
+    }
+
+    wp_clear_scheduled_hook('pixelforge_send_booking_reminder', [$bookingId]);
+    delete_post_meta($bookingId, 'table_booking_reminder_sent');
+
+    $reminderAt = $timestamp - DAY_IN_SECONDS;
+
+    if ($reminderAt <= $now) {
+        send_booking_reminder($bookingId);
+        return;
+    }
+
+    wp_schedule_single_event($reminderAt, 'pixelforge_send_booking_reminder', [$bookingId]);
+}
+
+function send_booking_reminder(int $bookingId): void
+{
+    if (get_post_meta($bookingId, 'table_booking_reminder_sent', true)) {
+        return;
+    }
+
+    if ((int)get_post_meta($bookingId, 'table_booking_verified', true) !== 1) {
+        return;
+    }
+
+    if (!is_booking_active($bookingId)) {
+        return;
+    }
+
+    $details = get_booking_details($bookingId);
+
+    if (!is_email($details['email'])) {
+        return;
+    }
+
+    $summary = build_booking_summary($bookingId, $details);
+    $subject = __('Reminder: your table booking is coming up', 'pixelforge');
+    $textBody = build_booking_email_text([
+        'intro' => __(
+            'This is a friendly reminder about your booking tomorrow. If your plans change, please let us know.',
+            'pixelforge'
+        ),
+        'summary' => $summary,
+    ]);
+
+    $htmlBody = build_booking_email_html([
+        'title' => $subject,
+        'intro' => __(
+            'This is a friendly reminder about your booking tomorrow. If your plans change, please let us know.',
+            'pixelforge'
+        ),
+        'summary' => $summary,
+    ]);
+
+    $sent = send_email([
+        'to' => $details['email'],
+        'toName' => $details['name'],
+        'subject' => $subject,
+        'text' => $textBody,
+        'html' => $htmlBody,
+    ]);
+
+    if (!$sent) {
+        wp_mail($details['email'], $subject, $textBody);
+    }
+
+    update_post_meta($bookingId, 'table_booking_reminder_sent', time());
 }
 
 function build_booking_summary(int $bookingId, array $details): string
