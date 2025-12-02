@@ -16,7 +16,7 @@ body {
   font-family: $brand_font;
   font-optical-sizing: auto;
   font-style: normal;
-  background-color: darken($brand-dark, 10%);
+  background-color: $brand_dark;
   min-height: 100%;
   text-align: center;
   color: white;
