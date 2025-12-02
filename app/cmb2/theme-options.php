@@ -91,10 +91,10 @@ function register_theme_options_metabox(): void
     ]);
 
     $cmb_options->add_field([
-        'name' => esc_html__('Brevo Email & SMS', 'pixelforge'),
+        'name' => esc_html__('Brevo Email', 'pixelforge'),
         'id' => 'brevo_options',
         'type' => 'title',
-        'desc' => esc_html__('Store your Brevo API credentials to send booking confirmations by email and SMS.', 'pixelforge'),
+        'desc' => esc_html__('Store your Brevo API credentials to send booking confirmations by email.', 'pixelforge'),
     ]);
 
     $cmb_options->add_field([
@@ -104,7 +104,7 @@ function register_theme_options_metabox(): void
         'attributes' => [
             'type' => 'password',
         ],
-        'desc' => esc_html__('Transactional/V3 API key used for both email and SMS.', 'pixelforge'),
+        'desc' => esc_html__('Transactional/V3 API key used for booking emails (SMS is handled by FrontlineSMS).', 'pixelforge'),
     ]);
 
     $cmb_options->add_field([
@@ -122,10 +122,42 @@ function register_theme_options_metabox(): void
     ]);
 
     $cmb_options->add_field([
-        'name' => esc_html__('SMS Sender ID', 'pixelforge'),
-        'id' => 'brevo_sms_sender',
+        'name' => esc_html__('FrontlineSMS (SMS)', 'pixelforge'),
+        'id' => 'frontlinesms_options',
+        'type' => 'title',
+        'desc' => esc_html__('Configure FrontlineSMS to send booking verification links by SMS while keeping Brevo for email.', 'pixelforge'),
+    ]);
+
+    $cmb_options->add_field([
+        'name' => esc_html__('FrontlineSMS API Token', 'pixelforge'),
+        'id' => 'frontlinesms_api_token',
+        'type' => 'text',
+        'attributes' => [
+            'type' => 'password',
+        ],
+        'desc' => esc_html__('Token from your FrontlineSMS workspace (environment variable FRONTLINESMS_API_TOKEN is also supported).', 'pixelforge'),
+    ]);
+
+    $cmb_options->add_field([
+        'name' => esc_html__('FrontlineSMS API URL', 'pixelforge'),
+        'id' => 'frontlinesms_api_url',
+        'type' => 'text_url',
+        'default' => 'https://cloud.frontlinesms.com/api/1/messages.json',
+        'desc' => esc_html__('Endpoint for sending messages; leave default for Frontline Cloud.', 'pixelforge'),
+    ]);
+
+    $cmb_options->add_field([
+        'name' => esc_html__('FrontlineSMS Channel ID (optional)', 'pixelforge'),
+        'id' => 'frontlinesms_channel',
         'type' => 'text_medium',
-        'desc' => esc_html__('Up to 11 alphanumeric characters approved in Brevo for transactional SMS.', 'pixelforge'),
+        'desc' => esc_html__('Restrict outbound SMS to a specific Frontline channel if required.', 'pixelforge'),
+    ]);
+
+    $cmb_options->add_field([
+        'name' => esc_html__('SMS Sender ID (optional)', 'pixelforge'),
+        'id' => 'frontlinesms_sender_id',
+        'type' => 'text_medium',
+        'desc' => esc_html__('Custom sender (from) label for SMS when supported by your Frontline channel.', 'pixelforge'),
     ]);
 
     $cmb_options->add_field([
