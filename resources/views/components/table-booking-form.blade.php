@@ -38,39 +38,13 @@
       @php(wp_nonce_field(\PixelForge\Bookings\NONCE_ACTION, 'pixelforge_booking_nonce'))
 
       <ol class="booking-form__progress">
-        <li class="booking-form__progress-step is-active">{{ __('Your details', 'pixelforge') }}</li>
-        <li class="booking-form__progress-step">{{ __('Reservation', 'pixelforge') }}</li>
+        <li class="booking-form__progress-step is-active">{{ __('Reservation', 'pixelforge') }}</li>
+        <li class="booking-form__progress-step">{{ __('Your details', 'pixelforge') }}</li>
         <li class="booking-form__progress-step">{{ __('Notes', 'pixelforge') }}</li>
       </ol>
 
       <div class="booking-form__steps">
         <fieldset class="booking-form__step is-active" data-step="1">
-          <legend class="booking-form__step-title">{{ __('Tell us about you', 'pixelforge') }}</legend>
-          <p class="booking-form__step-hint">{{ __('We will use these details to confirm your booking and keep you updated.', 'pixelforge') }}</p>
-
-          <div class="row g-3">
-            <label class="booking-form__field col-md-4">
-              <span class="booking-form__label form-label">{{ __('Name', 'pixelforge') }}</span>
-              <input class="booking-form__input form-control" type="text" name="pixelforge_booking_name" value="{{ $old['name'] ?? '' }}" required>
-            </label>
-
-            <label class="booking-form__field col-md-4">
-              <span class="booking-form__label form-label">{{ __('Email', 'pixelforge') }}</span>
-              <input class="booking-form__input form-control" type="email" name="pixelforge_booking_email" value="{{ $old['email'] ?? '' }}" required>
-            </label>
-
-            <label class="booking-form__field col-md-4">
-              <span class="booking-form__label form-label">{{ __('Phone', 'pixelforge') }}</span>
-              <input class="booking-form__input form-control" type="tel" name="pixelforge_booking_phone" value="{{ $old['phone'] ?? '' }}" required>
-            </label>
-          </div>
-
-          <div class="booking-form__actions">
-            <button class="booking-form__nav booking-form__nav--next btn btn-primary" type="button">{{ __('Next', 'pixelforge') }}</button>
-          </div>
-        </fieldset>
-
-        <fieldset class="booking-form__step" data-step="2">
           <legend class="booking-form__step-title">{{ __('Choose your table', 'pixelforge') }}</legend>
           <p class="booking-form__step-hint">{{ sprintf(__('Bookings last %d minutes.', 'pixelforge'), \PixelForge\Bookings\BOOKING_SLOT_MINUTES) }}</p>
 
@@ -124,8 +98,34 @@
           </div>
 
           <div class="booking-form__actions">
-            <button class="booking-form__nav booking-form__nav--prev btn btn-outline-light" type="button">{{ __('Back', 'pixelforge') }}</button>
             <button class="booking-form__nav booking-form__nav--next btn btn-primary" type="button">{{ __('Next', 'pixelforge') }}</button>
+          </div>
+        </fieldset>
+
+        <fieldset class="booking-form__step" data-step="2">
+          <legend class="booking-form__step-title">{{ __('Tell us about you', 'pixelforge') }}</legend>
+          <p class="booking-form__step-hint">{{ __('We will use these details to confirm your booking and keep you updated.', 'pixelforge') }}</p>
+
+          <div class="row g-3">
+            <label class="booking-form__field col-md-4">
+              <span class="booking-form__label form-label">{{ __('Name', 'pixelforge') }}</span>
+              <input class="booking-form__input form-control" type="text" name="pixelforge_booking_name" value="{{ $old['name'] ?? '' }}" required>
+            </label>
+
+            <label class="booking-form__field col-md-4">
+              <span class="booking-form__label form-label">{{ __('Email', 'pixelforge') }}</span>
+              <input class="booking-form__input form-control" type="email" name="pixelforge_booking_email" value="{{ $old['email'] ?? '' }}" required>
+            </label>
+
+            <label class="booking-form__field col-md-4">
+              <span class="booking-form__label form-label">{{ __('Phone', 'pixelforge') }}</span>
+              <input class="booking-form__input form-control" type="tel" name="pixelforge_booking_phone" value="{{ $old['phone'] ?? '' }}" required>
+            </label>
+          </div>
+
+          <div class="booking-form__actions">
+            <button class="booking-form__nav booking-form__nav--prev btn btn-outline-light" type="button">{{ __('Back', 'pixelforge') }}</button>
+            <button class="booking-form__nav booking-form__nav--next btn btn-primary" type="button">{{ __('Next', 'pixelforge')}}</button>
           </div>
         </fieldset>
 

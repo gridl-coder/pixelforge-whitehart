@@ -115,7 +115,7 @@ function render_booking_menus_shortcode(): string
 
     $dayOrder = array_keys($dayOptions);
 
-    $output = '<div class="row text-center booking-menu-shortcode">';
+    $output = '<div class="booking-menu-shortcode booking-menu-slider">';
 
     foreach ($menus as $menu) {
         $days = get_post_meta($menu->ID, 'booking_menu_days', true);
@@ -143,10 +143,9 @@ function render_booking_menus_shortcode(): string
 
         $thumbnailLink = get_the_post_thumbnail_url($menu->ID);
 
-        $output .= '<div class="col-6 col-md-3 booking-menu-shortcode__item mb-3">';
+        $output .= '<div class="booking-menu-shortcode__item">';
 
-
-        $output .= '<p><strong>' . esc_html(get_the_title($menu)) . '</strong><br>'
+        $output .= '<p class="booking-menu-shortcode__title"><strong>' . esc_html(get_the_title($menu)) . '</strong><br>'
             . esc_html(implode(' / ', $availableDays)) . '<br>'
             . esc_html($timeLabel) . '</p>';
 

@@ -322,3 +322,27 @@
     border: 1px solid $brand_yellow;
   }
 }
+
+.booking-menu-slider {
+  text-align: center;
+
+  .slick-slide {
+    padding: 0 0.75rem;
+  }
+
+  .booking-menu-shortcode__item {
+    background: rgba($brand_dark, 0.02);
+    border: 1px solid rgba($brand_dark, 0.08);
+    border-radius: 12px;
+    height: 100%;
+    padding: 1rem;
+  }
+
+  .booking-menu-shortcode__title {
+    margin-bottom: 0.5rem;
+  }
+
+  .booking-menu-shortcode__thumb {
+    margin-top: 0.5rem;
+  }
+}

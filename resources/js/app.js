@@ -84,10 +84,54 @@ const initCarouselSliders = async () => {
   });
 };
 
+const initBookingMenuSliders = async () => {
+  await loadSlick();
+
+  const $sliders = $('.booking-menu-slider');
+
+  if (!$sliders.length || typeof $sliders.slick !== 'function') {
+    return;
+  }
+
+  $sliders.each((index, slider) => {
+    const $slider = $(slider);
+
+    if ($slider.hasClass('slick-initialized')) {
+      return;
+    }
+
+    $slider.slick({
+      dots: true,
+      arrows: true,
+      adaptiveHeight: false,
+      autoplay: true,
+      autoplaySpeed: 2500,
+      slidesToShow: 4,
+      slidesToScroll: 1,
+      responsive: [
+        {
+          breakpoint: 1200,
+          settings: { slidesToShow: 3 },
+        },
+        {
+          breakpoint: 992,
+          settings: { slidesToShow: 2 },
+        },
+        {
+          breakpoint: 576,
+          settings: { slidesToShow: 1 },
+        },
+      ],
+    });
+  });
+};
+
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     initCarouselSliders().catch((error) => console.error('Failed to init carousel', error));
+    initBookingMenuSliders().catch((error) => console.error('Failed to init booking menu slider', error));
   });
 } else {
   initCarouselSliders().catch((error) => console.error('Failed to init carousel', error));
+  initBookingMenuSliders().catch((error) => console.error('Failed to init booking menu slider', error));
 }
