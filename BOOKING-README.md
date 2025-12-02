@@ -25,7 +25,7 @@ This theme ships with a reservation workflow built around custom post types and 
 ## 4) How bookings are processed
 - Customers choose a menu, date, section, party size, and an hourly slot within the menu's availability window.
 - On submission the system finds the first table in the chosen section with enough seats that is free for that hour. If no table is free, the user is prompted to try another time.
-- Successful submissions create a **Table Booking** entry, send a verification link to the customer by email (and SMS when configured), and notify the admin/business email configured under *PixelForge Options* (falls back to the site admin email).
+- Successful submissions create a **Table Booking** entry, send a verification link to the customer by email (and SMS via FrontlineSMS when configured), and notify the admin/business email configured under *PixelForge Options* (falls back to the site admin email).
 - Customers must click the verification link to mark the booking as **confirmed**; the admin receives a follow-up email once the customer verifies.
 - Booked tables are blocked for their hour, preventing double bookings of the same table and time.
 - The booking form displays a live availability calendar under the date field; unavailable days (menu closed or fully booked) are marked and cannot be selected.
