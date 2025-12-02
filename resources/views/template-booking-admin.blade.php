@@ -114,7 +114,11 @@
 
                 <label class="booking-admin__field">
                   <span>{{ __('Party size', 'pixelforge') }}</span>
-                  <input type="number" name="party_size" min="1" step="1" required>
+                  <select name="party_size" required>
+                    @for ($partySize = 2; $partySize <= 12; $partySize += 1)
+                      <option value="{{ $partySize }}">{{ $partySize }}</option>
+                    @endfor
+                  </select>
                 </label>
               </div>
 
@@ -141,22 +145,19 @@
 
                 <label class="booking-admin__field">
                   <span>{{ __('Tables', 'pixelforge') }}</span>
-                  <div class="booking-admin__checkboxes">
+                  <select name="table_ids[]" multiple required>
                     @foreach ($panel['tables'] as $table)
                       @php($tableSeats = get_post_meta($table->ID, 'booking_table_seats', true))
                       @php($tableSection = get_post_meta($table->ID, 'booking_table_section', true))
-                      <label class="booking-admin__checkbox">
-                        <input type="checkbox" name="table_ids[]" value="{{ $table->ID }}">
-                        <span>{{ $table->post_title }}</span>
-                        <small>
-                          @if ($tableSection)
-                            {{ get_the_title($tableSection) }} ·
-                          @endif
-                          {{ sprintf(__('Seats: %s', 'pixelforge'), $tableSeats ?: '—') }}
-                        </small>
-                      </label>
+                      <option value="{{ $table->ID }}">
+                        {{ $table->post_title }}
+                        @if ($tableSection)
+                          ({{ get_the_title($tableSection) }})
+                        @endif
+                        — {{ sprintf(__('Seats: %s', 'pixelforge'), $tableSeats ?: '—') }}
+                      </option>
                     @endforeach
-                  </div>
+                  </select>
                 </label>
 
               </div>
@@ -261,7 +262,11 @@
                           </label>
                           <label class="booking-admin__field">
                             <span>{{ __('Party size', 'pixelforge') }}</span>
-                            <input type="number" name="party_size" min="1" step="1" value="{{ $booking['details']['party_size'] }}" required>
+                            <select name="party_size" required>
+                              @for ($partySize = 2; $partySize <= 12; $partySize += 1)
+                                <option value="{{ $partySize }}" @selected($booking['details']['party_size'] === $partySize)>{{ $partySize }}</option>
+                              @endfor
+                            </select>
                           </label>
                         </div>
 
@@ -287,22 +292,19 @@
 
                         <label class="booking-admin__field">
                           <span>{{ __('Tables', 'pixelforge') }}</span>
-                          <div class="booking-admin__checkboxes">
+                          <select name="table_ids[]" multiple required>
                             @foreach ($panel['tables'] as $table)
                               @php($tableSeats = get_post_meta($table->ID, 'booking_table_seats', true))
                               @php($tableSection = get_post_meta($table->ID, 'booking_table_section', true))
-                              <label class="booking-admin__checkbox">
-                                <input type="checkbox" name="table_ids[]" value="{{ $table->ID }}" @checked(in_array($table->ID, $booking['details']['table_ids'], true))>
-                                <span>{{ $table->post_title }}</span>
-                                <small>
-                                  @if ($tableSection)
-                                    {{ get_the_title($tableSection) }} ·
-                                  @endif
-                                  {{ sprintf(__('Seats: %s', 'pixelforge'), $tableSeats ?: '—') }}
-                                </small>
-                              </label>
+                              <option value="{{ $table->ID }}" @selected(in_array($table->ID, $booking['details']['table_ids'], true))>
+                                {{ $table->post_title }}
+                                @if ($tableSection)
+                                  ({{ get_the_title($tableSection) }})
+                                @endif
+                                — {{ sprintf(__('Seats: %s', 'pixelforge'), $tableSeats ?: '—') }}
+                              </option>
                             @endforeach
-                          </div>
+                          </select>
                         </label>
 
                         <div class="booking-admin__field-grid">

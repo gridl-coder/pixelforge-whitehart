@@ -183,8 +183,12 @@ function process_booking_submission(array $data): array
         $feedback['errors'][] = __('Please enter a contact phone number.', 'pixelforge');
     }
 
-    if ($data['party_size'] < 1) {
-        $feedback['errors'][] = __('Please choose how many seats you need.', 'pixelforge');
+    if ($data['party_size'] < 2) {
+        $feedback['errors'][] = __('Please choose how many seats you need (minimum 2).', 'pixelforge');
+    }
+
+    if ($data['party_size'] > 12) {
+        $feedback['errors'][] = __('Bookings are limited to 12 guests online. Please call us for larger parties.', 'pixelforge');
     }
 
     if ($data['menu'] === 0 || get_post_type($data['menu']) !== BookingMenu::KEY) {
@@ -978,7 +982,7 @@ function check_table_availability(): void
     }
 
     $menuId = absint($_GET['menu'] ?? 0);
-    $partySize = max(1, absint($_GET['party_size'] ?? 0));
+    $partySize = min(12, max(2, absint($_GET['party_size'] ?? 0)));
     $dateValue = sanitize_text_field(wp_unslash($_GET['date'] ?? ''));
 
     $date = DateTimeImmutable::createFromFormat('Y-m-d', $dateValue, wp_timezone());
