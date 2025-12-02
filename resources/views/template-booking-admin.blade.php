@@ -199,7 +199,7 @@
             @else
               <div class="booking-admin__list">
                 @foreach ($panel['bookings'] as $booking)
-                  <details class="booking-admin__booking">
+                  <details class="booking-admin__booking" id="booking-record-{{ $booking['id'] }}" data-booking-id="{{ $booking['id'] }}">
                     <summary>
                       <div>
                         <strong>{{ $booking['details']['name'] }}</strong>
@@ -442,6 +442,24 @@
 
         const bookings = JSON.parse(calendarWrapper.getAttribute('data-bookings') || '[]');
 
+        function focusBooking(bookingId) {
+          const target = document.querySelector('[data-booking-id="' + bookingId + '"]');
+
+          if (!target) {
+            return;
+          }
+
+          setActivePanel('list');
+          target.open = true;
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+          const summary = target.querySelector('summary');
+
+          if (summary) {
+            summary.focus({ preventScroll: true });
+          }
+        }
+
         function getBookingsForDay(year, month, day) {
           return bookings.filter(function (booking) {
             if (!booking.date) {
@@ -488,6 +506,21 @@
               const tag = document.createElement('div');
               tag.className = 'booking-admin__calendar-event' + (booking.status === 'confirmed' ? ' is-confirmed' : '');
               tag.innerHTML = '<strong>' + booking.time + '</strong> ' + booking.name + ' · ' + booking.party_size + ' ' + '{{ __('guests', 'pixelforge') }}';
+              tag.setAttribute('tabindex', '0');
+              tag.setAttribute('role', 'button');
+              tag.setAttribute('aria-label', '{{ __('View booking', 'pixelforge') }}');
+              tag.dataset.bookingId = booking.id;
+
+              tag.addEventListener('click', function () {
+                focusBooking(booking.id);
+              });
+
+              tag.addEventListener('keydown', function (event) {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  focusBooking(booking.id);
+                }
+              });
 
               if (booking.table_label) {
                 const small = document.createElement('span');
