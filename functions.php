@@ -61,6 +61,7 @@ collect([
     'brevo',
     'cmb2/bookings-metabox',
     'booking',
+    'booking-admin',
     'cmb2/theme-options',
     'cmb2/seo-metabox',
     'performance',
