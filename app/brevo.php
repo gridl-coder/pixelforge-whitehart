@@ -55,6 +55,7 @@ function normalize_phone(string $phone): string
     $countryCode = ltrim($countryCode, '+');
 
     if ($countryCode !== '' && strpos($digits, $countryCode) !== 0) {
+        $digits = ltrim($digits, '0');
         $digits = $countryCode . $digits;
     }
 
@@ -116,12 +117,25 @@ function send_sms(array $args): bool
 
     $payload = [
         'sender' => $sender,
-        'recipient' => $recipient,
+        'recipient' => ltrim($recipient, '+'),
         'content' => $args['message'] ?? '',
+        'type' => 'transactional',
         'tag' => 'table_booking',
     ];
 
-    return brevo_request('transactionalSMS/sms', $payload, $apiKey);
+    error_log(sprintf('Brevo SMS sending to %s via %s', $recipient, $sender));
+
+    return brevo_request('transactionalSMS/sms', $payload, $apiKey, static function ($response) use ($recipient) {
+        $body = wp_remote_retrieve_body($response);
+        $parsed = json_decode($body, true);
+        $messageId = $parsed['messageId'] ?? ($parsed['messageIdString'] ?? null);
+
+        if ($messageId) {
+            error_log(sprintf('Brevo SMS sent to %s (messageId: %s)', $recipient, $messageId));
+        } else {
+            error_log(sprintf('Brevo SMS sent to %s (response: %s)', $recipient, $body));
+        }
+    });
 }
 
 function normalize_recipients($recipients): array
@@ -183,7 +197,7 @@ function maybe_send_via_brevo($return, array $atts)
     return $return;
 }
 
-function brevo_request(string $endpoint, array $payload, string $apiKey): bool
+function brevo_request(string $endpoint, array $payload, string $apiKey, callable $onSuccess = null): bool
 {
     $response = wp_remote_post(API_BASE . '/' . ltrim($endpoint, '/'), [
         'headers' => [
@@ -205,6 +219,10 @@ function brevo_request(string $endpoint, array $payload, string $apiKey): bool
     if ($status < 200 || $status >= 300) {
         error_log('Brevo request returned status ' . $status . ': ' . wp_remote_retrieve_body($response));
         return false;
+    }
+
+    if ($onSuccess) {
+        $onSuccess($response);
     }
 
     return true;
