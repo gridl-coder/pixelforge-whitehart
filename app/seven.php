@@ -111,7 +111,14 @@ function send_sms(array $args): bool
 
     $body = wp_remote_retrieve_body($response);
     $parsed = json_decode($body, true);
-    $isSuccess = is_array($parsed) && ($parsed['success_code'] ?? null) === 100;
+
+    $successCode = null;
+
+    if (is_array($parsed)) {
+        $successCode = $parsed['success_code'] ?? $parsed['success'] ?? null;
+    }
+
+    $isSuccess = (int) $successCode === 100;
 
     if ($isSuccess) {
         $messageId = $parsed['messages'][0]['id'] ?? $parsed['message_id'] ?? null;
