@@ -13,6 +13,20 @@
   <section class="booking-admin">
     <div class="booking-admin__header">
       <h1>{{ __('Table Booking Admin', 'pixelforge') }}</h1>
+
+      @if (is_user_logged_in() && current_user_can('edit_posts'))
+        <nav class="booking-admin__tabs" aria-label="{{ __('Booking admin pages', 'pixelforge') }}">
+          <a class="booking-admin__tab is-active" href="#booking-create" data-panel-toggle="create" role="tab" aria-controls="booking-panel-create" aria-selected="true">
+            {{ __('Add booking', 'pixelforge') }}
+          </a>
+          <a class="booking-admin__tab" href="#booking-view" data-panel-toggle="list" role="tab" aria-controls="booking-panel-list" aria-selected="false">
+            {{ __('View bookings', 'pixelforge') }}
+          </a>
+          <a class="booking-admin__tab" href="#booking-calendar" data-panel-toggle="calendar" role="tab" aria-controls="booking-panel-calendar" aria-selected="false">
+            {{ __('Calendar', 'pixelforge') }}
+          </a>
+        </nav>
+      @endif
     </div>
 
     @if ($notice !== '')
@@ -71,258 +85,433 @@
         <a class="booking-admin__button booking-admin__button--ghost" href="{{ wp_logout_url($redirect) }}">{{ __('Log out', 'pixelforge') }}</a>
       </div>
 
-      <div class="booking-admin__grid">
-        <div class="booking-admin__card">
-          <h2>{{ __('Create booking', 'pixelforge') }}</h2>
-          <p class="booking-admin__muted">{{ __('Add a new booking.', 'pixelforge') }}</p>
+      <div class="booking-admin__panels">
+        <div class="booking-admin__panel is-active" id="booking-panel-create" data-panel="create" role="tabpanel" aria-label="{{ __('Add booking', 'pixelforge') }}">
+          <div class="booking-admin__card">
+            <h2>{{ __('Create booking', 'pixelforge') }}</h2>
+            <p class="booking-admin__muted">{{ __('Add a new booking.', 'pixelforge') }}</p>
 
-          <form class="booking-admin__form" action="{{ admin_url('admin-post.php') }}" method="post">
-            @php(wp_nonce_field(\PixelForge\BookingAdmin\BOOKING_NONCE_ACTION))
-            <input type="hidden" name="action" value="pixelforge_booking_admin_create">
-            <input type="hidden" name="redirect_to" value="{{ esc_url($redirect) }}">
-
-            <label class="booking-admin__field">
-              <span>{{ __('Guest name', 'pixelforge') }}</span>
-              <input type="text" name="name" required>
-            </label>
-
-            <div class="booking-admin__field-grid">
-              <label class="booking-admin__field">
-                <span>{{ __('Email', 'pixelforge') }}</span>
-                <input type="email" name="email" required>
-              </label>
+            <form class="booking-admin__form" action="{{ admin_url('admin-post.php') }}" method="post">
+              @php(wp_nonce_field(\PixelForge\BookingAdmin\BOOKING_NONCE_ACTION))
+              <input type="hidden" name="action" value="pixelforge_booking_admin_create">
+              <input type="hidden" name="redirect_to" value="{{ esc_url($redirect) }}">
 
               <label class="booking-admin__field">
-                <span>{{ __('Phone', 'pixelforge') }}</span>
-                <input type="tel" name="phone" required>
+                <span>{{ __('Guest name', 'pixelforge') }}</span>
+                <input type="text" name="name" required>
               </label>
 
-              <label class="booking-admin__field">
-                <span>{{ __('Party size', 'pixelforge') }}</span>
-                <input type="number" name="party_size" min="1" step="1" required>
-              </label>
-            </div>
+              <div class="booking-admin__field-grid">
+                <label class="booking-admin__field">
+                  <span>{{ __('Email', 'pixelforge') }}</span>
+                  <input type="email" name="email" required>
+                </label>
 
-            <div class="booking-admin__field-grid">
-              <label class="booking-admin__field">
-                <span>{{ __('Menu', 'pixelforge') }}</span>
-                <select name="menu" required>
-                  <option value="">{{ __('Select a menu', 'pixelforge') }}</option>
-                  @foreach ($panel['menus'] as $menu)
-                    <option value="{{ $menu->ID }}">{{ $menu->post_title }}</option>
-                  @endforeach
-                </select>
-              </label>
+                <label class="booking-admin__field">
+                  <span>{{ __('Phone', 'pixelforge') }}</span>
+                  <input type="tel" name="phone" required>
+                </label>
 
-              <label class="booking-admin__field">
-                <span>{{ __('Section', 'pixelforge') }}</span>
-                <select name="section" required>
-                  <option value="">{{ __('Select a section', 'pixelforge') }}</option>
-                  @foreach ($panel['sections'] as $section)
-                    <option value="{{ $section->ID }}">{{ $section->post_title }}</option>
-                  @endforeach
-                </select>
-              </label>
-            </div>
-
-            <label class="booking-admin__field">
-              <span>{{ __('Tables', 'pixelforge') }}</span>
-              <div class="booking-admin__checkboxes">
-                @foreach ($panel['tables'] as $table)
-                  @php($tableSeats = get_post_meta($table->ID, 'booking_table_seats', true))
-                  @php($tableSection = get_post_meta($table->ID, 'booking_table_section', true))
-                  <label class="booking-admin__checkbox">
-                    <input type="checkbox" name="table_ids[]" value="{{ $table->ID }}">
-                    <span>{{ $table->post_title }}</span>
-                    <small>
-                      @if ($tableSection)
-                        {{ get_the_title($tableSection) }} ·
-                      @endif
-                      {{ sprintf(__('Seats: %s', 'pixelforge'), $tableSeats ?: '—') }}
-                    </small>
-                  </label>
-                @endforeach
+                <label class="booking-admin__field">
+                  <span>{{ __('Party size', 'pixelforge') }}</span>
+                  <input type="number" name="party_size" min="1" step="1" required>
+                </label>
               </div>
-            </label>
 
-            <div class="booking-admin__field-grid">
+              <div class="booking-admin__field-grid">
+                <label class="booking-admin__field">
+                  <span>{{ __('Menu', 'pixelforge') }}</span>
+                  <select name="menu" required>
+                    <option value="">{{ __('Select a menu', 'pixelforge') }}</option>
+                    @foreach ($panel['menus'] as $menu)
+                      <option value="{{ $menu->ID }}">{{ $menu->post_title }}</option>
+                    @endforeach
+                  </select>
+                </label>
+
+                <label class="booking-admin__field">
+                  <span>{{ __('Section', 'pixelforge') }}</span>
+                  <select name="section" required>
+                    <option value="">{{ __('Select a section', 'pixelforge') }}</option>
+                    @foreach ($panel['sections'] as $section)
+                      <option value="{{ $section->ID }}">{{ $section->post_title }}</option>
+                    @endforeach
+                  </select>
+                </label>
+
+                <label class="booking-admin__field">
+                  <span>{{ __('Tables', 'pixelforge') }}</span>
+                  <div class="booking-admin__checkboxes">
+                    @foreach ($panel['tables'] as $table)
+                      @php($tableSeats = get_post_meta($table->ID, 'booking_table_seats', true))
+                      @php($tableSection = get_post_meta($table->ID, 'booking_table_section', true))
+                      <label class="booking-admin__checkbox">
+                        <input type="checkbox" name="table_ids[]" value="{{ $table->ID }}">
+                        <span>{{ $table->post_title }}</span>
+                        <small>
+                          @if ($tableSection)
+                            {{ get_the_title($tableSection) }} ·
+                          @endif
+                          {{ sprintf(__('Seats: %s', 'pixelforge'), $tableSeats ?: '—') }}
+                        </small>
+                      </label>
+                    @endforeach
+                  </div>
+                </label>
+
+              <div class="booking-admin__field-grid">
+                <label class="booking-admin__field">
+                  <span>{{ __('Date', 'pixelforge') }}</span>
+                  <input type="date" name="date" required>
+                </label>
+
+                <label class="booking-admin__field">
+                  <span>{{ __('Time', 'pixelforge') }}</span>
+                  <input type="time" name="time" required>
+                </label>
+              </div>
+
               <label class="booking-admin__field">
-                <span>{{ __('Date', 'pixelforge') }}</span>
-                <input type="date" name="date" required>
+                <span>{{ __('Notes', 'pixelforge') }}</span>
+                <textarea name="notes" rows="3" placeholder="{{ __('Allergies, accessibility needs, etc.', 'pixelforge') }}"></textarea>
               </label>
 
-              <label class="booking-admin__field">
-                <span>{{ __('Time', 'pixelforge') }}</span>
-                <input type="time" name="time" required>
-              </label>
-            </div>
-
-            <label class="booking-admin__field">
-              <span>{{ __('Notes', 'pixelforge') }}</span>
-              <textarea name="notes" rows="3" placeholder="{{ __('Allergies, accessibility needs, etc.', 'pixelforge') }}"></textarea>
-            </label>
-
-            <button class="booking-admin__button" type="submit">{{ __('Save booking', 'pixelforge') }}</button>
-          </form>
+              <button class="booking-admin__button" type="submit">{{ __('Save booking', 'pixelforge') }}</button>
+            </form>
+          </div>
         </div>
 
-        <div class="booking-admin__card">
-          <div class="booking-admin__card-header">
-            <div>
-              <h2>{{ __('Existing bookings', 'pixelforge') }}</h2>
-              <p class="booking-admin__muted">{{ __('Review, update, or cancel bookings.', 'pixelforge') }}</p>
+        <div class="booking-admin__panel" id="booking-panel-list" data-panel="list" role="tabpanel" aria-label="{{ __('View bookings', 'pixelforge') }}">
+          <div class="booking-admin__card">
+            <div class="booking-admin__card-header">
+              <div>
+                <h2>{{ __('Existing bookings', 'pixelforge') }}</h2>
+                <p class="booking-admin__muted">{{ __('Review, update, or cancel bookings.', 'pixelforge') }}</p>
+              </div>
+              <span class="booking-admin__pill">{{ count($panel['bookings']) }} {{ __('records', 'pixelforge') }}</span>
             </div>
-            <span class="booking-admin__pill">{{ count($panel['bookings']) }} {{ __('records', 'pixelforge') }}</span>
-          </div>
 
-          @if ($panel['bookings'] === [])
-            <p class="booking-admin__muted">{{ __('No bookings found yet.', 'pixelforge') }}</p>
-          @else
-            <div class="booking-admin__list">
-              @foreach ($panel['bookings'] as $booking)
-                <details class="booking-admin__booking">
-                  <summary>
-                    <div>
-                      <strong>{{ $booking['details']['name'] }}</strong>
-                      <span class="booking-admin__muted">{{ $booking['details']['date'] }} · {{ $booking['details']['time'] }}</span>
-                    </div>
-                    <span class="booking-admin__pill {{ $booking['verified'] ? 'booking-admin__pill--success' : '' }}">
-                      {{ $booking['verified'] ? __('Confirmed', 'pixelforge') : __('Pending', 'pixelforge') }}
-                    </span>
-                  </summary>
-
-                  <div class="booking-admin__booking-body">
-                    <dl class="booking-admin__meta">
+            @if ($panel['bookings'] === [])
+              <p class="booking-admin__muted">{{ __('No bookings found yet.', 'pixelforge') }}</p>
+            @else
+              <div class="booking-admin__list">
+                @foreach ($panel['bookings'] as $booking)
+                  <details class="booking-admin__booking">
+                    <summary>
                       <div>
-                        <dt>{{ __('Menu', 'pixelforge') }}</dt>
-                        <dd>{{ $booking['details']['menu_name'] ?: '—' }}</dd>
+                        <strong>{{ $booking['details']['name'] }}</strong>
+                        <span class="booking-admin__muted">{{ $booking['details']['date'] }} · {{ $booking['details']['time'] }}</span>
                       </div>
-                      <div>
-                        <dt>{{ __('Section', 'pixelforge') }}</dt>
-                        <dd>{{ $booking['details']['section_name'] ?: '—' }}</dd>
-                      </div>
-                      <div>
-                        <dt>{{ __('Tables', 'pixelforge') }}</dt>
-                        <dd>{{ $booking['table_label'] ?: '—' }}</dd>
-                      </div>
-                      <div>
-                        <dt>{{ __('Party size', 'pixelforge') }}</dt>
-                        <dd>{{ $booking['details']['party_size'] }}</dd>
-                      </div>
-                      <div>
-                        <dt>{{ __('Contact', 'pixelforge') }}</dt>
-                        <dd>
-                          <div>{{ $booking['details']['email'] }}</div>
-                          <div>{{ $booking['details']['phone'] }}</div>
-                        </dd>
-                      </div>
-                      <div>
-                        <dt>{{ __('Notes', 'pixelforge') }}</dt>
-                        <dd>{{ $booking['details']['notes'] ?: '—' }}</dd>
-                      </div>
-                    </dl>
+                      <span class="booking-admin__pill {{ $booking['verified'] ? 'booking-admin__pill--success' : '' }}">
+                        {{ $booking['verified'] ? __('Confirmed', 'pixelforge') : __('Pending', 'pixelforge') }}
+                      </span>
+                    </summary>
 
-                    <form class="booking-admin__form booking-admin__form--inline" action="{{ admin_url('admin-post.php') }}" method="post">
-                      @php(wp_nonce_field(\PixelForge\BookingAdmin\BOOKING_NONCE_ACTION))
-                      <input type="hidden" name="action" value="pixelforge_booking_admin_update">
-                      <input type="hidden" name="booking_id" value="{{ $booking['id'] }}">
-                      <input type="hidden" name="redirect_to" value="{{ esc_url($redirect) }}">
-
-                      <div class="booking-admin__field-grid">
-                        <label class="booking-admin__field">
-                          <span>{{ __('Guest name', 'pixelforge') }}</span>
-                          <input type="text" name="name" value="{{ $booking['details']['name'] }}" required>
-                        </label>
-                        <label class="booking-admin__field">
-                          <span>{{ __('Email', 'pixelforge') }}</span>
-                          <input type="email" name="email" value="{{ $booking['details']['email'] }}" required>
-                        </label>
-                        <label class="booking-admin__field">
-                          <span>{{ __('Phone', 'pixelforge') }}</span>
-                          <input type="tel" name="phone" value="{{ $booking['details']['phone'] }}" required>
-                        </label>
-                        <label class="booking-admin__field">
-                          <span>{{ __('Party size', 'pixelforge') }}</span>
-                          <input type="number" name="party_size" min="1" step="1" value="{{ $booking['details']['party_size'] }}" required>
-                        </label>
-                      </div>
-
-                      <div class="booking-admin__field-grid">
-                        <label class="booking-admin__field">
-                          <span>{{ __('Menu', 'pixelforge') }}</span>
-                          <select name="menu" required>
-                            @foreach ($panel['menus'] as $menu)
-                              <option value="{{ $menu->ID }}" @selected($booking['details']['menu'] === $menu->ID)>{{ $menu->post_title }}</option>
-                            @endforeach
-                          </select>
-                        </label>
-
-                        <label class="booking-admin__field">
-                          <span>{{ __('Section', 'pixelforge') }}</span>
-                          <select name="section" required>
-                            @foreach ($panel['sections'] as $section)
-                              <option value="{{ $section->ID }}" @selected($booking['details']['section'] === $section->ID)>{{ $section->post_title }}</option>
-                            @endforeach
-                          </select>
-                        </label>
-                      </div>
-
-                      <label class="booking-admin__field">
-                        <span>{{ __('Tables', 'pixelforge') }}</span>
-                        <div class="booking-admin__checkboxes">
-                          @foreach ($panel['tables'] as $table)
-                            @php($tableSeats = get_post_meta($table->ID, 'booking_table_seats', true))
-                            @php($tableSection = get_post_meta($table->ID, 'booking_table_section', true))
-                            <label class="booking-admin__checkbox">
-                              <input type="checkbox" name="table_ids[]" value="{{ $table->ID }}" @checked(in_array($table->ID, $booking['details']['table_ids'], true))>
-                              <span>{{ $table->post_title }}</span>
-                              <small>
-                                @if ($tableSection)
-                                  {{ get_the_title($tableSection) }} ·
-                                @endif
-                                {{ sprintf(__('Seats: %s', 'pixelforge'), $tableSeats ?: '—') }}
-                              </small>
-                            </label>
-                          @endforeach
+                    <div class="booking-admin__booking-body">
+                      <dl class="booking-admin__meta">
+                        <div>
+                          <dt>{{ __('Menu', 'pixelforge') }}</dt>
+                          <dd>{{ $booking['details']['menu_name'] ?: '—' }}</dd>
                         </div>
-                      </label>
+                        <div>
+                          <dt>{{ __('Section', 'pixelforge') }}</dt>
+                          <dd>{{ $booking['details']['section_name'] ?: '—' }}</dd>
+                        </div>
+                        <div>
+                          <dt>{{ __('Tables', 'pixelforge') }}</dt>
+                          <dd>{{ $booking['table_label'] ?: '—' }}</dd>
+                        </div>
+                        <div>
+                          <dt>{{ __('Party size', 'pixelforge') }}</dt>
+                          <dd>{{ $booking['details']['party_size'] }}</dd>
+                        </div>
+                        <div>
+                          <dt>{{ __('Contact', 'pixelforge') }}</dt>
+                          <dd>
+                            <div>{{ $booking['details']['email'] }}</div>
+                            <div>{{ $booking['details']['phone'] }}</div>
+                          </dd>
+                        </div>
+                        <div>
+                          <dt>{{ __('Notes', 'pixelforge') }}</dt>
+                          <dd>{{ $booking['details']['notes'] ?: '—' }}</dd>
+                        </div>
+                      </dl>
 
-                      <div class="booking-admin__field-grid">
+                      <form class="booking-admin__form booking-admin__form--inline" action="{{ admin_url('admin-post.php') }}" method="post">
+                        @php(wp_nonce_field(\PixelForge\BookingAdmin\BOOKING_NONCE_ACTION))
+                        <input type="hidden" name="action" value="pixelforge_booking_admin_update">
+                        <input type="hidden" name="booking_id" value="{{ $booking['id'] }}">
+                        <input type="hidden" name="redirect_to" value="{{ esc_url($redirect) }}">
+
+                        <div class="booking-admin__field-grid">
+                          <label class="booking-admin__field">
+                            <span>{{ __('Guest name', 'pixelforge') }}</span>
+                            <input type="text" name="name" value="{{ $booking['details']['name'] }}" required>
+                          </label>
+                          <label class="booking-admin__field">
+                            <span>{{ __('Email', 'pixelforge') }}</span>
+                            <input type="email" name="email" value="{{ $booking['details']['email'] }}" required>
+                          </label>
+                          <label class="booking-admin__field">
+                            <span>{{ __('Phone', 'pixelforge') }}</span>
+                            <input type="tel" name="phone" value="{{ $booking['details']['phone'] }}" required>
+                          </label>
+                          <label class="booking-admin__field">
+                            <span>{{ __('Party size', 'pixelforge') }}</span>
+                            <input type="number" name="party_size" min="1" step="1" value="{{ $booking['details']['party_size'] }}" required>
+                          </label>
+                        </div>
+
+                        <div class="booking-admin__field-grid">
+                          <label class="booking-admin__field">
+                            <span>{{ __('Menu', 'pixelforge') }}</span>
+                            <select name="menu" required>
+                              @foreach ($panel['menus'] as $menu)
+                                <option value="{{ $menu->ID }}" @selected($booking['details']['menu'] === $menu->ID)>{{ $menu->post_title }}</option>
+                              @endforeach
+                            </select>
+                          </label>
+
+                          <label class="booking-admin__field">
+                            <span>{{ __('Section', 'pixelforge') }}</span>
+                            <select name="section" required>
+                              @foreach ($panel['sections'] as $section)
+                                <option value="{{ $section->ID }}" @selected($booking['details']['section'] === $section->ID)>{{ $section->post_title }}</option>
+                              @endforeach
+                            </select>
+                          </label>
+                        </div>
+
                         <label class="booking-admin__field">
-                          <span>{{ __('Date', 'pixelforge') }}</span>
-                          <input type="date" name="date" value="{{ $booking['details']['timestamp'] ? wp_date('Y-m-d', $booking['details']['timestamp'], wp_timezone()) : '' }}" required>
+                          <span>{{ __('Tables', 'pixelforge') }}</span>
+                          <div class="booking-admin__checkboxes">
+                            @foreach ($panel['tables'] as $table)
+                              @php($tableSeats = get_post_meta($table->ID, 'booking_table_seats', true))
+                              @php($tableSection = get_post_meta($table->ID, 'booking_table_section', true))
+                              <label class="booking-admin__checkbox">
+                                <input type="checkbox" name="table_ids[]" value="{{ $table->ID }}" @checked(in_array($table->ID, $booking['details']['table_ids'], true))>
+                                <span>{{ $table->post_title }}</span>
+                                <small>
+                                  @if ($tableSection)
+                                    {{ get_the_title($tableSection) }} ·
+                                  @endif
+                                  {{ sprintf(__('Seats: %s', 'pixelforge'), $tableSeats ?: '—') }}
+                                </small>
+                              </label>
+                            @endforeach
+                          </div>
                         </label>
 
+                        <div class="booking-admin__field-grid">
+                          <label class="booking-admin__field">
+                            <span>{{ __('Date', 'pixelforge') }}</span>
+                            <input type="date" name="date" value="{{ $booking['details']['timestamp'] ? wp_date('Y-m-d', $booking['details']['timestamp'], wp_timezone()) : '' }}" required>
+                          </label>
+
+                          <label class="booking-admin__field">
+                            <span>{{ __('Time', 'pixelforge') }}</span>
+                            <input type="time" name="time" value="{{ $booking['details']['timestamp'] ? wp_date('H:i', $booking['details']['timestamp'], wp_timezone()) : '' }}" required>
+                          </label>
+                        </div>
+
                         <label class="booking-admin__field">
-                          <span>{{ __('Time', 'pixelforge') }}</span>
-                          <input type="time" name="time" value="{{ $booking['details']['timestamp'] ? wp_date('H:i', $booking['details']['timestamp'], wp_timezone()) : '' }}" required>
+                          <span>{{ __('Notes', 'pixelforge') }}</span>
+                          <textarea name="notes" rows="2">{{ $booking['details']['notes'] }}</textarea>
                         </label>
-                      </div>
 
-                      <label class="booking-admin__field">
-                        <span>{{ __('Notes', 'pixelforge') }}</span>
-                        <textarea name="notes" rows="2">{{ $booking['details']['notes'] }}</textarea>
-                      </label>
+                        <div class="booking-admin__actions">
+                          <button class="booking-admin__button" type="submit">{{ __('Update booking', 'pixelforge') }}</button>
+                        </div>
+                      </form>
 
-                      <div class="booking-admin__actions">
-                        <button class="booking-admin__button" type="submit">{{ __('Update booking', 'pixelforge') }}</button>
-                      </div>
-                    </form>
+                      <form class="booking-admin__actions" action="{{ admin_url('admin-post.php') }}" method="post" onsubmit="return confirm('{{ __('Move this booking to the trash?', 'pixelforge') }}');">
+                        @php(wp_nonce_field(\PixelForge\BookingAdmin\BOOKING_NONCE_ACTION))
+                        <input type="hidden" name="action" value="pixelforge_booking_admin_delete">
+                        <input type="hidden" name="booking_id" value="{{ $booking['id'] }}">
+                        <input type="hidden" name="redirect_to" value="{{ esc_url($redirect) }}">
+                        <button class="booking-admin__button booking-admin__button--danger" type="submit">{{ __('Trash booking', 'pixelforge') }}</button>
+                      </form>
+                    </div>
+                  </details>
+                @endforeach
+              </div>
+            @endif
+          </div>
+        </div>
 
-                    <form class="booking-admin__actions" action="{{ admin_url('admin-post.php') }}" method="post" onsubmit="return confirm('{{ __('Move this booking to the trash?', 'pixelforge') }}');">
-                      @php(wp_nonce_field(\PixelForge\BookingAdmin\BOOKING_NONCE_ACTION))
-                      <input type="hidden" name="action" value="pixelforge_booking_admin_delete">
-                      <input type="hidden" name="booking_id" value="{{ $booking['id'] }}">
-                      <input type="hidden" name="redirect_to" value="{{ esc_url($redirect) }}">
-                      <button class="booking-admin__button booking-admin__button--danger" type="submit">{{ __('Trash booking', 'pixelforge') }}</button>
-                    </form>
-                  </div>
-                </details>
-              @endforeach
+        @php($calendarBookings = array_values(array_filter(array_map(function ($booking) {
+          if (empty($booking['details']['timestamp'])) {
+            return null;
+          }
+
+          return [
+            'id' => $booking['id'],
+            'date' => wp_date('Y-m-d', $booking['details']['timestamp'], wp_timezone()),
+            'time' => $booking['details']['time'],
+            'name' => $booking['details']['name'],
+            'status' => $booking['verified'] ? 'confirmed' : 'pending',
+            'party_size' => $booking['details']['party_size'],
+            'table_label' => $booking['table_label'],
+          ];
+        }, $panel['bookings']))))
+
+        <div class="booking-admin__panel" id="booking-panel-calendar" data-panel="calendar" role="tabpanel" aria-label="{{ __('Calendar', 'pixelforge') }}">
+          <div class="booking-admin__card booking-admin__card--flush">
+            <div class="booking-admin__card-header booking-admin__card-header--stacked">
+              <div>
+                <h2>{{ __('Calendar view', 'pixelforge') }}</h2>
+                <p class="booking-admin__muted">{{ __('Browse bookings month by month.', 'pixelforge') }}</p>
+              </div>
+
+              <div class="booking-admin__calendar-nav">
+                <button class="booking-admin__button booking-admin__button--ghost" type="button" data-calendar-prev aria-label="{{ __('Previous month', 'pixelforge') }}">‹</button>
+                <div class="booking-admin__calendar-month" data-calendar-month></div>
+                <button class="booking-admin__button booking-admin__button--ghost" type="button" data-calendar-next aria-label="{{ __('Next month', 'pixelforge') }}">›</button>
+              </div>
             </div>
-          @endif
+
+            <div class="booking-admin__calendar" data-booking-calendar data-bookings='@json($calendarBookings)'>
+              <div class="booking-admin__calendar-weekdays">
+                <span>{{ __('Sun', 'pixelforge') }}</span>
+                <span>{{ __('Mon', 'pixelforge') }}</span>
+                <span>{{ __('Tue', 'pixelforge') }}</span>
+                <span>{{ __('Wed', 'pixelforge') }}</span>
+                <span>{{ __('Thu', 'pixelforge') }}</span>
+                <span>{{ __('Fri', 'pixelforge') }}</span>
+                <span>{{ __('Sat', 'pixelforge') }}</span>
+              </div>
+              <div class="booking-admin__calendar-grid" data-calendar-grid></div>
+            </div>
+          </div>
         </div>
       </div>
     @endif
   </section>
+
+  @if (is_user_logged_in() && current_user_can('edit_posts'))
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const tabs = Array.from(document.querySelectorAll('[data-panel-toggle]'));
+        const panels = Array.from(document.querySelectorAll('[data-panel]'));
+
+        tabs.forEach(function (tab) {
+          tab.addEventListener('click', function (event) {
+            event.preventDefault();
+            const target = tab.getAttribute('data-panel-toggle');
+
+            tabs.forEach(function (link) {
+              const isActive = link === tab;
+              link.classList.toggle('is-active', isActive);
+              link.setAttribute('aria-selected', isActive ? 'true' : 'false');
+            });
+
+            panels.forEach(function (panel) {
+              panel.classList.toggle('is-active', panel.getAttribute('data-panel') === target);
+            });
+          });
+        });
+
+        const calendarWrapper = document.querySelector('[data-booking-calendar]');
+
+        if (!calendarWrapper) {
+          return;
+        }
+
+        const monthLabel = document.querySelector('[data-calendar-month]');
+        const grid = calendarWrapper.querySelector('[data-calendar-grid]');
+        const prev = document.querySelector('[data-calendar-prev]');
+        const next = document.querySelector('[data-calendar-next]');
+        const today = new Date();
+        let current = new Date(today.getFullYear(), today.getMonth(), 1);
+
+        const bookings = JSON.parse(calendarWrapper.getAttribute('data-bookings') || '[]');
+
+        function getBookingsForDay(year, month, day) {
+          return bookings.filter(function (booking) {
+            if (!booking.date) {
+              return false;
+            }
+
+            const date = new Date(booking.date + 'T00:00:00');
+            return date.getFullYear() === year && date.getMonth() === month && date.getDate() === day;
+          });
+        }
+
+        function renderCalendar() {
+          const year = current.getFullYear();
+          const month = current.getMonth();
+          const firstDay = new Date(year, month, 1);
+          const daysInMonth = new Date(year, month + 1, 0).getDate();
+          const leadingOffset = (firstDay.getDay() + 7) % 7;
+
+          if (monthLabel) {
+            monthLabel.textContent = firstDay.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+          }
+
+          grid.innerHTML = '';
+
+          for (let i = 0; i < leadingOffset; i += 1) {
+            const filler = document.createElement('div');
+            filler.className = 'booking-admin__calendar-day booking-admin__calendar-day--empty';
+            grid.appendChild(filler);
+          }
+
+          for (let day = 1; day <= daysInMonth; day += 1) {
+            const cell = document.createElement('div');
+            cell.className = 'booking-admin__calendar-day';
+
+            const heading = document.createElement('div');
+            heading.className = 'booking-admin__calendar-date';
+            heading.textContent = day.toString();
+            cell.appendChild(heading);
+
+            const items = document.createElement('div');
+            items.className = 'booking-admin__calendar-events';
+
+            getBookingsForDay(year, month, day).forEach(function (booking) {
+              const tag = document.createElement('div');
+              tag.className = 'booking-admin__calendar-event' + (booking.status === 'confirmed' ? ' is-confirmed' : '');
+              tag.innerHTML = '<strong>' + booking.time + '</strong> ' + booking.name + ' · ' + booking.party_size + ' ' + '{{ __('guests', 'pixelforge') }}';
+
+              if (booking.table_label) {
+                const small = document.createElement('span');
+                small.className = 'booking-admin__calendar-subtext';
+                small.textContent = booking.table_label;
+                tag.appendChild(small);
+              }
+
+              items.appendChild(tag);
+            });
+
+            if (!items.childElementCount) {
+              const placeholder = document.createElement('div');
+              placeholder.className = 'booking-admin__calendar-empty';
+              placeholder.textContent = '{{ __('No bookings', 'pixelforge') }}';
+              items.appendChild(placeholder);
+            }
+
+            cell.appendChild(items);
+            grid.appendChild(cell);
+          }
+        }
+
+        if (prev) {
+          prev.addEventListener('click', function () {
+            current.setMonth(current.getMonth() - 1);
+            renderCalendar();
+          });
+        }
+
+        if (next) {
+          next.addEventListener('click', function () {
+            current.setMonth(current.getMonth() + 1);
+            renderCalendar();
+          });
+        }
+
+        renderCalendar();
+      });
+    </script>
+  @endif
 @endsection
