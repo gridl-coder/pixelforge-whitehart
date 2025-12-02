@@ -12,6 +12,7 @@ use WP_User;
 use function PixelForge\Bookings\get_booking_details;
 use function PixelForge\Bookings\get_table_labels;
 use function PixelForge\Bookings\normalize_table_ids;
+use function PixelForge\Bookings\schedule_booking_reminder;
 
 const LOGIN_NONCE_ACTION = 'pixelforge_booking_admin_login';
 const BOOKING_NONCE_ACTION = 'pixelforge_booking_admin_manage';
@@ -86,6 +87,8 @@ function handle_create(): void
     update_post_meta($bookingId, 'table_booking_verified', 1);
     delete_post_meta($bookingId, 'table_booking_verification_token');
 
+    schedule_booking_reminder($bookingId, $data['timestamp']);
+
     wp_safe_redirect(add_query_arg('booking_admin_notice', 'created', $redirect));
     exit;
 }
@@ -127,6 +130,8 @@ function handle_update(): void
     ]);
 
     persist_booking_meta($bookingId, $data);
+
+    schedule_booking_reminder($bookingId, $data['timestamp']);
 
     wp_safe_redirect(add_query_arg('booking_admin_notice', 'updated', $redirect));
     exit;
