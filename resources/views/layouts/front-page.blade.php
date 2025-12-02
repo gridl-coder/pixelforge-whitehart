@@ -20,6 +20,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
 
+  @if (!empty($seasonalStyles['enabled']))
+    @vite('resources/css/christmas.scss')
+  @endif
+
+
   @vite(['resources/css/app.scss', 'resources/js/app.js'])
 </head>
 

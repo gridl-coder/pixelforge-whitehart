@@ -22,6 +22,11 @@
     rel="stylesheet">
 
 
+  @if (!empty($seasonalStyles['enabled']))
+    @vite('resources/css/christmas.scss')
+  @endif
+
+
   @vite(['resources/css/app.scss', 'resources/js/app.js'])
 </head>
 
