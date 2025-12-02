@@ -65,6 +65,8 @@
 
 .booking-admin__panel {
   display: block;
+  color: $brand_dark;
+
 }
 
 [data-panels-ready='true'] .booking-admin__panel {
@@ -247,7 +249,6 @@
 }
 
 .booking-admin__card--flush {
-  padding: 0;
   overflow: hidden;
 }
 
