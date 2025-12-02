@@ -1,8 +1,13 @@
+$z-header: 30;
+$z-header-frame: 1;
+$z-menu-overlay: 40;
+$z-quick-links: 20;
+
 .main-header {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 9999;
+  z-index: $z-header;
   width: 100%;
   background: #000;
   font-family: $brand_font_heading;
@@ -13,7 +18,6 @@
     height: auto;
   }
 
-
   &:before {
     content: '';
     position: absolute;
@@ -22,13 +26,20 @@
     bottom: 10px;
     right: 10px;
     background: #000;
-    z-index: 0;
+    z-index: $z-header-frame;
     border: 1px dashed rgba(255, 255, 255, 0.5);
+  }
+
+  .container {
+    position: relative;
+    z-index: $z-header-frame + 1;
   }
 
   .brand {
     a {
-      display: block;
+      display: flex;
+      align-items: center;
+      gap: 10px;
       padding: 15px;
 
       img {
@@ -37,29 +48,153 @@
     }
   }
 
+  .nav-toggle {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+
+    &__button {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      border: 1px solid rgba($brand_yellow, 0.45);
+      border-radius: 40px;
+      background: linear-gradient(135deg, rgba($brand_yellow, 0.9), $brand_yellow);
+      color: $brand_dark;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+
+      &:hover,
+      &:focus-visible {
+        background: linear-gradient(135deg, darken($brand_yellow, 5%), $brand_yellow);
+        transform: translateY(-1px);
+        box-shadow: 0 10px 25px rgba($brand_yellow, 0.35);
+      }
+
+      &:focus-visible {
+        outline: 2px solid lighten($brand_yellow, 8%);
+        outline-offset: 4px;
+      }
+    }
+
+    &__icon {
+      display: inline-flex;
+    }
+
+    &__label {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.95rem;
+      color: $brand_dark;
+    }
+  }
+
   .mastnav {
     display: none;
-    @include media-breakpoint-up(sm) {
+    position: fixed;
+    inset: 0;
+    padding: 120px 24px 32px;
+    background: rgba($brand_dark, 0.95);
+    backdrop-filter: blur(4px);
+    text-align: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: $z-menu-overlay;
+
+    &.open {
       display: block;
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .main-nav-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+
+      li {
+        margin: 0;
+      }
+
+      a {
+        display: inline-block;
+        color: white;
+        font-family: 'Montserrat', sans-serif;
+        text-transform: uppercase;
+        font-weight: bold;
+        letter-spacing: 0.08em;
+        padding: 10px 16px;
+        border-radius: 999px;
+        transition: background 0.3s ease, color 0.3s ease, transform 0.2s ease;
+
+        &:hover,
+        &:focus-visible {
+          background: rgba($brand_yellow, 0.15);
+          color: $brand_yellow;
+          transform: translateY(-1px);
+          outline: none;
+        }
+      }
+    }
+
+    .nav-close {
+      position: absolute;
+      top: 28px;
+      right: 20px;
+      background: rgba($brand_yellow, 0.15);
+      border: 1px solid rgba($brand_yellow, 0.65);
+      border-radius: 50%;
+      color: $brand_yellow;
+      width: 48px;
+      height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s ease, transform 0.2s ease;
+
+      &:hover,
+      &:focus-visible {
+        background: rgba($brand_yellow, 0.3);
+        transform: translateY(-1px);
+        outline: none;
+      }
+    }
+
+    @include media-breakpoint-up(md) {
+      display: block;
+      position: relative;
+      inset: auto;
+      padding: 0;
+      background: none;
+      opacity: 1;
+      visibility: visible;
       text-align: right;
-      ul {
+
+      .main-nav-list {
         display: block;
         margin: 0;
         padding: 45px 0 0 0;
+        gap: 0;
 
         li {
-          padding: 0;
-          margin: 0 15px;
           display: inline-block;
+          margin: 0 15px;
         }
 
         a {
-          display: block;
-          color: white;
-          font-family: 'Montserrat', sans-serif;
-          text-transform: uppercase;
-          font-weight: bold;
+          padding: 8px;
+          border-radius: 0;
         }
+      }
+
+      .nav-close {
+        display: none;
       }
     }
   }
@@ -69,22 +204,19 @@
     bottom: 0;
     left: 0;
     right: 0;
-    z-index: 9999;
+    z-index: $z-quick-links;
     background: #000;
+
     @include media-breakpoint-up(sm) {
       position: relative;
       background: none;
-      padding: 10px;
-
-      padding-top: 20px;
+      padding: 10px 0 0;
     }
-
 
     li {
       font-weight: bolder;
       display: inline-block;
-      font-size:3.8em;
-
+      font-size: 3.8em;
 
       span {
         display: none;
@@ -101,11 +233,9 @@
       background: $brand_yellow;
       display: inline-block;
       height: 60px;
-
       width: 60px;
       line-height: 60px;
       position: relative;
-
 
       svg {
         position: relative;
@@ -120,7 +250,6 @@
         width: 40px;
         line-height: 40px;
         top: 5px;
-
       }
     }
   }

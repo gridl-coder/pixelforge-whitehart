@@ -20,6 +20,7 @@ const loadSlick = async () => {
 
 const navButton = document.getElementById('navButton');
 const mainNav = document.getElementById('mainNav');
+const navCloseButtons = document.querySelectorAll('[data-nav-close]');
 
 const toggleNavigation = (force) => {
   if (!mainNav || !navButton) {
@@ -40,7 +41,11 @@ if (navButton && mainNav) {
     toggleNavigation();
   });
 
-  document.querySelectorAll('.main-nav a').forEach((link) => {
+  navCloseButtons.forEach((button) => {
+    button.addEventListener('click', () => toggleNavigation(false));
+  });
+
+  document.querySelectorAll('.main-nav-list a').forEach((link) => {
     link.addEventListener('click', () => toggleNavigation(false));
   });
 }
