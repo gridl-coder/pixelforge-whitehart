@@ -141,8 +141,6 @@ function render_booking_menus_shortcode(): string
             'loading' => 'lazy',
         ]);
 
-        $thumbnailUrl = get_the_post_thumbnail_url($menu->ID, 'full');
-
         $output .= '<div class="col-md-3 booking-menu-shortcode__item">';
 
         if ($thumbnail) {
@@ -152,11 +150,6 @@ function render_booking_menus_shortcode(): string
         $output .= '<p><strong>' . esc_html(get_the_title($menu)) . '</strong><br>'
             . esc_html(implode(' / ', $availableDays)) . '<br>'
             . esc_html($timeLabel) . '</p>';
-
-        if ($thumbnailUrl) {
-            $output .= '<p><a class="booking-menu-shortcode__download" href="' . esc_url($thumbnailUrl) . '" download>'
-                . esc_html__('Download menu', 'pixelforge') . '</a></p>';
-        }
 
         $output .= '</div>';
     }
