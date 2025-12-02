@@ -38,39 +38,13 @@
       @php(wp_nonce_field(\PixelForge\Bookings\NONCE_ACTION, 'pixelforge_booking_nonce'))
 
       <ol class="booking-form__progress">
-        <li class="booking-form__progress-step is-active">{{ __('Your details', 'pixelforge') }}</li>
-        <li class="booking-form__progress-step">{{ __('Reservation', 'pixelforge') }}</li>
+        <li class="booking-form__progress-step is-active">{{ __('Reservation', 'pixelforge') }}</li>
+        <li class="booking-form__progress-step">{{ __('Your details', 'pixelforge') }}</li>
         <li class="booking-form__progress-step">{{ __('Notes', 'pixelforge') }}</li>
       </ol>
 
       <div class="booking-form__steps">
         <fieldset class="booking-form__step is-active" data-step="1">
-          <legend class="booking-form__step-title">{{ __('Tell us about you', 'pixelforge') }}</legend>
-          <p class="booking-form__step-hint">{{ __('We will use these details to confirm your booking and keep you updated.', 'pixelforge') }}</p>
-
-          <div class="row g-3">
-            <label class="booking-form__field col-md-4">
-              <span class="booking-form__label form-label">{{ __('Name', 'pixelforge') }}</span>
-              <input class="booking-form__input form-control" type="text" name="pixelforge_booking_name" value="{{ $old['name'] ?? '' }}" required>
-            </label>
-
-            <label class="booking-form__field col-md-4">
-              <span class="booking-form__label form-label">{{ __('Email', 'pixelforge') }}</span>
-              <input class="booking-form__input form-control" type="email" name="pixelforge_booking_email" value="{{ $old['email'] ?? '' }}" required>
-            </label>
-
-            <label class="booking-form__field col-md-4">
-              <span class="booking-form__label form-label">{{ __('Phone', 'pixelforge') }}</span>
-              <input class="booking-form__input form-control" type="tel" name="pixelforge_booking_phone" value="{{ $old['phone'] ?? '' }}" required>
-            </label>
-          </div>
-
-          <div class="booking-form__actions">
-            <button class="booking-form__nav booking-form__nav--next btn btn-primary" type="button">{{ __('Next', 'pixelforge') }}</button>
-          </div>
-        </fieldset>
-
-        <fieldset class="booking-form__step" data-step="2">
           <legend class="booking-form__step-title">{{ __('Choose your table', 'pixelforge') }}</legend>
           <p class="booking-form__step-hint">{{ sprintf(__('Bookings last %d minutes.', 'pixelforge'), \PixelForge\Bookings\BOOKING_SLOT_MINUTES) }}</p>
 
@@ -93,6 +67,7 @@
                   <option value="{{ $menu->ID }}" @selected(($old['menu'] ?? $menus[0]->ID ?? null) === $menu->ID)>{{ $menu->post_title }}</option>
                 @endforeach
               </select>
+              <p class="booking-form__meta" id="booking_menu_meta" aria-live="polite"></p>
             </label>
 
             <label class="booking-form__field col-md-4">
@@ -107,6 +82,7 @@
             <label class="booking-form__field col-md-4">
               <span class="booking-form__label form-label">{{ __('Date', 'pixelforge') }}</span>
               <input class="booking-form__input form-control" type="date" name="pixelforge_booking_date" value="{{ $old['date'] ?? '' }}" min="{{ $minDate }}" required>
+              <div class="booking-form__day-legend" id="booking_day_legend" aria-live="polite"></div>
             </label>
 
             <label class="booking-form__field col-md-4">
@@ -124,8 +100,34 @@
           </div>
 
           <div class="booking-form__actions">
-            <button class="booking-form__nav booking-form__nav--prev btn btn-outline-light" type="button">{{ __('Back', 'pixelforge') }}</button>
             <button class="booking-form__nav booking-form__nav--next btn btn-primary" type="button">{{ __('Next', 'pixelforge') }}</button>
+          </div>
+        </fieldset>
+
+        <fieldset class="booking-form__step" data-step="2">
+          <legend class="booking-form__step-title">{{ __('Tell us about you', 'pixelforge') }}</legend>
+          <p class="booking-form__step-hint">{{ __('We will use these details to confirm your booking and keep you updated.', 'pixelforge') }}</p>
+
+          <div class="row g-3">
+            <label class="booking-form__field col-md-4">
+              <span class="booking-form__label form-label">{{ __('Name', 'pixelforge') }}</span>
+              <input class="booking-form__input form-control" type="text" name="pixelforge_booking_name" value="{{ $old['name'] ?? '' }}" required>
+            </label>
+
+            <label class="booking-form__field col-md-4">
+              <span class="booking-form__label form-label">{{ __('Email', 'pixelforge') }}</span>
+              <input class="booking-form__input form-control" type="email" name="pixelforge_booking_email" value="{{ $old['email'] ?? '' }}" required>
+            </label>
+
+            <label class="booking-form__field col-md-4">
+              <span class="booking-form__label form-label">{{ __('Phone', 'pixelforge') }}</span>
+              <input class="booking-form__input form-control" type="tel" name="pixelforge_booking_phone" value="{{ $old['phone'] ?? '' }}" required>
+            </label>
+          </div>
+
+          <div class="booking-form__actions">
+            <button class="booking-form__nav booking-form__nav--prev btn btn-outline-light" type="button">{{ __('Back', 'pixelforge') }}</button>
+            <button class="booking-form__nav booking-form__nav--next btn btn-primary" type="button">{{ __('Next', 'pixelforge')}}</button>
           </div>
         </fieldset>
 
@@ -172,14 +174,20 @@
         const notice = $('#booking_availability_notice');
         const slots = @json($menuSlots);
         const menuDays = @json($menuDays);
+        const menuWindows = @json($menuWindows);
+        const dayLabels = @json($dayLabels);
         const minDateString = @json($minDate);
         const ajaxUrl = form.data('ajax-url');
         const unavailableDateMessage = @json(__('Selected date is unavailable for this menu.', 'pixelforge'));
+        const availabilityEveryDay = @json(__('Available every day', 'pixelforge'));
+        const availabilityNotSet = @json(__('Service times not set', 'pixelforge'));
         const unavailableSectionMessage = @json(__('Selected area is fully booked for this date.', 'pixelforge'));
         const alerts = {
           error: $('.booking-form__alert--error'),
           success: $('.booking-form__alert--success'),
         };
+        const menuMeta = $('#booking_menu_meta');
+        const dayLegend = $('#booking_day_legend');
 
         const scrollToSuccess = () => {
           if (!alerts.success.length || !alerts.success.hasClass('is-visible')) {
@@ -232,6 +240,8 @@
         const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 
         const baseMinDate = parseDate(minDateString) || new Date();
+        const preferredStartDate = new Date(baseMinDate.getTime());
+        preferredStartDate.setDate(preferredStartDate.getDate() + 1);
 
         const findNextAllowedDate = (startDate, allowedDays = []) => {
           if (!(startDate instanceof Date) || Number.isNaN(startDate.valueOf())) {
@@ -267,14 +277,56 @@
           return allowedDays.includes(dayNames[date.getDay()]);
         };
 
+        const renderDayLegend = (allowedDays = []) => {
+          if (!dayLegend.length) {
+            return;
+          }
+
+          dayLegend.empty();
+
+          dayNames.forEach((day) => {
+            const allowed = allowedDays.length === 0 || allowedDays.includes(day);
+            const label = dayLabels[day] || day.charAt(0).toUpperCase() + day.slice(1);
+
+            dayLegend.append(
+              $('<span/>')
+                .addClass('booking-form__day')
+                .toggleClass('is-allowed', allowed)
+                .toggleClass('is-blocked', !allowed)
+                .text(label),
+            );
+          });
+        };
+
+        const updateMenuMeta = () => {
+          const menuId = menuSelect.val();
+          const allowedDays = menuDays[menuId] || [];
+          const window = menuWindows[menuId];
+
+          const allowedText = allowedDays.length
+            ? allowedDays.map((day) => dayLabels[day] || day).join(', ')
+            : availabilityEveryDay;
+          const windowText = window ? `${window.start} – ${window.end}` : availabilityNotSet;
+
+          renderDayLegend(allowedDays);
+
+          if (!menuMeta.length) {
+            return;
+          }
+
+          menuMeta.text(`${allowedText} · ${windowText}`);
+        };
+
         const updateDateForMenu = () => {
           const menuId = menuSelect.val();
           const allowedDays = menuDays[menuId] || [];
           const minCandidate = new Date(baseMinDate.getTime());
           const minDate = findNextAllowedDate(minCandidate, allowedDays) || minCandidate;
           const currentDate = parseDate(dateInput.val());
-          const targetDate = currentDate && currentDate >= minDate ? currentDate : minDate;
-          const nextDate = findNextAllowedDate(new Date(targetDate.getTime()), allowedDays) || minDate;
+          const targetDate = currentDate && currentDate >= minDate ? currentDate : preferredStartDate;
+          const nextDate = findNextAllowedDate(new Date(targetDate.getTime()), allowedDays)
+            || findNextAllowedDate(new Date(minDate.getTime()), allowedDays)
+            || minDate;
 
           dateInput.attr('min', formatDate(minDate));
           dateInput.val(formatDate(nextDate));
@@ -524,6 +576,7 @@
 
         menuSelect.on('change', () => {
           updateDateForMenu();
+          updateMenuMeta();
           fetchAvailability();
         });
 
@@ -544,6 +597,7 @@
         rebuildTimes();
         updateDateForMenu();
         enforceAllowedDate();
+        updateMenuMeta();
         fetchAvailability();
         scrollToSuccess();
         });

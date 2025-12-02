@@ -20,6 +20,7 @@ const loadSlick = async () => {
 
 const navButton = document.getElementById('navButton');
 const mainNav = document.getElementById('mainNav');
+const navCloseButtons = document.querySelectorAll('[data-nav-close]');
 
 const toggleNavigation = (force) => {
   if (!mainNav || !navButton) {
@@ -40,7 +41,11 @@ if (navButton && mainNav) {
     toggleNavigation();
   });
 
-  document.querySelectorAll('.main-nav a').forEach((link) => {
+  navCloseButtons.forEach((button) => {
+    button.addEventListener('click', () => toggleNavigation(false));
+  });
+
+  document.querySelectorAll('.main-nav-list a').forEach((link) => {
     link.addEventListener('click', () => toggleNavigation(false));
   });
 }
@@ -79,10 +84,54 @@ const initCarouselSliders = async () => {
   });
 };
 
+const initBookingMenuSliders = async () => {
+  await loadSlick();
+
+  const $sliders = $('.booking-menu-slider');
+
+  if (!$sliders.length || typeof $sliders.slick !== 'function') {
+    return;
+  }
+
+  $sliders.each((index, slider) => {
+    const $slider = $(slider);
+
+    if ($slider.hasClass('slick-initialized')) {
+      return;
+    }
+
+    $slider.slick({
+      dots: true,
+      arrows: true,
+      adaptiveHeight: false,
+      autoplay: true,
+      autoplaySpeed: 2500,
+      slidesToShow: 4,
+      slidesToScroll: 1,
+      responsive: [
+        {
+          breakpoint: 1200,
+          settings: { slidesToShow: 3 },
+        },
+        {
+          breakpoint: 992,
+          settings: { slidesToShow: 2 },
+        },
+        {
+          breakpoint: 576,
+          settings: { slidesToShow: 1 },
+        },
+      ],
+    });
+  });
+};
+
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     initCarouselSliders().catch((error) => console.error('Failed to init carousel', error));
+    initBookingMenuSliders().catch((error) => console.error('Failed to init booking menu slider', error));
   });
 } else {
   initCarouselSliders().catch((error) => console.error('Failed to init carousel', error));
+  initBookingMenuSliders().catch((error) => console.error('Failed to init booking menu slider', error));
 }

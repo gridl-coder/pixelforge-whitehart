@@ -107,6 +107,12 @@
 
 .food-banner__poster {
   margin-top: 15px;
+  margin-bottom: 15px;
+  padding: 0 15%;
+  @include media-breakpoint-up(md) {
+    padding:0;
+    margin-bottom: 0;
+  }
 }
 
 .carousel-slider__slide {
@@ -115,6 +121,10 @@
   gap: 6px;
   align-items: center;
 
+  padding: 0 15%;
+  @include media-breakpoint-up(md) {
+    padding:0;
+  }
   span {
     color: $brand_dark;
     font-weight: 600;

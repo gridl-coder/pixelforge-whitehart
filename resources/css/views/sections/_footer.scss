@@ -1,0 +1,7 @@
+.mastfooter {
+  padding-top: 30px;
+  padding-bottom: 120px;
+  @include media-breakpoint-up(md) {
+    padding-bottom: 0;
+  }
+}

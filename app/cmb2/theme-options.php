@@ -52,6 +52,25 @@ function register_theme_options_metabox(): void
     ]);
 
     $cmb_options->add_field([
+        'name' => esc_html__('Seasonal Styling', 'pixelforge'),
+        'id' => 'seasonal_styling_title',
+        'type' => 'title',
+        'desc' => esc_html__('Enable limited-run visual themes for holidays and events.', 'pixelforge'),
+    ]);
+
+    $cmb_options->add_field([
+        'name' => esc_html__('Homepage Seasonal Theme', 'pixelforge'),
+        'id' => 'seasonal_theme',
+        'type' => 'select',
+        'default' => 'none',
+        'options' => [
+            'none' => esc_html__('Off', 'pixelforge'),
+            'christmas' => esc_html__('Christmas', 'pixelforge'),
+        ],
+        'desc' => esc_html__('Adds optional festive styling such as snowfall to the homepage.', 'pixelforge'),
+    ]);
+
+    $cmb_options->add_field([
         'name' => esc_html__('Enable Table Bookings', 'pixelforge'),
         'id' => 'enable_bookings',
         'type' => 'checkbox',

@@ -57,12 +57,33 @@ function render_booking_form_shortcode(): string
 
     $menuSlots = [];
     $menuDays = [];
+    $menuWindows = [];
+
+    $dayOptions = function_exists('\\PixelForge\\CMB2\\get_day_options')
+        ? \PixelForge\CMB2\get_day_options()
+        : [
+            'monday' => esc_html__('Monday', 'pixelforge'),
+            'tuesday' => esc_html__('Tuesday', 'pixelforge'),
+            'wednesday' => esc_html__('Wednesday', 'pixelforge'),
+            'thursday' => esc_html__('Thursday', 'pixelforge'),
+            'friday' => esc_html__('Friday', 'pixelforge'),
+            'saturday' => esc_html__('Saturday', 'pixelforge'),
+            'sunday' => esc_html__('Sunday', 'pixelforge'),
+        ];
 
     foreach ($menus as $menu) {
         $menuSlots[$menu->ID] = build_menu_slots((int)$menu->ID);
 
         $days = get_post_meta((int)$menu->ID, 'booking_menu_days', true);
         $menuDays[$menu->ID] = is_array($days) ? array_values(array_map('strtolower', $days)) : [];
+
+        $window = get_menu_time_window((int)$menu->ID);
+        $menuWindows[$menu->ID] = $window
+            ? [
+                'start' => $window['start']->format('H:i'),
+                'end' => $window['end']->format('H:i'),
+            ]
+            : null;
     }
 
     $feedback = get_feedback();
@@ -82,6 +103,8 @@ function render_booking_form_shortcode(): string
         'menus' => $menus,
         'menuSlots' => $menuSlots,
         'menuDays' => $menuDays,
+        'menuWindows' => $menuWindows,
+        'dayLabels' => $dayOptions,
         'feedback' => $feedback,
         'minDate' => $today->format('Y-m-d'),
     ])->render();
@@ -115,7 +138,7 @@ function render_booking_menus_shortcode(): string
 
     $dayOrder = array_keys($dayOptions);
 
-    $output = '<div class="row text-center booking-menu-shortcode">';
+    $output = '<div class="booking-menu-shortcode booking-menu-slider">';
 
     foreach ($menus as $menu) {
         $days = get_post_meta($menu->ID, 'booking_menu_days', true);
@@ -141,21 +164,16 @@ function render_booking_menus_shortcode(): string
             'loading' => 'lazy',
         ]);
 
-        $thumbnailUrl = get_the_post_thumbnail_url($menu->ID, 'full');
+        $thumbnailLink = get_the_post_thumbnail_url($menu->ID);
 
-        $output .= '<div class="col-md-3 booking-menu-shortcode__item">';
+        $output .= '<div class="booking-menu-shortcode__item">';
 
-        if ($thumbnail) {
-            $output .= '<div class="booking-menu-shortcode__thumb">' . $thumbnail . '</div>';
-        }
-
-        $output .= '<p><strong>' . esc_html(get_the_title($menu)) . '</strong><br>'
+        $output .= '<p class="booking-menu-shortcode__title"><strong>' . esc_html(get_the_title($menu)) . '</strong><br>'
             . esc_html(implode(' / ', $availableDays)) . '<br>'
             . esc_html($timeLabel) . '</p>';
 
-        if ($thumbnailUrl) {
-            $output .= '<p><a class="booking-menu-shortcode__download" href="' . esc_url($thumbnailUrl) . '" download>'
-                . esc_html__('Download menu', 'pixelforge') . '</a></p>';
+        if ($thumbnail) {
+            $output .= '<div class="booking-menu-shortcode__thumb"><a target="_blank" href="' . $thumbnailLink . '">' . $thumbnail . '</a></div>';
         }
 
         $output .= '</div>';

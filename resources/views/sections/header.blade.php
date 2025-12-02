@@ -2,9 +2,9 @@
 
   <div class="container">
 
-    <div class="row">
+    <div class="row align-items-center">
 
-      <div class="brand col-md-2">
+      <div class="brand col-8 col-md-2">
         <a href="{{ esc_url(home_url('/')) }}" title="{{ esc_attr($companyProfile['name'] ?? get_bloginfo('name')) }}">
           @if (!empty($companyProfile['logo']['url']))
             <img class="img-fluid" src="{{ esc_url($companyProfile['logo']['url']) }}"
@@ -16,16 +16,37 @@
       </div>
 
       @if (has_nav_menu('primary_navigation'))
-        <nav class="mastnav col-md-7" id="mastnav" aria-label="{{ esc_attr__('Primary navigation', 'pixelforge') }}">
+        <div class="nav-toggle col-4 d-md-none text-end">
+          <button class="nav-toggle__button" id="navButton" type="button"
+                  aria-controls="mainNav" aria-expanded="false">
+            <span class="nav-toggle__icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28">
+                <path fill="currentColor" d="M3 7.25C3 6.56 3.56 6 4.25 6h15.5C20.44 6 21 6.56 21 7.25S20.44 8.5 19.75 8.5H4.25C3.56 8.5 3 7.94 3 7.25zm0 4.75c0-.69.56-1.25 1.25-1.25h15.5c.69 0 1.25.56 1.25 1.25S20.44 13.25 19.75 13.25H4.25C3.56 13.25 3 12.69 3 12zm1.25 3.5c-.69 0-1.25.56-1.25 1.25S3.56 18 4.25 18h15.5c.69 0 1.25-.56 1.25-1.25S20.44 15.5 19.75 15.5z"/>
+              </svg>
+            </span>
+            <span class="nav-toggle__label">{{ __('Menu', 'pixelforge') }}</span>
+          </button>
+        </div>
+
+        <nav class="mastnav main-nav col-12 col-md-10" id="mainNav" aria-label="{{ esc_attr__('Primary navigation', 'pixelforge') }}">
+          <button class="nav-close d-md-none" type="button" data-nav-close>
+            <span class="nav-close__icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28">
+                <path fill="currentColor" d="M6.225 4.811a1 1 0 0 0-1.414 1.414L10.586 12l-5.775 5.775a1 1 0 1 0 1.414 1.414L12 13.414l5.775 5.775a1 1 0 0 0 1.414-1.414L13.414 12l5.775-5.775a1 1 0 0 0-1.414-1.414L12 10.586z"/>
+              </svg>
+            </span>
+            <span class="sr-only">{{ __('Close menu', 'pixelforge') }}</span>
+          </button>
           {!! wp_nav_menu([
             'theme_location' => 'primary_navigation',
             'menu_class' => 'main-nav-list',
+            'container' => false,
             'echo' => false,
           ]) !!}
         </nav>
       @endif
 
-      <div class="quick-links col-md-3">
+      <div class="quick-links col-12 col-md-3 d-md-none">
 
         <ul>
           @if (!empty($companyProfile['phone']))
