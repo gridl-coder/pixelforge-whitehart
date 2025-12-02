@@ -64,9 +64,9 @@ function normalize_phone(string $phone): string
 function send_email(array $args): bool
 {
     $apiKey = get_api_key();
-    $recipient = $args['to'] ?? '';
+    $recipients = normalize_recipients($args['to'] ?? '');
 
-    if ($apiKey === '' || $recipient === '') {
+    if ($apiKey === '' || empty($recipients)) {
         return false;
     }
 
@@ -75,12 +75,12 @@ function send_email(array $args): bool
             'email' => get_sender_email(),
             'name' => get_sender_name(),
         ],
-        'to' => [
-            [
+        'to' => array_map(static function ($recipient) use ($args) {
+            return [
                 'email' => $recipient,
                 'name' => $args['toName'] ?? '',
-            ],
-        ],
+            ];
+        }, $recipients),
         'subject' => $args['subject'] ?? '',
         'htmlContent' => $args['html'] ?? null,
         'textContent' => $args['text'] ?? null,
@@ -109,6 +109,65 @@ function send_sms(array $args): bool
     return brevo_request('transactionalSMS/sms', $payload, $apiKey);
 }
 
+function normalize_recipients($recipients): array
+{
+    if (is_string($recipients)) {
+        $recipients = wp_parse_list($recipients);
+    }
+
+    if (! is_array($recipients)) {
+        return [];
+    }
+
+    return array_values(array_unique(array_filter(array_map(static function ($email) {
+        $clean = sanitize_email((string) $email);
+
+        return is_email($clean) ? $clean : '';
+    }, $recipients))));
+}
+
+function maybe_send_via_brevo($return, array $atts)
+{
+    $apiKey = get_api_key();
+
+    if ($apiKey === '' || ! isset($atts['to'])) {
+        return $return;
+    }
+
+    if (! empty($atts['attachments'])) {
+        return $return;
+    }
+
+    $isHtml = false;
+    $headers = $atts['headers'] ?? [];
+
+    if (is_string($headers)) {
+        $headers = preg_split("/\r?\n/", $headers);
+    }
+
+    if (is_array($headers)) {
+        foreach ($headers as $header) {
+            if (stripos((string) $header, 'content-type:') === 0 && stripos((string) $header, 'text/html') !== false) {
+                $isHtml = true;
+                break;
+            }
+        }
+    }
+
+    $sent = send_email([
+        'to' => $atts['to'],
+        'subject' => (string) ($atts['subject'] ?? ''),
+        'html' => $isHtml ? (string) ($atts['message'] ?? '') : null,
+        'text' => $isHtml ? wp_strip_all_tags((string) ($atts['message'] ?? '')) : (string) ($atts['message'] ?? ''),
+    ]);
+
+    if ($sent) {
+        return true;
+    }
+
+    return $return;
+}
+
 function brevo_request(string $endpoint, array $payload, string $apiKey): bool
 {
     $response = wp_remote_post(API_BASE . '/' . ltrim($endpoint, '/'), [
@@ -135,3 +194,5 @@ function brevo_request(string $endpoint, array $payload, string $apiKey): bool
 
     return true;
 }
+
+add_filter('pre_wp_mail', __NAMESPACE__ . '\\maybe_send_via_brevo', 10, 2);
