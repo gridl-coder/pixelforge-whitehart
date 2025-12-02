@@ -9,12 +9,15 @@ use PixelForge\PostTypes\BookingSection;
 use PixelForge\PostTypes\BookingTable;
 use PixelForge\PostTypes\TableBooking;
 use WP_Query;
+use function PixelForge\Brevo\send_email;
+use function PixelForge\Brevo\send_sms;
 use function PixelForge\CMB2\get_theme_option;
 
 const NONCE_ACTION = 'pixelforge_table_booking';
 
 add_action('init', __NAMESPACE__ . '\\register_booking_shortcodes');
 add_action('init', __NAMESPACE__ . '\\handle_booking_submission');
+add_action('template_redirect', __NAMESPACE__ . '\\maybe_confirm_booking');
 add_action('wp_ajax_pixelforge_check_table_availability', __NAMESPACE__ . '\\check_table_availability');
 add_action('wp_ajax_nopriv_pixelforge_check_table_availability', __NAMESPACE__ . '\\check_table_availability');
 add_filter('manage_table_booking_posts_columns', __NAMESPACE__ . '\\register_table_booking_columns');
@@ -54,6 +57,14 @@ function render_booking_form_shortcode(): string
     }
 
     $feedback = get_feedback();
+
+    if (isset($_GET['booking_confirmed']) && empty($feedback['success'])) {
+        if (sanitize_text_field(wp_unslash($_GET['booking_confirmed'])) === '1') {
+            $feedback['success'] = __('Thanks! Your booking is now confirmed. We look forward to seeing you.', 'pixelforge');
+        } else {
+            $feedback['errors'][] = __('We could not verify this booking link. Please contact us to confirm your reservation.', 'pixelforge');
+        }
+    }
 
     $today = new DateTimeImmutable('today', wp_timezone());
 
@@ -227,11 +238,14 @@ function handle_booking_submission(): void
     update_post_meta($bookingId, 'table_booking_datetime', $timestamp);
     update_post_meta($bookingId, 'table_booking_notes', $data['notes']);
 
-    update_post_meta($bookingId, 'table_booking_verified', 1);
+    $verificationToken = wp_generate_password(20, false, false);
 
-    send_booking_emails($bookingId, $data, $tableIds, $timestamp);
+    update_post_meta($bookingId, 'table_booking_verified', 0);
+    update_post_meta($bookingId, 'table_booking_verification_token', $verificationToken);
 
-    $feedback['success'] = __('Your booking is confirmed! We will use your contact details to confirm your booking. If you need multiple bookings, please call us on 07922 214361 and we will help.', 'pixelforge');
+    send_booking_notifications($bookingId, $data, $tableIds, $timestamp, $verificationToken);
+
+    $feedback['success'] = __('Thanks! We\'ve reserved this slot. Please confirm your booking from the link we sent via email/SMS so we can finalize it.', 'pixelforge');
     $feedback['old'] = [];
 
     set_feedback($feedback);
@@ -257,6 +271,33 @@ function set_feedback(array $feedback): void
     global $pixelforge_booking_feedback;
 
     $pixelforge_booking_feedback = $feedback;
+}
+
+function maybe_confirm_booking(): void
+{
+    $bookingId = absint($_GET['pixelforge_booking_confirm'] ?? 0);
+    $token = isset($_GET['token']) ? sanitize_text_field(wp_unslash($_GET['token'])) : '';
+
+    if ($bookingId === 0 || $token === '') {
+        return;
+    }
+
+    $storedToken = (string) get_post_meta($bookingId, 'table_booking_verification_token', true);
+
+    if ($storedToken === '' || ! hash_equals($storedToken, $token)) {
+        wp_safe_redirect(add_query_arg('booking_confirmed', '0', home_url('/')));
+        exit;
+    }
+
+    update_post_meta($bookingId, 'table_booking_verified', 1);
+    delete_post_meta($bookingId, 'table_booking_verification_token');
+
+    $details = get_booking_details($bookingId);
+
+    send_verified_notifications($bookingId, $details);
+
+    wp_safe_redirect(add_query_arg('booking_confirmed', '1', home_url('/')));
+    exit;
 }
 
 function get_menu_time_window(int $menuId): ?array
@@ -561,38 +602,174 @@ function normalize_table_ids($value): array
     return [$id];
 }
 
-function send_booking_emails(int $bookingId, array $data, array $tableIds, int $timestamp): void
+function send_booking_notifications(int $bookingId, array $data, array $tableIds, int $timestamp, string $token): void
 {
-    $adminEmail = get_theme_option('business_email', get_option('admin_email'));
+    $details = get_booking_details($bookingId, $data, $tableIds, $timestamp);
+    $summary = build_booking_summary($bookingId, $details);
+    $confirmationLink = get_booking_confirmation_link($bookingId, $token);
 
-    $tableNames = array_map('get_the_title', normalize_table_ids($tableIds));
-    $menuName = get_the_title($data['menu']);
-    $sectionName = get_the_title($data['section']);
-    $datetime = wp_date(get_option('date_format') . ' ' . get_option('time_format'), $timestamp, wp_timezone());
-
-    $message = sprintf(
-        "%s\n\n%s\n%s\n%s\n%s",
-        sprintf(__('Booking reference: #%d', 'pixelforge'), $bookingId),
-        sprintf(__('Name: %s', 'pixelforge'), $data['name']),
-        sprintf(__('Party Size: %d', 'pixelforge'), $data['party_size']),
-        sprintf(__('Menu: %s', 'pixelforge'), $menuName ?: __('Unknown menu', 'pixelforge')),
-        sprintf(
-            __('Table: %s (%s)', 'pixelforge'),
-            $tableNames ? implode(', ', $tableNames) : __('Unknown table', 'pixelforge'),
-            $sectionName ?: __('No section', 'pixelforge')
-        )
+    $customerSubject = __('Confirm your table booking', 'pixelforge');
+    $customerBody = sprintf(
+        "%s<br><br>%s<br><br>%s",
+        __('Please confirm your booking by clicking the link below. We will hold the slot while you verify.', 'pixelforge'),
+        sprintf('<a href="%1$s">%1$s</a>', esc_url($confirmationLink)),
+        nl2br(esc_html($summary))
     );
 
-    $message .= sprintf("\n%s", sprintf(__('Date & Time: %s', 'pixelforge'), $datetime));
-    $message .= sprintf("\n%s", sprintf(__('Email: %s', 'pixelforge'), $data['email']));
-    $message .= sprintf("\n%s", sprintf(__('Phone: %s', 'pixelforge'), $data['phone']));
+    $customerText = sprintf(
+        "%s\n\n%s\n\n%s",
+        __('Please confirm your booking by visiting this link:', 'pixelforge'),
+        $confirmationLink,
+        $summary
+    );
 
-    if ($data['notes'] !== '') {
-        $message .= sprintf("\n%s", sprintf(__('Notes: %s', 'pixelforge'), $data['notes']));
+    $customerSent = send_email([
+        'to' => $details['email'],
+        'toName' => $details['name'],
+        'subject' => $customerSubject,
+        'html' => $customerBody,
+        'text' => $customerText,
+    ]);
+
+    if (! $customerSent) {
+        wp_mail($details['email'], $customerSubject, $customerText);
     }
 
-    wp_mail($adminEmail, __('New table booking received', 'pixelforge'), $message);
-    wp_mail($data['email'], __('Your table booking confirmation', 'pixelforge'), $message);
+    $smsMessage = sprintf(
+        __('Confirm your booking for %1$s at %2$s: %3$s', 'pixelforge'),
+        $details['date'] ?? '',
+        $details['time'] ?? '',
+        $confirmationLink
+    );
+
+    send_sms([
+        'to' => $details['phone'],
+        'message' => $smsMessage,
+    ]);
+
+    $adminEmail = get_theme_option('business_email', get_option('admin_email'));
+    $adminSubject = __('New table booking pending confirmation', 'pixelforge');
+    $adminBody = sprintf(
+        "%s\n\n%s",
+        __('A new booking was submitted and is awaiting customer verification.', 'pixelforge'),
+        $summary
+    );
+
+    $adminSent = send_email([
+        'to' => $adminEmail,
+        'subject' => $adminSubject,
+        'text' => $adminBody,
+    ]);
+
+    if (! $adminSent) {
+        wp_mail($adminEmail, $adminSubject, $adminBody);
+    }
+}
+
+function send_verified_notifications(int $bookingId, array $details): void
+{
+    $summary = build_booking_summary($bookingId, $details);
+    $adminEmail = get_theme_option('business_email', get_option('admin_email'));
+    $adminSubject = __('Booking verified by customer', 'pixelforge');
+    $adminBody = sprintf(
+        "%s\n\n%s",
+        __('The customer confirmed their booking via email/SMS.', 'pixelforge'),
+        $summary
+    );
+
+    $adminSent = send_email([
+        'to' => $adminEmail,
+        'subject' => $adminSubject,
+        'text' => $adminBody,
+    ]);
+
+    if (! $adminSent) {
+        wp_mail($adminEmail, $adminSubject, $adminBody);
+    }
+
+    $customerSubject = __('Your table booking is confirmed', 'pixelforge');
+    $customerBody = sprintf(
+        "%s\n\n%s",
+        __('Thanks for confirming! Here are your booking details:', 'pixelforge'),
+        $summary
+    );
+
+    $customerSent = send_email([
+        'to' => $details['email'],
+        'toName' => $details['name'],
+        'subject' => $customerSubject,
+        'text' => $customerBody,
+    ]);
+
+    if (! $customerSent) {
+        wp_mail($details['email'], $customerSubject, $customerBody);
+    }
+}
+
+function build_booking_summary(int $bookingId, array $details): string
+{
+    $lines = [
+        sprintf(__('Booking reference: #%d', 'pixelforge'), $bookingId),
+        sprintf(__('Name: %s', 'pixelforge'), $details['name']),
+        sprintf(__('Party Size: %d', 'pixelforge'), $details['party_size']),
+        sprintf(__('Menu: %s', 'pixelforge'), $details['menu_name'] ?: __('Unknown menu', 'pixelforge')),
+        sprintf(
+            __('Table: %s (%s)', 'pixelforge'),
+            $details['table_label'] ?: __('Unknown table', 'pixelforge'),
+            $details['section_name'] ?: __('No section', 'pixelforge')
+        ),
+        sprintf(__('Date & Time: %s', 'pixelforge'), $details['formatted_datetime']),
+        sprintf(__('Email: %s', 'pixelforge'), $details['email']),
+        sprintf(__('Phone: %s', 'pixelforge'), $details['phone']),
+    ];
+
+    if ($details['notes'] !== '') {
+        $lines[] = sprintf(__('Notes: %s', 'pixelforge'), $details['notes']);
+    }
+
+    if (! (bool) get_theme_option('enable_bookings', 1)) {
+        $lines[] = __('Bookings are currently disabled in the theme options.', 'pixelforge');
+    }
+
+    return implode("\n", array_filter($lines));
+}
+
+function get_booking_details(int $bookingId, array $data = [], array $tableIds = [], int $timestamp = 0): array
+{
+    $menuId = $data['menu'] ?? get_post_meta($bookingId, 'table_booking_menu_id', true);
+    $sectionId = $data['section'] ?? get_post_meta($bookingId, 'table_booking_section_id', true);
+    $tableIds = $tableIds ?: normalize_table_ids(get_post_meta($bookingId, 'table_booking_table_id', true));
+    $timestamp = $timestamp ?: (int) get_post_meta($bookingId, 'table_booking_datetime', true);
+    $menuId = absint($menuId);
+    $sectionId = absint($sectionId);
+
+    $datetime = wp_date(get_option('date_format') . ' ' . get_option('time_format'), $timestamp, wp_timezone());
+
+    return [
+        'name' => $data['name'] ?? get_post_meta($bookingId, 'table_booking_customer_name', true),
+        'email' => $data['email'] ?? get_post_meta($bookingId, 'table_booking_customer_email', true),
+        'phone' => $data['phone'] ?? get_post_meta($bookingId, 'table_booking_customer_phone', true),
+        'party_size' => (int) ($data['party_size'] ?? get_post_meta($bookingId, 'table_booking_party_size', true)),
+        'menu_name' => $menuId ? get_the_title($menuId) : '',
+        'section_name' => $sectionId ? get_the_title($sectionId) : '',
+        'table_label' => get_table_labels($tableIds),
+        'notes' => $data['notes'] ?? (string) get_post_meta($bookingId, 'table_booking_notes', true),
+        'formatted_datetime' => $datetime,
+        'menu' => $menuId,
+        'section' => $sectionId,
+        'table_ids' => $tableIds,
+        'timestamp' => $timestamp,
+        'date' => $timestamp ? wp_date('M j, Y', $timestamp, wp_timezone()) : '',
+        'time' => $timestamp ? wp_date(get_option('time_format'), $timestamp, wp_timezone()) : '',
+    ];
+}
+
+function get_booking_confirmation_link(int $bookingId, string $token): string
+{
+    return add_query_arg([
+        'pixelforge_booking_confirm' => $bookingId,
+        'token' => $token,
+    ], home_url('/'));
 }
 
 function check_table_availability(): void
