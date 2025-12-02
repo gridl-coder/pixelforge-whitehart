@@ -12,9 +12,29 @@
 
     <div class="booking-form-container">
 
-      <h4 class="text-center mt-5">Table Booking</h4>
+      <h3 class="text-center mt-5 mb-5">Table Booking</h3>
 
       <div style="max-width: 840px; margin: 0 auto 50px auto; text-align: left;">
+
+
+        <div class="row text-center">
+          <div class="col-md-3">
+            <p><strong>White Hart Breakfast</strong><br>Mon / Tue / Wed / Thur<br>09:00 - 13:00</p>
+
+          </div>
+          <div class="col-md-3">
+            <p><strong>GRIDL Breakfast Takeover</strong><br>Friday / Saturday<br>09:00 - 14:00</p>
+
+          </div>
+          <div class="col-md-3">
+            <p><strong>Sunday Lunch</strong><br>Sunday's<br>12:00 - 15:00</p>
+
+          </div>
+          <div class="col-md-3">
+            <p><strong>Guest Food Evening</strong><br>Tuesday's<br>17:00 - 20:00</p>
+
+          </div>
+        </div>
 
           <?= do_shortcode('[pixelforge_table_booking]'); ?>
 
