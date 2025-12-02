@@ -382,7 +382,7 @@
               }
             })
             .catch(() => {
-              renderAlert('error', [{{ json_encode(__('We could not submit your booking right now. Please try again in a moment.', 'pixelforge')) }}]);
+              renderAlert('error', [@json(__('We could not submit your booking right now. Please try again in a moment.', 'pixelforge'))]);
             })
             .finally(() => {
               submitButton.prop('disabled', false).removeClass('is-loading');
