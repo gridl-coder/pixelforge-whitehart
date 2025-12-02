@@ -14,12 +14,16 @@ use function PixelForge\Brevo\send_sms;
 use function PixelForge\CMB2\get_theme_option;
 
 const NONCE_ACTION = 'pixelforge_table_booking';
+const BOOKING_SLOT_MINUTES = 90;
+const BOOKING_SLOT_SECONDS = BOOKING_SLOT_MINUTES * MINUTE_IN_SECONDS;
 
 add_action('init', __NAMESPACE__ . '\\register_booking_shortcodes');
 add_action('init', __NAMESPACE__ . '\\handle_booking_submission');
 add_action('template_redirect', __NAMESPACE__ . '\\maybe_confirm_booking');
 add_action('wp_ajax_pixelforge_check_table_availability', __NAMESPACE__ . '\\check_table_availability');
 add_action('wp_ajax_nopriv_pixelforge_check_table_availability', __NAMESPACE__ . '\\check_table_availability');
+add_action('wp_ajax_pixelforge_submit_booking', __NAMESPACE__ . '\\handle_booking_ajax_submission');
+add_action('wp_ajax_nopriv_pixelforge_submit_booking', __NAMESPACE__ . '\\handle_booking_ajax_submission');
 add_filter('manage_table_booking_posts_columns', __NAMESPACE__ . '\\register_table_booking_columns');
 add_action('manage_table_booking_posts_custom_column', __NAMESPACE__ . '\\render_table_booking_columns', 10, 2);
 
@@ -79,6 +83,10 @@ function render_booking_form_shortcode(): string
 
 function handle_booking_submission(): void
 {
+    if (wp_doing_ajax()) {
+        return;
+    }
+
     if (!(bool)get_theme_option('enable_bookings', 1)) {
         return;
     }
@@ -94,19 +102,65 @@ function handle_booking_submission(): void
         return;
     }
 
-    $data = [
-        'name' => sanitize_text_field(wp_unslash($_POST['pixelforge_booking_name'] ?? '')),
-        'email' => sanitize_email(wp_unslash($_POST['pixelforge_booking_email'] ?? '')),
-        'phone' => sanitize_text_field(wp_unslash($_POST['pixelforge_booking_phone'] ?? '')),
-        'party_size' => absint(wp_unslash($_POST['pixelforge_booking_party_size'] ?? 0)),
-        'menu' => absint(wp_unslash($_POST['pixelforge_booking_menu'] ?? 0)),
-        'section' => absint(wp_unslash($_POST['pixelforge_booking_section'] ?? 0)),
-        'date' => sanitize_text_field(wp_unslash($_POST['pixelforge_booking_date'] ?? '')),
-        'time' => sanitize_text_field(wp_unslash($_POST['pixelforge_booking_time'] ?? '')),
-        'notes' => sanitize_textarea_field(wp_unslash($_POST['pixelforge_booking_notes'] ?? '')),
-        'honeypot' => sanitize_text_field(wp_unslash($_POST['pixelforge_booking_hp'] ?? '')),
-    ];
+    $feedback = process_booking_submission(collect_booking_data($_POST));
 
+    set_feedback($feedback);
+}
+
+function handle_booking_ajax_submission(): void
+{
+    if (!(bool)get_theme_option('enable_bookings', 1)) {
+        wp_send_json([
+            'errors' => [__('Table bookings are currently disabled.', 'pixelforge')],
+            'success' => null,
+            'old' => collect_booking_data($_POST),
+        ]);
+    }
+
+    if (!isset($_POST['pixelforge_booking_form']) || $_POST['pixelforge_booking_form'] !== '1') {
+        wp_send_json([
+            'errors' => [__('We could not verify your booking details. Please refresh and try again.', 'pixelforge')],
+            'success' => null,
+            'old' => collect_booking_data($_POST),
+        ]);
+    }
+
+    if (!isset($_POST['pixelforge_booking_nonce']) || !wp_verify_nonce(
+            sanitize_text_field(wp_unslash($_POST['pixelforge_booking_nonce'])),
+            NONCE_ACTION
+        )) {
+        wp_send_json([
+            'errors' => [__('We could not verify your booking details. Please refresh and try again.', 'pixelforge')],
+            'success' => null,
+            'old' => collect_booking_data($_POST),
+        ]);
+    }
+
+    $feedback = process_booking_submission(collect_booking_data($_POST));
+
+    set_feedback($feedback);
+
+    wp_send_json($feedback);
+}
+
+function collect_booking_data(array $source): array
+{
+    return [
+        'name' => sanitize_text_field(wp_unslash($source['pixelforge_booking_name'] ?? '')),
+        'email' => sanitize_email(wp_unslash($source['pixelforge_booking_email'] ?? '')),
+        'phone' => sanitize_text_field(wp_unslash($source['pixelforge_booking_phone'] ?? '')),
+        'party_size' => absint(wp_unslash($source['pixelforge_booking_party_size'] ?? 0)),
+        'menu' => absint(wp_unslash($source['pixelforge_booking_menu'] ?? 0)),
+        'section' => absint(wp_unslash($source['pixelforge_booking_section'] ?? 0)),
+        'date' => sanitize_text_field(wp_unslash($source['pixelforge_booking_date'] ?? '')),
+        'time' => sanitize_text_field(wp_unslash($source['pixelforge_booking_time'] ?? '')),
+        'notes' => sanitize_textarea_field(wp_unslash($source['pixelforge_booking_notes'] ?? '')),
+        'honeypot' => sanitize_text_field(wp_unslash($source['pixelforge_booking_hp'] ?? '')),
+    ];
+}
+
+function process_booking_submission(array $data): array
+{
     $feedback = [
         'errors' => [],
         'success' => null,
@@ -161,14 +215,11 @@ function handle_booking_submission(): void
 
     if ($bookingDate && $timeWindow) {
         $slotStart = time_from_string($data['time']);
+        $allowedSlots = build_menu_slots($data['menu']);
 
-        if (!$slotStart) {
-            $feedback['errors'][] = __('Please choose a valid time slot.', 'pixelforge');
+        if (!$slotStart || !in_array($data['time'], $allowedSlots, true)) {
+            $feedback['errors'][] = __('Bookings are limited to 90-minute slots.', 'pixelforge');
         } else {
-            if ((int)$slotStart->format('i') !== 0) {
-                $feedback['errors'][] = __('Bookings are limited to hourly slots.', 'pixelforge');
-            }
-
             if ($slotStart < $timeWindow['start'] || $slotStart >= $timeWindow['end']) {
                 $feedback['errors'][] = __('Selected time is outside the menu availability.', 'pixelforge');
             }
@@ -180,16 +231,15 @@ function handle_booking_submission(): void
     }
 
     if (!empty($feedback['errors'])) {
-        set_feedback($feedback);
-        return;
+        return $feedback;
     }
 
     $timestamp = $bookingDate ? $bookingDate->getTimestamp() : 0;
 
     if (customer_has_active_booking($data['email'], $data['phone'], $timestamp)) {
         $feedback['errors'][] = __('You already have a booking with us. Please call to arrange multiple bookings.', 'pixelforge');
-        set_feedback($feedback);
-        return;
+
+        return $feedback;
     }
 
     $tableIds = find_available_tables($data['section'], $data['party_size'], $timestamp);
@@ -206,8 +256,7 @@ function handle_booking_submission(): void
             $feedback['errors'][] = __('No tables are available for that area and time. Please try another slot.', 'pixelforge');
         }
 
-        set_feedback($feedback);
-        return;
+        return $feedback;
     }
 
     $bookingTitle = sprintf(
@@ -224,8 +273,8 @@ function handle_booking_submission(): void
 
     if (is_wp_error($bookingId) || !$bookingId) {
         $feedback['errors'][] = __('Unable to save your booking right now. Please try again later.', 'pixelforge');
-        set_feedback($feedback);
-        return;
+
+        return $feedback;
     }
 
     update_post_meta($bookingId, 'table_booking_customer_name', $data['name']);
@@ -248,7 +297,7 @@ function handle_booking_submission(): void
     $feedback['success'] = __('<p><strong>Thanks! We\'ve reserved this slot.</strong></p><p>Please confirm your booking from the link we sent via email/SMS so we can finalise it.</p>', 'pixelforge');
     $feedback['old'] = [];
 
-    set_feedback($feedback);
+    return $feedback;
 }
 
 function get_feedback(): array
@@ -358,7 +407,7 @@ function build_menu_slots(int $menuId): array
 
     while ($cursor < $window['end']) {
         $slots[] = $cursor->format('H:i');
-        $cursor = $cursor->add(new DateInterval('PT1H'));
+        $cursor = $cursor->add(new DateInterval(sprintf('PT%dM', BOOKING_SLOT_MINUTES)));
     }
 
     return $slots;
@@ -540,7 +589,7 @@ function get_section_tables(int $sectionId): array
 function get_booked_tables_for_section(int $sectionId, int $timestamp): array
 {
     $slotStart = $timestamp;
-    $slotEnd = $timestamp + HOUR_IN_SECONDS - 1;
+    $slotEnd = $timestamp + BOOKING_SLOT_SECONDS - 1;
 
     $bookings = new WP_Query([
         'post_type' => TableBooking::KEY,
