@@ -96,6 +96,21 @@ function send_sms(array $args): bool
     $sender = (string) get_theme_option('brevo_sms_sender', '');
 
     if ($apiKey === '' || $recipient === '' || $sender === '') {
+        $reasons = [];
+
+        if ($apiKey === '') {
+            $reasons[] = 'missing API key';
+        }
+
+        if ($recipient === '') {
+            $reasons[] = 'missing or invalid recipient number';
+        }
+
+        if ($sender === '') {
+            $reasons[] = 'missing SMS sender ID';
+        }
+
+        error_log('Brevo SMS skipped: ' . implode(', ', $reasons));
         return false;
     }
 
