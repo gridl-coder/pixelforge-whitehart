@@ -162,7 +162,7 @@ final class BookingMenu
             'rest_base' => self::SLUG,
             'menu_position' => 22,
             'menu_icon' => 'dashicons-list-view',
-            'supports' => ['title', 'editor', 'excerpt'],
+            'supports' => ['title', 'editor', 'excerpt', 'thumbnail'],
             'rewrite' => [
                 'slug' => self::SLUG,
                 'with_front' => false,

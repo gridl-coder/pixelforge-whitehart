@@ -30,6 +30,7 @@ add_action('manage_table_booking_posts_custom_column', __NAMESPACE__ . '\\render
 function register_booking_shortcodes(): void
 {
     add_shortcode('pixelforge_table_booking', __NAMESPACE__ . '\\render_booking_form_shortcode');
+    add_shortcode('pixelforge_booking_menus', __NAMESPACE__ . '\\render_booking_menus_shortcode');
 }
 
 function render_booking_form_shortcode(): string
@@ -84,6 +85,85 @@ function render_booking_form_shortcode(): string
         'feedback' => $feedback,
         'minDate' => $today->format('Y-m-d'),
     ])->render();
+}
+
+function render_booking_menus_shortcode(): string
+{
+    $menus = get_posts([
+        'post_type' => BookingMenu::KEY,
+        'post_status' => 'publish',
+        'numberposts' => -1,
+        'orderby' => 'title',
+        'order' => 'ASC',
+    ]);
+
+    if ($menus === []) {
+        return '';
+    }
+
+    $dayOptions = function_exists('\\PixelForge\\CMB2\\get_day_options')
+        ? \PixelForge\CMB2\get_day_options()
+        : [
+            'monday' => esc_html__('Monday', 'pixelforge'),
+            'tuesday' => esc_html__('Tuesday', 'pixelforge'),
+            'wednesday' => esc_html__('Wednesday', 'pixelforge'),
+            'thursday' => esc_html__('Thursday', 'pixelforge'),
+            'friday' => esc_html__('Friday', 'pixelforge'),
+            'saturday' => esc_html__('Saturday', 'pixelforge'),
+            'sunday' => esc_html__('Sunday', 'pixelforge'),
+        ];
+
+    $dayOrder = array_keys($dayOptions);
+
+    $output = '<div class="row text-center booking-menu-shortcode">';
+
+    foreach ($menus as $menu) {
+        $days = get_post_meta($menu->ID, 'booking_menu_days', true);
+        $availableDays = [];
+
+        if (is_array($days) && $days !== []) {
+            foreach ($dayOrder as $key) {
+                if (in_array($key, $days, true)) {
+                    $availableDays[] = $dayOptions[$key] ?? ucfirst($key);
+                }
+            }
+        } else {
+            $availableDays[] = esc_html__('Every day', 'pixelforge');
+        }
+
+        $window = get_menu_time_window((int)$menu->ID);
+        $timeLabel = $window
+            ? sprintf('%s - %s', $window['start']->format('H:i'), $window['end']->format('H:i'))
+            : esc_html__('Times not set', 'pixelforge');
+
+        $thumbnail = get_the_post_thumbnail($menu->ID, 'large', [
+            'class' => 'booking-menu__image',
+            'loading' => 'lazy',
+        ]);
+
+        $thumbnailUrl = get_the_post_thumbnail_url($menu->ID, 'full');
+
+        $output .= '<div class="col-md-3 booking-menu-shortcode__item">';
+
+        if ($thumbnail) {
+            $output .= '<div class="booking-menu-shortcode__thumb">' . $thumbnail . '</div>';
+        }
+
+        $output .= '<p><strong>' . esc_html(get_the_title($menu)) . '</strong><br>'
+            . esc_html(implode(' / ', $availableDays)) . '<br>'
+            . esc_html($timeLabel) . '</p>';
+
+        if ($thumbnailUrl) {
+            $output .= '<p><a class="booking-menu-shortcode__download" href="' . esc_url($thumbnailUrl) . '" download>'
+                . esc_html__('Download menu', 'pixelforge') . '</a></p>';
+        }
+
+        $output .= '</div>';
+    }
+
+    $output .= '</div>';
+
+    return $output;
 }
 
 function handle_booking_submission(): void
