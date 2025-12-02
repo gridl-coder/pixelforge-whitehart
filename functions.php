@@ -58,6 +58,7 @@ collect([
     'cmb2/helpers',
     'cmb2/home-metabox',
     'cmb2/events-metabox',
+    'seven',
     'brevo',
     'cmb2/bookings-metabox',
     'booking',

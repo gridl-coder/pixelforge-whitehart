@@ -6,7 +6,7 @@ This document explains how to run the PixelForge table booking system day to day
 
 - Publishes a public booking form you can place on any page.
 - Prevents double bookings by assigning guests to specific tables and time slots.
-- Sends verification links to customers (email + SMS when Brevo is configured) so only confirmed bookings stay on the calendar.
+- Sends verification links to customers (email via Brevo + SMS via seven.io) so only confirmed bookings stay on the calendar.
 - Lets staff manage bookings from either WordPress admin or a simplified Booking Admin Panel.
 
 ## Daily tasks at a glance
@@ -40,7 +40,7 @@ Complete these steps once when the site launches or whenever the floor plan chan
 
 ### 4) Choose who gets notified
 - Go to **PixelForge Options → Business Email** to set where admin notifications are sent (falls back to the WordPress admin email).
-- Brevo users can add SMS by filling **Brevo Email & SMS** options (see below).
+- Configure **Brevo Email** for outgoing emails and **seven (SMS)** for text messages.
 
 ## How bookings flow
 
@@ -72,14 +72,15 @@ Access these under **PixelForge Options** in WordPress:
 - **Business Telephone** and **Business Address** – surfaced in theme templates.
 - **Enable Table Bookings** – hides/shows the public form and availability checks.
 - **Booking Data Tools** – one-click, permanent deletion of all booking data (sections, tables, menus, bookings). Use with caution.
-- **Brevo Email & SMS** – configure API key, sender email/name, SMS sender ID, and default country code to send confirmations via Brevo. If Brevo is missing, the system falls back to standard WordPress email and skips SMS.
+- **Brevo Email** – configure API key, sender email/name for confirmations. If Brevo is missing, the system falls back to standard WordPress email.
+- **seven (SMS)** – configure API key, gateway URL (usually default), optional sender ID, plus the default country code used to normalise phone numbers for SMS confirmations.
 - **SEO & Social Defaults** – default meta description, keywords, Open Graph title/description/image, and Twitter username used across the site when individual pages do not override them.
 
 ## Tips and troubleshooting
 
 - **Menus need times** – menus without valid start/end times or without any published tables/sections will not present usable slots.
 - **Customer already booked** – the same email/phone cannot hold overlapping active bookings.
-- **Delivery issues** – if confirmations do not arrive, check the Business Email value and your mail transport. For Brevo SMS, ensure the API key, sender ID, and credits are valid.
+- **Delivery issues** – if confirmations do not arrive, check the Business Email value and your mail transport. For SMS, confirm the seven API key, gateway URL, and sender settings are valid.
 - **Timezone** – booking times and availability use the site timezone; update it in **Settings → General** if needed.
 - **Data cleanup** – use **Booking Data Tools** only when resetting the system; it removes all booking-related records and cannot be undone.
 
@@ -87,7 +88,8 @@ Access these under **PixelForge Options** in WordPress:
 
 - Publish/hide form: **PixelForge Options → Enable Table Bookings**
 - Notification recipients: **PixelForge Options → Business Email**
-- Email/SMS senders: **PixelForge Options → Brevo Email & SMS**
+- Email sender: **PixelForge Options → Brevo Email**
+- SMS sender: **PixelForge Options → seven (SMS)**
 - Manage bookings (full WordPress): **Table Bookings** post type
 - Manage bookings (staff-friendly): page using **Booking Admin Panel** template
 - Define seating: **Table Sections** and **Tables** post types
