@@ -2,6 +2,10 @@
 
 namespace PixelForge\Brevo;
 
+use Brevo\Client\Api\TransactionalSMSApi;
+use Brevo\Client\ApiException;
+use Brevo\Client\Configuration;
+use Brevo\Client\Model\SendTransacSms;
 use function PixelForge\CMB2\get_theme_option;
 
 const API_BASE = 'https://api.brevo.com/v3';
@@ -115,6 +119,36 @@ function send_sms(array $args): bool
         return false;
     }
 
+    $config = Configuration::getDefaultConfiguration()->setApiKey('api-key', $apiKey);
+    $transactionalSms = new TransactionalSMSApi(null, $config);
+    $sms = (new SendTransacSms())
+        ->setSender($sender)
+        ->setRecipient(ltrim($recipient, '+'))
+        ->setContent($args['message'] ?? '')
+        ->setType('transactional')
+        ->setTag('table_booking');
+
+    try {
+        $response = $transactionalSms->sendTransacSms($sms);
+        $messageId = method_exists($response, 'getMessageId') ? $response->getMessageId() : null;
+        $reference = method_exists($response, 'getReference') ? $response->getReference() : null;
+
+        if ($messageId || $reference) {
+            error_log(sprintf('Brevo SMS sent to %s (messageId: %s, reference: %s)', $recipient, $messageId ?? 'n/a', $reference ?? 'n/a'));
+        } else {
+            error_log(sprintf('Brevo SMS sent to %s', $recipient));
+        }
+
+        return true;
+    } catch (ApiException $exception) {
+        $responseBody = $exception->getResponseBody();
+        $details = is_string($responseBody) ? $responseBody : wp_json_encode($responseBody);
+        error_log(sprintf('Brevo SMS failed for %s: %s (%s)', $recipient, $exception->getMessage(), $details));
+    } catch (\Throwable $throwable) {
+        error_log(sprintf('Brevo SMS unexpected error for %s: %s', $recipient, $throwable->getMessage()));
+    }
+
+    return false;
     $payload = [
         'sender' => $sender,
         'recipient' => ltrim($recipient, '+'),
