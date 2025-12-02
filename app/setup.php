@@ -7,6 +7,8 @@
 namespace PixelForge;
 
 use Illuminate\Support\Facades\Vite;
+use function is_front_page;
+use function PixelForge\CMB2\get_theme_option;
 
 /**
  * Disable the block editor in favor of the classic editor experience.
@@ -167,6 +169,16 @@ add_action('widgets_init', function () {
         'name' => __('Footer', 'pixelforge'),
         'id' => 'sidebar-footer',
     ] + $config);
+});
+
+add_filter('body_class', function (array $classes): array {
+    $seasonalTheme = (string) get_theme_option('seasonal_theme', 'none');
+
+    if ($seasonalTheme === 'christmas' && is_front_page()) {
+        $classes[] = 'has-christmas-theme';
+    }
+
+    return $classes;
 });
 
 /**
