@@ -10,6 +10,23 @@ use function PixelForge\CMB2\get_theme_option;
 
 const API_BASE = 'https://api.brevo.com/v3';
 
+function get_recipient_name(string $recipient, string $providedName = ''): string
+{
+    $name = sanitize_text_field(trim($providedName));
+
+    if ($name !== '') {
+        return $name;
+    }
+
+    $emailLocalPart = sanitize_text_field(trim((string) preg_replace('/@.*/', '', $recipient)));
+
+    if ($emailLocalPart !== '') {
+        return $emailLocalPart;
+    }
+
+    return __('Customer', 'pixelforge');
+}
+
 function get_api_key(): string
 {
     $key = (string) get_theme_option('brevo_api_key', '');
@@ -83,7 +100,7 @@ function send_email(array $args): bool
         'to' => array_map(static function ($recipient) use ($args) {
             return [
                 'email' => $recipient,
-                'name' => $args['toName'] ?? '',
+                'name' => get_recipient_name($recipient, $args['toName'] ?? ''),
             ];
         }, $recipients),
         'subject' => $args['subject'] ?? '',
