@@ -262,6 +262,39 @@
       }
     }
 
+    &__meta {
+      margin-top: 6px;
+      color: rgba(#fff, 0.75);
+      font-size: 0.95rem;
+    }
+
+    &__day-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    &__day {
+      padding: 4px 8px;
+      border-radius: 10px;
+      border: 1px solid rgba(#fff, 0.12);
+      background: rgba(#fff, 0.06);
+      color: rgba(#fff, 0.65);
+      font-weight: 600;
+      font-size: 0.9rem;
+
+      &.is-allowed {
+        background: rgba($brand_yellow, 0.2);
+        border-color: rgba($brand_yellow, 0.4);
+        color: $brand_yellow;
+      }
+
+      &.is-blocked {
+        opacity: 0.45;
+      }
+    }
+
     &__input--unavailable {
       border-color: #dc3545;
     }
