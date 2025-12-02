@@ -10,7 +10,7 @@ use PixelForge\PostTypes\BookingTable;
 use PixelForge\PostTypes\TableBooking;
 use WP_Query;
 use function PixelForge\Brevo\send_email;
-use function PixelForge\FrontlineSMS\send_sms;
+use function PixelForge\Seven\send_sms;
 use function PixelForge\CMB2\get_theme_option;
 
 const NONCE_ACTION = 'pixelforge_table_booking';

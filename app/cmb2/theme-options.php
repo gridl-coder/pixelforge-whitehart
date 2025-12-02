@@ -104,7 +104,7 @@ function register_theme_options_metabox(): void
         'attributes' => [
             'type' => 'password',
         ],
-        'desc' => esc_html__('Transactional/V3 API key used for booking emails (SMS is handled by FrontlineSMS).', 'pixelforge'),
+        'desc' => esc_html__('Transactional/V3 API key used for booking emails (SMS is handled by seven).', 'pixelforge'),
     ]);
 
     $cmb_options->add_field([
@@ -122,42 +122,35 @@ function register_theme_options_metabox(): void
     ]);
 
     $cmb_options->add_field([
-        'name' => esc_html__('FrontlineSMS (SMS)', 'pixelforge'),
-        'id' => 'frontlinesms_options',
+        'name' => esc_html__('seven (SMS)', 'pixelforge'),
+        'id' => 'seven_options',
         'type' => 'title',
-        'desc' => esc_html__('Configure FrontlineSMS to send booking verification links by SMS while keeping Brevo for email.', 'pixelforge'),
+        'desc' => esc_html__('Configure seven.io to send booking verification links by SMS while keeping Brevo for email.', 'pixelforge'),
     ]);
 
     $cmb_options->add_field([
-        'name' => esc_html__('FrontlineSMS API Token', 'pixelforge'),
-        'id' => 'frontlinesms_api_token',
+        'name' => esc_html__('seven API Key', 'pixelforge'),
+        'id' => 'seven_api_key',
         'type' => 'text',
         'attributes' => [
             'type' => 'password',
         ],
-        'desc' => esc_html__('Token from your FrontlineSMS workspace (environment variable FRONTLINESMS_API_TOKEN is also supported).', 'pixelforge'),
+        'desc' => esc_html__('API key from your seven account (environment variable SEVEN_API_KEY is also supported).', 'pixelforge'),
     ]);
 
     $cmb_options->add_field([
-        'name' => esc_html__('FrontlineSMS API URL', 'pixelforge'),
-        'id' => 'frontlinesms_api_url',
+        'name' => esc_html__('seven API URL', 'pixelforge'),
+        'id' => 'seven_api_url',
         'type' => 'text_url',
-        'default' => 'https://cloud.frontlinesms.com/api/1/messages.json',
-        'desc' => esc_html__('Endpoint for sending messages; leave default for Frontline Cloud.', 'pixelforge'),
-    ]);
-
-    $cmb_options->add_field([
-        'name' => esc_html__('FrontlineSMS Channel ID (optional)', 'pixelforge'),
-        'id' => 'frontlinesms_channel',
-        'type' => 'text_medium',
-        'desc' => esc_html__('Restrict outbound SMS to a specific Frontline channel if required.', 'pixelforge'),
+        'default' => 'https://gateway.seven.io/api/sms',
+        'desc' => esc_html__('Endpoint for sending messages; leave default unless using a custom gateway URL.', 'pixelforge'),
     ]);
 
     $cmb_options->add_field([
         'name' => esc_html__('SMS Sender ID (optional)', 'pixelforge'),
-        'id' => 'frontlinesms_sender_id',
+        'id' => 'seven_sender_id',
         'type' => 'text_medium',
-        'desc' => esc_html__('Custom sender (from) label for SMS when supported by your Frontline channel.', 'pixelforge'),
+        'desc' => esc_html__('Custom sender (from) label for SMS when supported by your seven account.', 'pixelforge'),
     ]);
 
     $cmb_options->add_field([
