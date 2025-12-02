@@ -96,15 +96,10 @@ function send_email(array $args): bool
 
 function send_sms(array $args): bool
 {
-    if (! class_exists(TransactionalSMSApi::class) || ! class_exists(SendTransacSms::class)) {
-        error_log('Brevo SMS skipped: SDK is not installed. Run composer install to add getbrevo/brevo-php.');
-
-        return false;
-    }
-
     $apiKey = get_api_key();
     $recipient = isset($args['to']) ? normalize_phone((string) $args['to']) : '';
     $sender = (string) get_theme_option('brevo_sms_sender', '');
+    $message = (string) ($args['message'] ?? '');
 
     if ($apiKey === '' || $recipient === '' || $sender === '') {
         $reasons = [];
@@ -125,45 +120,53 @@ function send_sms(array $args): bool
         return false;
     }
 
-    $config = Configuration::getDefaultConfiguration()->setApiKey('api-key', $apiKey);
-    $transactionalSms = new TransactionalSMSApi(null, $config);
-    $sms = (new SendTransacSms())
-        ->setSender($sender)
-        ->setRecipient(ltrim($recipient, '+'))
-        ->setContent($args['message'] ?? '')
-        ->setType('transactional')
-        ->setTag('table_booking');
+    if (class_exists(TransactionalSMSApi::class) && class_exists(SendTransacSms::class)) {
+        $config = Configuration::getDefaultConfiguration()->setApiKey('api-key', $apiKey);
+        $transactionalSms = new TransactionalSMSApi(null, $config);
+        $sms = (new SendTransacSms())
+            ->setSender($sender)
+            ->setRecipient(ltrim($recipient, '+'))
+            ->setContent($message)
+            ->setType('transactional')
+            ->setTag('table_booking');
 
-    try {
-        $response = $transactionalSms->sendTransacSms($sms);
-        $messageId = method_exists($response, 'getMessageId') ? $response->getMessageId() : null;
-        $reference = method_exists($response, 'getReference') ? $response->getReference() : null;
+        try {
+            $response = $transactionalSms->sendTransacSms($sms);
+            $messageId = method_exists($response, 'getMessageId') ? $response->getMessageId() : null;
+            $reference = method_exists($response, 'getReference') ? $response->getReference() : null;
 
-        if ($messageId || $reference) {
-            error_log(sprintf('Brevo SMS sent to %s (messageId: %s, reference: %s)', $recipient, $messageId ?? 'n/a', $reference ?? 'n/a'));
-        } else {
-            error_log(sprintf('Brevo SMS sent to %s', $recipient));
+            if ($messageId || $reference) {
+                error_log(sprintf('Brevo SMS sent to %s (messageId: %s, reference: %s)', $recipient, $messageId ?? 'n/a', $reference ?? 'n/a'));
+            } else {
+                error_log(sprintf('Brevo SMS sent to %s', $recipient));
+            }
+
+            return true;
+        } catch (ApiException $exception) {
+            $responseBody = $exception->getResponseBody();
+            $details = is_string($responseBody) ? $responseBody : wp_json_encode($responseBody);
+            error_log(sprintf('Brevo SMS failed for %s via SDK: %s (%s)', $recipient, $exception->getMessage(), $details));
+        } catch (\Throwable $throwable) {
+            error_log(sprintf('Brevo SMS unexpected error for %s via SDK: %s', $recipient, $throwable->getMessage()));
         }
-
-        return true;
-    } catch (ApiException $exception) {
-        $responseBody = $exception->getResponseBody();
-        $details = is_string($responseBody) ? $responseBody : wp_json_encode($responseBody);
-        error_log(sprintf('Brevo SMS failed for %s: %s (%s)', $recipient, $exception->getMessage(), $details));
-    } catch (\Throwable $throwable) {
-        error_log(sprintf('Brevo SMS unexpected error for %s: %s', $recipient, $throwable->getMessage()));
+    } else {
+        error_log('Brevo SMS SDK missing; attempting HTTP fallback. Run composer install to add getbrevo/brevo-php.');
     }
 
-    return false;
+    return send_sms_via_http($apiKey, $sender, $recipient, $message);
+}
+
+function send_sms_via_http(string $apiKey, string $sender, string $recipient, string $message): bool
+{
     $payload = [
         'sender' => $sender,
         'recipient' => ltrim($recipient, '+'),
-        'content' => $args['message'] ?? '',
+        'content' => $message,
         'type' => 'transactional',
         'tag' => 'table_booking',
     ];
 
-    error_log(sprintf('Brevo SMS sending to %s via %s', $recipient, $sender));
+    error_log(sprintf('Brevo SMS sending to %s via HTTP', $recipient));
 
     return brevo_request('transactionalSMS/sms', $payload, $apiKey, static function ($response) use ($recipient) {
         $body = wp_remote_retrieve_body($response);
