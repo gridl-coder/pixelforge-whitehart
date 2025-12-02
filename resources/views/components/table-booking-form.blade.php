@@ -23,10 +23,12 @@
 
   <div class="booking-form__alert booking-form__alert--success @if(! empty($feedback['success'])) is-visible @endif" data-alert="success" role="alert" aria-live="polite">
     <button class="booking-form__alert-close" type="button" aria-label="{{ __('Close alert', 'pixelforge') }}">&times;</button>
-    <div class="booking-form__alert-body" data-alert-body="success">
-      @if(! empty($feedback['success']))
-        {!! $feedback['success'] !!}
-      @endif
+    <div class="booking-form__alert-content">
+      <div class="booking-form__alert-body" data-alert-body="success">
+        @if(! empty($feedback['success']))
+          {!! $feedback['success'] !!}
+        @endif
+      </div>
     </div>
   </div>
 
@@ -189,17 +191,11 @@
         const menuMeta = $('#booking_menu_meta');
         const dayLegend = $('#booking_day_legend');
 
-        const scrollToSuccess = () => {
-          if (!alerts.success.length || !alerts.success.hasClass('is-visible')) {
-            return;
-          }
-
-          const top = Math.max(alerts.success.offset().top - 16, 0);
-
-          $('html, body').animate({ scrollTop: top }, 300);
-        };
-
         let currentStep = 0;
+
+        const hideForm = () => {
+          form.addClass('is-hidden').attr('aria-hidden', 'true');
+        };
 
         const hideAlerts = () => {
           Object.values(alerts).forEach((alert) => alert.removeClass('is-visible'));
@@ -378,10 +374,6 @@
           }
 
           alerts[type].addClass('is-visible');
-
-          if (type === 'success') {
-            scrollToSuccess();
-          }
         };
 
         const setNotice = (text) => {
@@ -564,6 +556,7 @@
                 rebuildTimes();
                 showStep(0);
                 renderAlert('success', data.success);
+                hideForm();
               }
             })
             .catch(() => {
@@ -594,12 +587,15 @@
 
         partyInput.on('change', fetchAvailability);
 
+        if (alerts.success.hasClass('is-visible')) {
+          hideForm();
+        }
+
         rebuildTimes();
         updateDateForMenu();
         enforceAllowedDate();
         updateMenuMeta();
         fetchAvailability();
-        scrollToSuccess();
         });
       };
 
