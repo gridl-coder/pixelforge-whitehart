@@ -96,6 +96,12 @@ function send_email(array $args): bool
 
 function send_sms(array $args): bool
 {
+    if (! class_exists(TransactionalSMSApi::class) || ! class_exists(SendTransacSms::class)) {
+        error_log('Brevo SMS skipped: SDK is not installed. Run composer install to add getbrevo/brevo-php.');
+
+        return false;
+    }
+
     $apiKey = get_api_key();
     $recipient = isset($args['to']) ? normalize_phone((string) $args['to']) : '';
     $sender = (string) get_theme_option('brevo_sms_sender', '');
