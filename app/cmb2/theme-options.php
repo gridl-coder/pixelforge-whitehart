@@ -104,7 +104,7 @@ function register_theme_options_metabox(): void
         'attributes' => [
             'type' => 'password',
         ],
-        'desc' => esc_html__('Transactional/V3 API key used for booking emails (SMS is handled by seven).', 'pixelforge'),
+        'desc' => esc_html__('Transactional/V3 API key used for booking emails.', 'pixelforge'),
     ]);
 
     $cmb_options->add_field([
@@ -119,48 +119,6 @@ function register_theme_options_metabox(): void
         'id' => 'brevo_sender_name',
         'type' => 'text_medium',
         'desc' => esc_html__('Appears as the from name on confirmation emails (defaults to site name).', 'pixelforge'),
-    ]);
-
-    $cmb_options->add_field([
-        'name' => esc_html__('seven (SMS)', 'pixelforge'),
-        'id' => 'seven_options',
-        'type' => 'title',
-        'desc' => esc_html__('Configure seven.io to send booking verification links by SMS while keeping Brevo for email.', 'pixelforge'),
-    ]);
-
-    $cmb_options->add_field([
-        'name' => esc_html__('seven API Key', 'pixelforge'),
-        'id' => 'seven_api_key',
-        'type' => 'text',
-        'attributes' => [
-            'type' => 'password',
-        ],
-        'desc' => esc_html__('API key from your seven account (environment variable SEVEN_API_KEY is also supported).', 'pixelforge'),
-    ]);
-
-    $cmb_options->add_field([
-        'name' => esc_html__('seven API URL', 'pixelforge'),
-        'id' => 'seven_api_url',
-        'type' => 'text_url',
-        'default' => 'https://gateway.seven.io/api/sms',
-        'desc' => esc_html__('Endpoint for sending messages; leave default unless using a custom gateway URL.', 'pixelforge'),
-    ]);
-
-    $cmb_options->add_field([
-        'name' => esc_html__('SMS Sender ID (optional)', 'pixelforge'),
-        'id' => 'seven_sender_id',
-        'type' => 'text_medium',
-        'desc' => esc_html__('Custom sender (from) label for SMS when supported by your seven account.', 'pixelforge'),
-    ]);
-
-    $cmb_options->add_field([
-        'name' => esc_html__('SMS Default Country Code', 'pixelforge'),
-        'id' => 'brevo_sms_country_code',
-        'type' => 'text_small',
-        'attributes' => [
-            'pattern' => '^\+?\d{1,4}$',
-        ],
-        'desc' => esc_html__('Optional. Prepends this code when numbers are entered without one (e.g. "+44").', 'pixelforge'),
     ]);
 
     $cmb_options->add_field([
