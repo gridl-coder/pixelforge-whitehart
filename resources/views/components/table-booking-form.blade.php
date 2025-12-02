@@ -67,6 +67,7 @@
                   <option value="{{ $menu->ID }}" @selected(($old['menu'] ?? $menus[0]->ID ?? null) === $menu->ID)>{{ $menu->post_title }}</option>
                 @endforeach
               </select>
+              <p class="booking-form__meta" id="booking_menu_meta" aria-live="polite"></p>
             </label>
 
             <label class="booking-form__field col-md-4">
@@ -81,6 +82,7 @@
             <label class="booking-form__field col-md-4">
               <span class="booking-form__label form-label">{{ __('Date', 'pixelforge') }}</span>
               <input class="booking-form__input form-control" type="date" name="pixelforge_booking_date" value="{{ $old['date'] ?? '' }}" min="{{ $minDate }}" required>
+              <div class="booking-form__day-legend" id="booking_day_legend" aria-live="polite"></div>
             </label>
 
             <label class="booking-form__field col-md-4">
@@ -172,14 +174,20 @@
         const notice = $('#booking_availability_notice');
         const slots = @json($menuSlots);
         const menuDays = @json($menuDays);
+        const menuWindows = @json($menuWindows);
+        const dayLabels = @json($dayLabels);
         const minDateString = @json($minDate);
         const ajaxUrl = form.data('ajax-url');
         const unavailableDateMessage = @json(__('Selected date is unavailable for this menu.', 'pixelforge'));
+        const availabilityEveryDay = @json(__('Available every day', 'pixelforge'));
+        const availabilityNotSet = @json(__('Service times not set', 'pixelforge'));
         const unavailableSectionMessage = @json(__('Selected area is fully booked for this date.', 'pixelforge'));
         const alerts = {
           error: $('.booking-form__alert--error'),
           success: $('.booking-form__alert--success'),
         };
+        const menuMeta = $('#booking_menu_meta');
+        const dayLegend = $('#booking_day_legend');
 
         const scrollToSuccess = () => {
           if (!alerts.success.length || !alerts.success.hasClass('is-visible')) {
@@ -267,6 +275,46 @@
           }
 
           return allowedDays.includes(dayNames[date.getDay()]);
+        };
+
+        const renderDayLegend = (allowedDays = []) => {
+          if (!dayLegend.length) {
+            return;
+          }
+
+          dayLegend.empty();
+
+          dayNames.forEach((day) => {
+            const allowed = allowedDays.length === 0 || allowedDays.includes(day);
+            const label = dayLabels[day] || day.charAt(0).toUpperCase() + day.slice(1);
+
+            dayLegend.append(
+              $('<span/>')
+                .addClass('booking-form__day')
+                .toggleClass('is-allowed', allowed)
+                .toggleClass('is-blocked', !allowed)
+                .text(label),
+            );
+          });
+        };
+
+        const updateMenuMeta = () => {
+          const menuId = menuSelect.val();
+          const allowedDays = menuDays[menuId] || [];
+          const window = menuWindows[menuId];
+
+          const allowedText = allowedDays.length
+            ? allowedDays.map((day) => dayLabels[day] || day).join(', ')
+            : availabilityEveryDay;
+          const windowText = window ? `${window.start} – ${window.end}` : availabilityNotSet;
+
+          renderDayLegend(allowedDays);
+
+          if (!menuMeta.length) {
+            return;
+          }
+
+          menuMeta.text(`${allowedText} · ${windowText}`);
         };
 
         const updateDateForMenu = () => {
@@ -528,6 +576,7 @@
 
         menuSelect.on('change', () => {
           updateDateForMenu();
+          updateMenuMeta();
           fetchAvailability();
         });
 
@@ -548,6 +597,7 @@
         rebuildTimes();
         updateDateForMenu();
         enforceAllowedDate();
+        updateMenuMeta();
         fetchAvailability();
         scrollToSuccess();
         });
