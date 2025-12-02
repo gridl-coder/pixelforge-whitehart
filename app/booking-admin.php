@@ -233,8 +233,12 @@ function validate_booking_data(array $data): array
         $errors[] = __('Please add a contact number.', 'pixelforge');
     }
 
-    if ($data['party_size'] < 1) {
-        $errors[] = __('Party size must be at least 1.', 'pixelforge');
+    if ($data['party_size'] < 2) {
+        $errors[] = __('Party size must be at least 2.', 'pixelforge');
+    }
+
+    if ($data['party_size'] > 12) {
+        $errors[] = __('Party size cannot exceed 12.', 'pixelforge');
     }
 
     if ($data['menu'] === 0 || get_post_type($data['menu']) !== BookingMenu::KEY) {

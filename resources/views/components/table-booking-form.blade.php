@@ -77,7 +77,13 @@
           <div class="row g-3">
             <label class="booking-form__field col-md-4">
               <span class="booking-form__label form-label">{{ __('Party Size', 'pixelforge') }}</span>
-              <input class="booking-form__input form-control" type="number" min="1" step="1" name="pixelforge_booking_party_size" value="{{ $old['party_size'] ?? '' }}" required>
+              <select class="booking-form__input form-select" name="pixelforge_booking_party_size" required>
+                @for ($partySize = 2; $partySize <= 12; $partySize += 1)
+                  <option value="{{ $partySize }}" @selected(($old['party_size'] ?? 2) === $partySize)>
+                    {{ sprintf(_n('%d guest', '%d guests', $partySize, 'pixelforge'), $partySize) }}
+                  </option>
+                @endfor
+              </select>
             </label>
 
             <label class="booking-form__field col-md-4">
@@ -162,7 +168,7 @@
         const timeSelect = $('#pixelforge_booking_time');
         const sectionSelect = form.find('select[name="pixelforge_booking_section"]');
         const dateInput = form.find('input[name="pixelforge_booking_date"]');
-        const partyInput = form.find('input[name="pixelforge_booking_party_size"]');
+        const partyInput = form.find('select[name="pixelforge_booking_party_size"]');
         const notice = $('#booking_availability_notice');
         const slots = @json($menuSlots);
         const ajaxUrl = form.data('ajax-url');
@@ -412,7 +418,7 @@
         menuSelect.on('change', fetchAvailability);
         sectionSelect.on('change', fetchAvailability);
         dateInput.on('change', fetchAvailability);
-        partyInput.on('input', fetchAvailability);
+        partyInput.on('change', fetchAvailability);
 
         rebuildTimes();
         fetchAvailability();
