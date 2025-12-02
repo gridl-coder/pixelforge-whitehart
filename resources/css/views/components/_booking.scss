@@ -6,9 +6,15 @@
 
   .booking-form__alert {
     text-align: center;
-    padding: 5px;
-    margin-bottom: 25px;
-    margin-top: 25px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 10001;
+    margin: 0;
+    padding: 20%;
+    font-size: 1.6rem;
 
     &--success {
       background: #0c4128;

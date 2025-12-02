@@ -30,7 +30,7 @@ function register_booking_shortcodes(): void
 
 function render_booking_form_shortcode(): string
 {
-    if (! (bool) get_theme_option('enable_bookings', 1)) {
+    if (!(bool)get_theme_option('enable_bookings', 1)) {
         return '<p class="booking-form__notice">' . esc_html__('Table bookings are currently unavailable.', 'pixelforge') . '</p>';
     }
 
@@ -53,16 +53,16 @@ function render_booking_form_shortcode(): string
     $menuSlots = [];
 
     foreach ($menus as $menu) {
-        $menuSlots[$menu->ID] = build_menu_slots((int) $menu->ID);
+        $menuSlots[$menu->ID] = build_menu_slots((int)$menu->ID);
     }
 
     $feedback = get_feedback();
 
     if (isset($_GET['booking_confirmed']) && empty($feedback['success'])) {
         if (sanitize_text_field(wp_unslash($_GET['booking_confirmed'])) === '1') {
-            $feedback['success'] = __('Thanks! Your booking is now confirmed. We look forward to seeing you.', 'pixelforge');
+            $feedback['success'] = __('<p><strong>Thanks!</strong><p>Your booking is now confirmed. We look forward to seeing you.</p>', 'pixelforge');
         } else {
-            $feedback['errors'][] = __('We could not verify this booking link. Please contact us to confirm your reservation.', 'pixelforge');
+            $feedback['errors'][] = __('<p><strong>We could not verify this booking link.</strong></p><p>Please contact us to confirm your reservation.</p>', 'pixelforge');
         }
     }
 
@@ -79,18 +79,18 @@ function render_booking_form_shortcode(): string
 
 function handle_booking_submission(): void
 {
-    if (! (bool) get_theme_option('enable_bookings', 1)) {
+    if (!(bool)get_theme_option('enable_bookings', 1)) {
         return;
     }
 
-    if (! isset($_POST['pixelforge_booking_form']) || $_POST['pixelforge_booking_form'] !== '1') {
+    if (!isset($_POST['pixelforge_booking_form']) || $_POST['pixelforge_booking_form'] !== '1') {
         return;
     }
 
-    if (! isset($_POST['pixelforge_booking_nonce']) || ! wp_verify_nonce(
-        sanitize_text_field(wp_unslash($_POST['pixelforge_booking_nonce'])),
-        NONCE_ACTION
-    )) {
+    if (!isset($_POST['pixelforge_booking_nonce']) || !wp_verify_nonce(
+            sanitize_text_field(wp_unslash($_POST['pixelforge_booking_nonce'])),
+            NONCE_ACTION
+        )) {
         return;
     }
 
@@ -121,7 +121,7 @@ function handle_booking_submission(): void
         $feedback['errors'][] = __('Please enter your name.', 'pixelforge');
     }
 
-    if ($data['email'] === '' || ! is_email($data['email'])) {
+    if ($data['email'] === '' || !is_email($data['email'])) {
         $feedback['errors'][] = __('Please enter a valid email address.', 'pixelforge');
     }
 
@@ -143,13 +143,13 @@ function handle_booking_submission(): void
 
     $bookingDate = DateTimeImmutable::createFromFormat('Y-m-d H:i', sprintf('%s %s', $data['date'], $data['time']), wp_timezone());
 
-    if (! $bookingDate) {
+    if (!$bookingDate) {
         $feedback['errors'][] = __('Please choose a valid date and time.', 'pixelforge');
     }
 
     $timeWindow = get_menu_time_window($data['menu']);
 
-    if (! $timeWindow) {
+    if (!$timeWindow) {
         $feedback['errors'][] = __('This menu is missing booking hours.', 'pixelforge');
     }
 
@@ -162,10 +162,10 @@ function handle_booking_submission(): void
     if ($bookingDate && $timeWindow) {
         $slotStart = time_from_string($data['time']);
 
-        if (! $slotStart) {
+        if (!$slotStart) {
             $feedback['errors'][] = __('Please choose a valid time slot.', 'pixelforge');
         } else {
-            if ((int) $slotStart->format('i') !== 0) {
+            if ((int)$slotStart->format('i') !== 0) {
                 $feedback['errors'][] = __('Bookings are limited to hourly slots.', 'pixelforge');
             }
 
@@ -173,13 +173,13 @@ function handle_booking_submission(): void
                 $feedback['errors'][] = __('Selected time is outside the menu availability.', 'pixelforge');
             }
 
-            if (! menu_allows_day($data['menu'], $bookingDate)) {
+            if (!menu_allows_day($data['menu'], $bookingDate)) {
                 $feedback['errors'][] = __('Selected day is not available for this menu.', 'pixelforge');
             }
         }
     }
 
-    if (! empty($feedback['errors'])) {
+    if (!empty($feedback['errors'])) {
         set_feedback($feedback);
         return;
     }
@@ -194,7 +194,7 @@ function handle_booking_submission(): void
 
     $tableIds = find_available_tables($data['section'], $data['party_size'], $timestamp);
 
-    if (! $tableIds) {
+    if (!$tableIds) {
         $suggestion = find_next_available_slot($data['section'], $data['party_size'], $data['menu'], $bookingDate ?: new DateTimeImmutable('now', wp_timezone()));
 
         if ($suggestion) {
@@ -222,7 +222,7 @@ function handle_booking_submission(): void
         'post_title' => $bookingTitle,
     ]);
 
-    if (is_wp_error($bookingId) || ! $bookingId) {
+    if (is_wp_error($bookingId) || !$bookingId) {
         $feedback['errors'][] = __('Unable to save your booking right now. Please try again later.', 'pixelforge');
         set_feedback($feedback);
         return;
@@ -245,7 +245,7 @@ function handle_booking_submission(): void
 
     send_booking_notifications($bookingId, $data, $tableIds, $timestamp, $verificationToken);
 
-    $feedback['success'] = __('Thanks! We\'ve reserved this slot. Please confirm your booking from the link we sent via email/SMS so we can finalize it.', 'pixelforge');
+    $feedback['success'] = __('<p><strong>Thanks! We\'ve reserved this slot.</strong></p><p>Please confirm your booking from the link we sent via email/SMS so we can finalise it.</p>', 'pixelforge');
     $feedback['old'] = [];
 
     set_feedback($feedback);
@@ -255,7 +255,7 @@ function get_feedback(): array
 {
     global $pixelforge_booking_feedback;
 
-    if (! isset($pixelforge_booking_feedback)) {
+    if (!isset($pixelforge_booking_feedback)) {
         return [
             'errors' => [],
             'success' => null,
@@ -282,9 +282,9 @@ function maybe_confirm_booking(): void
         return;
     }
 
-    $storedToken = (string) get_post_meta($bookingId, 'table_booking_verification_token', true);
+    $storedToken = (string)get_post_meta($bookingId, 'table_booking_verification_token', true);
 
-    if ($storedToken === '' || ! hash_equals($storedToken, $token)) {
+    if ($storedToken === '' || !hash_equals($storedToken, $token)) {
         wp_safe_redirect(add_query_arg('booking_confirmed', '0', home_url('/')));
         exit;
     }
@@ -305,7 +305,7 @@ function get_menu_time_window(int $menuId): ?array
     $start = time_from_string(get_post_meta($menuId, 'booking_menu_start_time', true));
     $end = time_from_string(get_post_meta($menuId, 'booking_menu_end_time', true));
 
-    if (! $start || ! $end || $end <= $start) {
+    if (!$start || !$end || $end <= $start) {
         return null;
     }
 
@@ -325,7 +325,7 @@ function time_from_string(string $time): ?DateTimeImmutable
 
     $parsed = DateTimeImmutable::createFromFormat('!H:i', $time, wp_timezone());
 
-    if (! $parsed) {
+    if (!$parsed) {
         return null;
     }
 
@@ -336,7 +336,7 @@ function menu_allows_day(int $menuId, DateTimeImmutable $date): bool
 {
     $days = get_post_meta($menuId, 'booking_menu_days', true);
 
-    if (! is_array($days) || $days === []) {
+    if (!is_array($days) || $days === []) {
         return true;
     }
 
@@ -349,7 +349,7 @@ function build_menu_slots(int $menuId): array
 {
     $window = get_menu_time_window($menuId);
 
-    if (! $window) {
+    if (!$window) {
         return [];
     }
 
@@ -371,7 +371,7 @@ function find_available_tables(int $sectionId, int $partySize, int $timestamp): 
     $bookedTables = get_booked_tables_for_section($sectionId, $timestamp);
 
     $availableTables = array_values(array_filter($tables, static function (array $table) use ($bookedTables) {
-        return ! in_array($table['id'], $bookedTables, true);
+        return !in_array($table['id'], $bookedTables, true);
     }));
 
     if ($availableTables === []) {
@@ -410,7 +410,7 @@ function find_next_available_slot(int $sectionId, int $partySize, int $menuId, D
     for ($dayOffset = 0; $dayOffset < 7; $dayOffset++) {
         $date = $from->modify(sprintf('+%d day', $dayOffset));
 
-        if (! menu_allows_day($menuId, $date)) {
+        if (!menu_allows_day($menuId, $date)) {
             continue;
         }
 
@@ -421,7 +421,7 @@ function find_next_available_slot(int $sectionId, int $partySize, int $menuId, D
                 wp_timezone()
             );
 
-            if (! $slotDate) {
+            if (!$slotDate) {
                 continue;
             }
 
@@ -451,7 +451,7 @@ function get_available_slots_for_section(int $sectionId, int $partySize, int $me
             wp_timezone()
         );
 
-        if (! $slotDate || $slotDate <= $now) {
+        if (!$slotDate || $slotDate <= $now) {
             continue;
         }
 
@@ -485,13 +485,13 @@ function customer_has_active_booking(string $email, string $phone, int $timestam
         ],
     ]);
 
-    if (! $query->posts) {
+    if (!$query->posts) {
         return false;
     }
 
     foreach ($query->posts as $bookingId) {
-        $bookingTime = (int) get_post_meta((int) $bookingId, 'table_booking_datetime', true);
-        $status = get_post_status((int) $bookingId);
+        $bookingTime = (int)get_post_meta((int)$bookingId, 'table_booking_datetime', true);
+        $status = get_post_status((int)$bookingId);
 
         if ($bookingTime >= time() && $status !== 'trash') {
             return true;
@@ -522,14 +522,14 @@ function get_section_tables(int $sectionId): array
     $tables = [];
 
     foreach ($query->posts as $table) {
-        $seats = (int) get_post_meta((int) $table->ID, 'booking_table_seats', true);
+        $seats = (int)get_post_meta((int)$table->ID, 'booking_table_seats', true);
 
         if ($seats < 1) {
             continue;
         }
 
         $tables[] = [
-            'id' => (int) $table->ID,
+            'id' => (int)$table->ID,
             'seats' => $seats,
         ];
     }
@@ -565,11 +565,11 @@ function get_booked_tables_for_section(int $sectionId, int $timestamp): array
     $tables = [];
 
     foreach ($bookings->posts as $bookingId) {
-        if (! is_booking_active((int) $bookingId)) {
+        if (!is_booking_active((int)$bookingId)) {
             continue;
         }
 
-        $tables = array_merge($tables, normalize_table_ids(get_post_meta((int) $bookingId, 'table_booking_table_id', true)));
+        $tables = array_merge($tables, normalize_table_ids(get_post_meta((int)$bookingId, 'table_booking_table_id', true)));
     }
 
     return array_values(array_unique(array_filter($tables)));
@@ -577,7 +577,7 @@ function get_booked_tables_for_section(int $sectionId, int $timestamp): array
 
 function is_booking_active(int $bookingId): bool
 {
-    $bookingTime = (int) get_post_meta($bookingId, 'table_booking_datetime', true);
+    $bookingTime = (int)get_post_meta($bookingId, 'table_booking_datetime', true);
     $status = get_post_status($bookingId);
 
     if ($bookingTime === 0 || $status === 'trash') {
@@ -631,7 +631,7 @@ function send_booking_notifications(int $bookingId, array $data, array $tableIds
         'text' => $customerText,
     ]);
 
-    if (! $customerSent) {
+    if (!$customerSent) {
         wp_mail($details['email'], $customerSubject, $customerText);
     }
 
@@ -661,7 +661,7 @@ function send_booking_notifications(int $bookingId, array $data, array $tableIds
         'text' => $adminBody,
     ]);
 
-    if (! $adminSent) {
+    if (!$adminSent) {
         wp_mail($adminEmail, $adminSubject, $adminBody);
     }
 }
@@ -683,7 +683,7 @@ function send_verified_notifications(int $bookingId, array $details): void
         'text' => $adminBody,
     ]);
 
-    if (! $adminSent) {
+    if (!$adminSent) {
         wp_mail($adminEmail, $adminSubject, $adminBody);
     }
 
@@ -701,7 +701,7 @@ function send_verified_notifications(int $bookingId, array $details): void
         'text' => $customerBody,
     ]);
 
-    if (! $customerSent) {
+    if (!$customerSent) {
         wp_mail($details['email'], $customerSubject, $customerBody);
     }
 }
@@ -727,7 +727,7 @@ function build_booking_summary(int $bookingId, array $details): string
         $lines[] = sprintf(__('Notes: %s', 'pixelforge'), $details['notes']);
     }
 
-    if (! (bool) get_theme_option('enable_bookings', 1)) {
+    if (!(bool)get_theme_option('enable_bookings', 1)) {
         $lines[] = __('Bookings are currently disabled in the theme options.', 'pixelforge');
     }
 
@@ -739,7 +739,7 @@ function get_booking_details(int $bookingId, array $data = [], array $tableIds =
     $menuId = $data['menu'] ?? get_post_meta($bookingId, 'table_booking_menu_id', true);
     $sectionId = $data['section'] ?? get_post_meta($bookingId, 'table_booking_section_id', true);
     $tableIds = $tableIds ?: normalize_table_ids(get_post_meta($bookingId, 'table_booking_table_id', true));
-    $timestamp = $timestamp ?: (int) get_post_meta($bookingId, 'table_booking_datetime', true);
+    $timestamp = $timestamp ?: (int)get_post_meta($bookingId, 'table_booking_datetime', true);
     $menuId = absint($menuId);
     $sectionId = absint($sectionId);
 
@@ -749,11 +749,11 @@ function get_booking_details(int $bookingId, array $data = [], array $tableIds =
         'name' => $data['name'] ?? get_post_meta($bookingId, 'table_booking_customer_name', true),
         'email' => $data['email'] ?? get_post_meta($bookingId, 'table_booking_customer_email', true),
         'phone' => $data['phone'] ?? get_post_meta($bookingId, 'table_booking_customer_phone', true),
-        'party_size' => (int) ($data['party_size'] ?? get_post_meta($bookingId, 'table_booking_party_size', true)),
+        'party_size' => (int)($data['party_size'] ?? get_post_meta($bookingId, 'table_booking_party_size', true)),
         'menu_name' => $menuId ? get_the_title($menuId) : '',
         'section_name' => $sectionId ? get_the_title($sectionId) : '',
         'table_label' => get_table_labels($tableIds),
-        'notes' => $data['notes'] ?? (string) get_post_meta($bookingId, 'table_booking_notes', true),
+        'notes' => $data['notes'] ?? (string)get_post_meta($bookingId, 'table_booking_notes', true),
         'formatted_datetime' => $datetime,
         'menu' => $menuId,
         'section' => $sectionId,
@@ -774,7 +774,7 @@ function get_booking_confirmation_link(int $bookingId, string $token): string
 
 function check_table_availability(): void
 {
-    if (! (bool) get_theme_option('enable_bookings', 1)) {
+    if (!(bool)get_theme_option('enable_bookings', 1)) {
         wp_send_json([
             'unavailableDate' => true,
             'availableSections' => [],
@@ -788,7 +788,7 @@ function check_table_availability(): void
 
     $date = DateTimeImmutable::createFromFormat('Y-m-d', $dateValue, wp_timezone());
 
-    if ($menuId === 0 || ! $date) {
+    if ($menuId === 0 || !$date) {
         wp_send_json([
             'unavailableDate' => true,
             'availableSections' => [],
@@ -796,7 +796,7 @@ function check_table_availability(): void
         ]);
     }
 
-    if (! menu_allows_day($menuId, $date)) {
+    if (!menu_allows_day($menuId, $date)) {
         wp_send_json([
             'unavailableDate' => true,
             'availableSections' => [],
@@ -814,7 +814,7 @@ function check_table_availability(): void
     $availableSections = [];
 
     foreach ($sections as $section) {
-        $slots = get_available_slots_for_section((int) $section->ID, $partySize, $menuId, $date);
+        $slots = get_available_slots_for_section((int)$section->ID, $partySize, $menuId, $date);
 
         if ($slots !== []) {
             $availableSlots[$section->ID] = $slots;

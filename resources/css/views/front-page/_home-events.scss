@@ -44,6 +44,7 @@
   }
 }
 
+
 .stage-events, .home-events-hero {
   padding: 30px 15px;
   @include media-breakpoint-up(md) {
@@ -101,6 +102,7 @@
   background-image: url('@images/events-header-image.jpg');
   background-repeat: no-repeat;
   background-size: cover;
+  padding: 90px 0;
   .col-12 {
    text-shadow: 0 0 5px rgba(0, 0, 0, .7);
   }
