@@ -232,6 +232,8 @@
         const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 
         const baseMinDate = parseDate(minDateString) || new Date();
+        const preferredStartDate = new Date(baseMinDate.getTime());
+        preferredStartDate.setDate(preferredStartDate.getDate() + 1);
 
         const findNextAllowedDate = (startDate, allowedDays = []) => {
           if (!(startDate instanceof Date) || Number.isNaN(startDate.valueOf())) {
@@ -273,8 +275,10 @@
           const minCandidate = new Date(baseMinDate.getTime());
           const minDate = findNextAllowedDate(minCandidate, allowedDays) || minCandidate;
           const currentDate = parseDate(dateInput.val());
-          const targetDate = currentDate && currentDate >= minDate ? currentDate : minDate;
-          const nextDate = findNextAllowedDate(new Date(targetDate.getTime()), allowedDays) || minDate;
+          const targetDate = currentDate && currentDate >= minDate ? currentDate : preferredStartDate;
+          const nextDate = findNextAllowedDate(new Date(targetDate.getTime()), allowedDays)
+            || findNextAllowedDate(new Date(minDate.getTime()), allowedDays)
+            || minDate;
 
           dateInput.attr('min', formatDate(minDate));
           dateInput.val(formatDate(nextDate));
