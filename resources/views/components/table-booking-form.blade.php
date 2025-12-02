@@ -148,10 +148,16 @@
     </form>
 
     <script>
-      jQuery(($) => {
-        const form = $('.booking-form__form');
-        const steps = form.find('.booking-form__step');
-        const progressSteps = form.find('.booking-form__progress-step');
+      const initBookingForm = () => {
+        if (typeof window.jQuery === 'undefined') {
+          console.warn('Booking form requires jQuery to run.');
+          return;
+        }
+
+        window.jQuery(($) => {
+          const form = $('.booking-form__form');
+          const steps = form.find('.booking-form__step');
+          const progressSteps = form.find('.booking-form__progress-step');
         const menuSelect = $('#pixelforge_booking_menu');
         const timeSelect = $('#pixelforge_booking_time');
         const sectionSelect = form.find('select[name="pixelforge_booking_section"]');
@@ -396,7 +402,14 @@
 
         rebuildTimes();
         fetchAvailability();
-      });
+        });
+      };
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initBookingForm, { once: true });
+      } else {
+        initBookingForm();
+      }
     </script>
   @endif
 </section>

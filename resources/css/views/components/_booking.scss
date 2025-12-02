@@ -96,16 +96,16 @@
     &__progress-step {
       position: relative;
       flex: 1;
-      padding: 10px 10px 12px 15px;
-      background: rgba(#fff, 0.05);
-      border: 1px solid rgba(#fff, 0.1);
+      padding: 10px 10px 10px 34px;
+      background: #ffffff0d;
+      border: 1px solid rgba(255, 255, 255, .1);
       border-radius: 14px;
       color: #fff;
       font-weight: 600;
-      letter-spacing: 0.3px;
-      transition: all 0.2s ease;
+      letter-spacing: .3px;
+      transition: all .2s ease;
       counter-increment: booking-step;
-      font-size: 10px;
+      font-size: 12px;
 
       &::before {
         content: counter(booking-step);
