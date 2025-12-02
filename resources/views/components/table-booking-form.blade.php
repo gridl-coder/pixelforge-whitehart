@@ -255,6 +255,18 @@
           return null;
         };
 
+        const isAllowedDay = (date, allowedDays = []) => {
+          if (!(date instanceof Date) || Number.isNaN(date.valueOf())) {
+            return false;
+          }
+
+          if (!Array.isArray(allowedDays) || allowedDays.length === 0) {
+            return true;
+          }
+
+          return allowedDays.includes(dayNames[date.getDay()]);
+        };
+
         const updateDateForMenu = () => {
           const menuId = menuSelect.val();
           const allowedDays = menuDays[menuId] || [];
@@ -269,6 +281,27 @@
           dateInput.get(0).setCustomValidity('');
 
           return dateInput.val();
+        };
+
+        const enforceAllowedDate = () => {
+          const menuId = menuSelect.val();
+          const allowedDays = menuDays[menuId] || [];
+          const minDate = parseDate(dateInput.attr('min')) || baseMinDate;
+          const currentDate = parseDate(dateInput.val());
+
+          if (currentDate && isAllowedDay(currentDate, allowedDays) && currentDate >= minDate) {
+            return;
+          }
+
+          const nextDate = findNextAllowedDate(new Date((currentDate || minDate).getTime()), allowedDays);
+
+          if (nextDate) {
+            dateInput.val(formatDate(nextDate));
+            dateInput.get(0).setCustomValidity('');
+          } else {
+            dateInput.val('');
+            dateInput.get(0).setCustomValidity(unavailableDateMessage);
+          }
         };
 
         const renderAlert = (type, content) => {
@@ -496,15 +529,21 @@
 
         sectionSelect.on('change', fetchAvailability);
 
-        dateInput.on('change', () => {
+        dateInput.on('change input', () => {
           updateDateForMenu();
+          enforceAllowedDate();
           fetchAvailability();
+        });
+
+        dateInput.on('keydown', (event) => {
+          event.preventDefault();
         });
 
         partyInput.on('change', fetchAvailability);
 
         rebuildTimes();
         updateDateForMenu();
+        enforceAllowedDate();
         fetchAvailability();
         scrollToSuccess();
         });
