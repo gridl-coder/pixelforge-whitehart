@@ -1,6 +1,17 @@
 .table-booking, .home {
   .page-header {
-    margin-top: 80px;
+    margin-top: 40px;
+    @include media-breakpoint-up(md) {
+      margin-top: 80px;
+    }
+  }
+
+  .booking-form-container {
+    .container {
+      @include media-breakpoint-up(md) {
+        padding: 0;
+      }
+    }
   }
 
   .booking-form__alert {
@@ -72,8 +83,11 @@
   .booking-form {
     max-width: 960px;
     margin: 30px auto 80px auto;
-    padding: 0 16px;
+
     text-align: left;
+    @include media-breakpoint-up(md) {
+      padding: 0 16px;
+    }
 
     &__form {
       background: rgba(255, 255, 255, 0.06);
@@ -300,9 +314,11 @@
     transform: translateY(0);
   }
 }
+
 .booking-menu-shortcode {
   font-size: 0.75rem;
+
   img {
-    border:  1px solid $brand_yellow;
+    border: 1px solid $brand_yellow;
   }
 }

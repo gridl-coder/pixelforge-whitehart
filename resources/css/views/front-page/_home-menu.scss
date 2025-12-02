@@ -18,6 +18,13 @@
   }
 }
 
+.menu-times-main strong{
+  display: block;
+  @include media-breakpoint-up(md) {
+    display: inline-block;
+  }
+}
+
 .stage-menu {
   padding: 15px;
   color: $brand-dark;

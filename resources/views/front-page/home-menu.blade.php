@@ -80,7 +80,7 @@
 </svg>
     </span>
       </div>
-      <p>
+      <p class="menu-times-main">
         Our Main Menu is served <strong>Mon / Tue / Wed / Thur: 9:00 - 13:00 </strong><br/>
         <em> Takeaway Service Available.</em>
       </p>
@@ -211,8 +211,6 @@
             requirements .</p>
 
 
-          <a href="<?= get_template_directory_uri(); ?>/resources/images/hart-main-1.png"
-             target="_blank" class="btn btn-primary btn-lg"> Download Menu </a>
 
         </div>
 
