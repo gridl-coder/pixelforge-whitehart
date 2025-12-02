@@ -141,15 +141,18 @@ function render_booking_menus_shortcode(): string
             'loading' => 'lazy',
         ]);
 
-        $output .= '<div class="col-md-3 booking-menu-shortcode__item">';
+        $thumbnailLink = get_the_post_thumbnail_url($menu->ID);
 
-        if ($thumbnail) {
-            $output .= '<div class="booking-menu-shortcode__thumb">' . $thumbnail . '</div>';
-        }
+        $output .= '<div class="col-6 col-md-3 booking-menu-shortcode__item mb-3">';
+
 
         $output .= '<p><strong>' . esc_html(get_the_title($menu)) . '</strong><br>'
             . esc_html(implode(' / ', $availableDays)) . '<br>'
             . esc_html($timeLabel) . '</p>';
+
+        if ($thumbnail) {
+            $output .= '<div class="booking-menu-shortcode__thumb"><a target="_blank" href="' . $thumbnailLink . '">' . $thumbnail . '</a></div>';
+        }
 
         $output .= '</div>';
     }

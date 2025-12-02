@@ -45,7 +45,7 @@
 }
 
 
-.stage-events, .home-events-hero {
+.stage-events, .home-events-hero, .booking-form-container {
   padding: 30px 15px;
   @include media-breakpoint-up(md) {
     padding: 120px 60px;
@@ -125,4 +125,8 @@
     left: 0;
     right: 0;
   }
+}
+
+.booking-form-container {
+
 }

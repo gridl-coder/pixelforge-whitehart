@@ -243,13 +243,13 @@ function get_menu_options(): array
 function get_day_options(): array
 {
     return [
-        'monday' => esc_html__('Monday', 'pixelforge'),
-        'tuesday' => esc_html__('Tuesday', 'pixelforge'),
-        'wednesday' => esc_html__('Wednesday', 'pixelforge'),
-        'thursday' => esc_html__('Thursday', 'pixelforge'),
-        'friday' => esc_html__('Friday', 'pixelforge'),
-        'saturday' => esc_html__('Saturday', 'pixelforge'),
-        'sunday' => esc_html__('Sunday', 'pixelforge'),
+        'monday' => esc_html__('Mon', 'pixelforge'),
+        'tuesday' => esc_html__('Tues', 'pixelforge'),
+        'wednesday' => esc_html__('Wed', 'pixelforge'),
+        'thursday' => esc_html__('Thur', 'pixelforge'),
+        'friday' => esc_html__('Fri', 'pixelforge'),
+        'saturday' => esc_html__('Sat', 'pixelforge'),
+        'sunday' => esc_html__('Sun', 'pixelforge'),
     ];
 }
 
