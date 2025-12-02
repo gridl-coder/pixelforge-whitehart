@@ -111,12 +111,18 @@ function send_sms(array $args): bool
 
     $body = wp_remote_retrieve_body($response);
     $parsed = json_decode($body, true);
-    $messageId = is_array($parsed) ? ($parsed['messages'][0]['id'] ?? ($parsed['message_id'] ?? null)) : null;
+    $isSuccess = is_array($parsed) && ($parsed['success_code'] ?? null) === 100;
 
-    if ($messageId) {
-        error_log(sprintf('seven SMS sent to %s (id: %s)', $recipient, $messageId));
+    if ($isSuccess) {
+        $messageId = $parsed['messages'][0]['id'] ?? $parsed['message_id'] ?? null;
+        if ($messageId) {
+            error_log(sprintf('seven SMS sent to %s (id: %s)', $recipient, $messageId));
+        } else {
+            error_log(sprintf('seven SMS sent to %s (success code 100)', $recipient));
+        }
     } else {
-        error_log(sprintf('seven SMS sent to %s', $recipient));
+        error_log('seven SMS failed with response: ' . $body);
+        return false;
     }
 
     return true;
