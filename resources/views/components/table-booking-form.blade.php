@@ -171,6 +171,8 @@
         const partyInput = form.find('select[name="pixelforge_booking_party_size"]');
         const notice = $('#booking_availability_notice');
         const slots = @json($menuSlots);
+        const menuDays = @json($menuDays);
+        const minDateString = @json($minDate);
         const ajaxUrl = form.data('ajax-url');
         const unavailableDateMessage = @json(__('Selected date is unavailable for this menu.', 'pixelforge'));
         const unavailableSectionMessage = @json(__('Selected area is fully booked for this date.', 'pixelforge'));
@@ -198,6 +200,76 @@
         $('.booking-form__alert-close').on('click', (event) => {
           $(event.currentTarget).closest('.booking-form__alert').removeClass('is-visible');
         });
+
+        const formatDate = (date) => {
+          if (!(date instanceof Date) || Number.isNaN(date.valueOf())) {
+            return '';
+          }
+
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          const day = String(date.getDate()).padStart(2, '0');
+
+          return `${year}-${month}-${day}`;
+        };
+
+        const parseDate = (value) => {
+          if (!value) {
+            return null;
+          }
+
+          const [year, month, day] = value.split('-').map(Number);
+
+          if (!year || !month || !day) {
+            return null;
+          }
+
+          const parsed = new Date(year, month - 1, day);
+
+          return Number.isNaN(parsed.valueOf()) ? null : parsed;
+        };
+
+        const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+
+        const baseMinDate = parseDate(minDateString) || new Date();
+
+        const findNextAllowedDate = (startDate, allowedDays = []) => {
+          if (!(startDate instanceof Date) || Number.isNaN(startDate.valueOf())) {
+            return null;
+          }
+
+          if (!Array.isArray(allowedDays) || allowedDays.length === 0) {
+            return startDate;
+          }
+
+          const cursor = new Date(startDate.getTime());
+
+          for (let i = 0; i < 90; i += 1) {
+            if (allowedDays.includes(dayNames[cursor.getDay()])) {
+              return cursor;
+            }
+
+            cursor.setDate(cursor.getDate() + 1);
+          }
+
+          return null;
+        };
+
+        const updateDateForMenu = () => {
+          const menuId = menuSelect.val();
+          const allowedDays = menuDays[menuId] || [];
+          const minCandidate = new Date(baseMinDate.getTime());
+          const minDate = findNextAllowedDate(minCandidate, allowedDays) || minCandidate;
+          const currentDate = parseDate(dateInput.val());
+          const targetDate = currentDate && currentDate >= minDate ? currentDate : minDate;
+          const nextDate = findNextAllowedDate(new Date(targetDate.getTime()), allowedDays) || minDate;
+
+          dateInput.attr('min', formatDate(minDate));
+          dateInput.val(formatDate(nextDate));
+          dateInput.get(0).setCustomValidity('');
+
+          return dateInput.val();
+        };
 
         const renderAlert = (type, content) => {
           hideAlerts();
@@ -309,6 +381,8 @@
         };
 
         const fetchAvailability = () => {
+          updateDateForMenu();
+
           const menuId = menuSelect.val();
           const date = dateInput.val();
           const partySize = partyInput.val();
@@ -415,12 +489,22 @@
             });
         });
 
-        menuSelect.on('change', fetchAvailability);
+        menuSelect.on('change', () => {
+          updateDateForMenu();
+          fetchAvailability();
+        });
+
         sectionSelect.on('change', fetchAvailability);
-        dateInput.on('change', fetchAvailability);
+
+        dateInput.on('change', () => {
+          updateDateForMenu();
+          fetchAvailability();
+        });
+
         partyInput.on('change', fetchAvailability);
 
         rebuildTimes();
+        updateDateForMenu();
         fetchAvailability();
         scrollToSuccess();
         });
