@@ -72,6 +72,54 @@ function register_theme_options_metabox(): void
     ]);
 
     $cmb_options->add_field([
+        'name' => esc_html__('Brevo Email & SMS', 'pixelforge'),
+        'id' => 'brevo_options',
+        'type' => 'title',
+        'desc' => esc_html__('Store your Brevo API credentials to send booking confirmations by email and SMS.', 'pixelforge'),
+    ]);
+
+    $cmb_options->add_field([
+        'name' => esc_html__('Brevo API Key', 'pixelforge'),
+        'id' => 'brevo_api_key',
+        'type' => 'text',
+        'attributes' => [
+            'type' => 'password',
+        ],
+        'desc' => esc_html__('Transactional/V3 API key used for both email and SMS.', 'pixelforge'),
+    ]);
+
+    $cmb_options->add_field([
+        'name' => esc_html__('Brevo Sender Email', 'pixelforge'),
+        'id' => 'brevo_sender_email',
+        'type' => 'text_email',
+        'desc' => esc_html__('Must be a validated sender/domain in Brevo.', 'pixelforge'),
+    ]);
+
+    $cmb_options->add_field([
+        'name' => esc_html__('Brevo Sender Name', 'pixelforge'),
+        'id' => 'brevo_sender_name',
+        'type' => 'text_medium',
+        'desc' => esc_html__('Appears as the from name on confirmation emails (defaults to site name).', 'pixelforge'),
+    ]);
+
+    $cmb_options->add_field([
+        'name' => esc_html__('SMS Sender ID', 'pixelforge'),
+        'id' => 'brevo_sms_sender',
+        'type' => 'text_medium',
+        'desc' => esc_html__('Up to 11 alphanumeric characters approved in Brevo for transactional SMS.', 'pixelforge'),
+    ]);
+
+    $cmb_options->add_field([
+        'name' => esc_html__('SMS Default Country Code', 'pixelforge'),
+        'id' => 'brevo_sms_country_code',
+        'type' => 'text_small',
+        'attributes' => [
+            'pattern' => '^\+?\d{1,4}$',
+        ],
+        'desc' => esc_html__('Optional. Prepends this code when numbers are entered without one (e.g. "+44").', 'pixelforge'),
+    ]);
+
+    $cmb_options->add_field([
         'name' => esc_html__('SEO & Social Defaults', 'cmb2'),
         'id' => 'seo_defaults_title',
         'type' => 'title',
