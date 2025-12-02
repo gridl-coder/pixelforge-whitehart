@@ -85,7 +85,7 @@
         <a class="booking-admin__button booking-admin__button--ghost" href="{{ wp_logout_url($redirect) }}">{{ __('Log out', 'pixelforge') }}</a>
       </div>
 
-      <div class="booking-admin__panels">
+      <div class="booking-admin__panels" data-panel-container>
         <div class="booking-admin__panel is-active" id="booking-panel-create" data-panel="create" role="tabpanel" aria-label="{{ __('Add booking', 'pixelforge') }}">
           <div class="booking-admin__card">
             <h2>{{ __('Create booking', 'pixelforge') }}</h2>
@@ -158,6 +158,8 @@
                     @endforeach
                   </div>
                 </label>
+
+              </div>
 
               <div class="booking-admin__field-grid">
                 <label class="booking-admin__field">
@@ -394,23 +396,34 @@
       document.addEventListener('DOMContentLoaded', function () {
         const tabs = Array.from(document.querySelectorAll('[data-panel-toggle]'));
         const panels = Array.from(document.querySelectorAll('[data-panel]'));
+        const panelContainer = document.querySelector('[data-panel-container]');
+
+        function setActivePanel(target) {
+          tabs.forEach(function (link) {
+            const isActive = link.getAttribute('data-panel-toggle') === target;
+            link.classList.toggle('is-active', isActive);
+            link.setAttribute('aria-selected', isActive ? 'true' : 'false');
+          });
+
+          panels.forEach(function (panel) {
+            const isMatch = panel.getAttribute('data-panel') === target;
+            panel.classList.toggle('is-active', isMatch);
+            panel.setAttribute('aria-hidden', isMatch ? 'false' : 'true');
+          });
+        }
 
         tabs.forEach(function (tab) {
           tab.addEventListener('click', function (event) {
             event.preventDefault();
-            const target = tab.getAttribute('data-panel-toggle');
-
-            tabs.forEach(function (link) {
-              const isActive = link === tab;
-              link.classList.toggle('is-active', isActive);
-              link.setAttribute('aria-selected', isActive ? 'true' : 'false');
-            });
-
-            panels.forEach(function (panel) {
-              panel.classList.toggle('is-active', panel.getAttribute('data-panel') === target);
-            });
+            setActivePanel(tab.getAttribute('data-panel-toggle'));
           });
         });
+
+        if (panelContainer) {
+          panelContainer.setAttribute('data-panels-ready', 'true');
+        }
+
+        setActivePanel('create');
 
         const calendarWrapper = document.querySelector('[data-booking-calendar]');
 

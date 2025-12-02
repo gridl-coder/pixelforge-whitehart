@@ -64,10 +64,14 @@
 }
 
 .booking-admin__panel {
+  display: block;
+}
+
+[data-panels-ready='true'] .booking-admin__panel {
   display: none;
 }
 
-.booking-admin__panel.is-active {
+[data-panels-ready='true'] .booking-admin__panel.is-active {
   display: block;
 }
 
