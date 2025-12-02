@@ -21,7 +21,7 @@
     right: 0;
   }
 
-  @include media-breakpoint-up(md) {
+  @include media-breakpoint-up(sm) {
     padding-top: 30px;
   }
 
@@ -32,7 +32,7 @@
     left: 0;
     width: 100%;
     z-index: -1;
-    @include media-breakpoint-up(md) {
+    @include media-breakpoint-up(sm) {
       top: -250px;
 
     }
@@ -48,12 +48,16 @@
     border: 1px dashed rgba(255, 255, 255, 0.5);
     padding: 15px;
 
-    h1 {
+    @include media-breakpoint-up(sm) {
+      margin: 75px auto 0 auto;
+    }
+
+      h1 {
       letter-spacing: 4px;
       font-weight: 500;
       text-transform: uppercase;
 
-      @include media-breakpoint-up(md) {
+      @include media-breakpoint-up(sm) {
         margin-bottom: 1rem;
         font-size: 3.5rem;
         line-height: 1.4;
@@ -72,7 +76,7 @@
     margin: 30px auto 0 auto;
     background: url("@images/hart-bg.png") no-repeat -95% -7%;
 
-    @include media-breakpoint-up(md) {
+    @include media-breakpoint-up(sm) {
       background: url("@images/hart-bg.png") no-repeat right 13%;
     }
   }
@@ -98,7 +102,7 @@
   text-align: center;
 
 
-  @include media-breakpoint-up(md) {
+  @include media-breakpoint-up(sm) {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;

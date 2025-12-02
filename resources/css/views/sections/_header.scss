@@ -73,6 +73,7 @@
     padding: 10px;
     @include media-breakpoint-up(sm) {
       position: relative;
+      background: none;
       padding-top: 20px;
     }
 
