@@ -40,7 +40,7 @@ function normalize_phone(string $phone): string
         return '';
     }
 
-    $countryCode = (string) get_theme_option('sms_default_country_code', '');
+    $countryCode = (string) get_theme_option('sms_default_country_code', '44');
     $countryCode = ltrim($countryCode, '+');
 
     if ($countryCode !== '' && strpos($digits, $countryCode) !== 0) {
