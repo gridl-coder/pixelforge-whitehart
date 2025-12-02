@@ -27,6 +27,10 @@
 
 body {
   font-family: 'Raleway', 'arial', sans-serif;
+  padding-top: 100px;
+  @include media-breakpoint-up(sm) {
+    padding-top: 0;
+  }
 }
 
 .btn {

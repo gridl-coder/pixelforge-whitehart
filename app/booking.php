@@ -231,7 +231,7 @@ function handle_booking_submission(): void
 
     send_booking_emails($bookingId, $data, $tableIds, $timestamp);
 
-    $feedback['success'] = __('Your booking is confirmed! We have sent the details to your email. If you need multiple bookings, call us and we will help.', 'pixelforge');
+    $feedback['success'] = __('Your booking is confirmed! We will use your contact details to confirm your booking. If you need multiple bookings, please call us on 07922 214361 and we will help.', 'pixelforge');
     $feedback['old'] = [];
 
     set_feedback($feedback);

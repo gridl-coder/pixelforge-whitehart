@@ -71,7 +71,7 @@ const initCarouselSliders = async () => {
   $carousels.slick({
     dots: true,
     arrows: false,
-    adaptiveHeight: true,
+    adaptiveHeight: false,
     autoplay: true,
     autoplaySpeed: 2000,
     slidesToShow: 1,
