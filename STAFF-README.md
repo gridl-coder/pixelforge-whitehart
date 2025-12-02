@@ -4,7 +4,7 @@ This guide explains how front-of-house staff can manage reservations using the B
 
 ## Access and sign-in
 
-- Open the shared Booking Admin Panel link.
+- Open the shared Booking Admin Panel link. /table-booking-admin/
 - Enter your WordPress **username** and **password**, then click **Sign in**.
 - If you see “No access”, your account is missing the **edit posts** permission; ask a manager to adjust your role. Trashing bookings requires the **delete posts** permission.
 - Use the **Log out** button in the top-right to end your session.

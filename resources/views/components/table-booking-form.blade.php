@@ -72,7 +72,7 @@
 
         <fieldset class="booking-form__step" data-step="2">
           <legend class="booking-form__step-title">{{ __('Choose your table', 'pixelforge') }}</legend>
-          <p class="booking-form__step-hint">{{ sprintf(__('Bookings last %d minutes so everyone gets time to savour their meal.', 'pixelforge'), \PixelForge\Bookings\BOOKING_SLOT_MINUTES) }}</p>
+          <p class="booking-form__step-hint">{{ sprintf(__('Bookings last %d minutes.', 'pixelforge'), \PixelForge\Bookings\BOOKING_SLOT_MINUTES) }}</p>
 
           <div class="row g-3">
             <label class="booking-form__field col-md-4">

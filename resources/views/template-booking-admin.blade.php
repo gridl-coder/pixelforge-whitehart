@@ -7,13 +7,12 @@
 @php($notice = sanitize_text_field(wp_unslash($_GET['booking_admin_notice'] ?? '')))
 @php($error = isset($_GET['booking_admin_error']) ? wp_kses_post(wp_unslash($_GET['booking_admin_error'])) : '')
 
-@extends('layouts.app')
+@extends('layouts.booking-admin')
 
 @section('content')
   <section class="booking-admin">
     <div class="booking-admin__header">
       <h1>{{ __('Table Booking Admin', 'pixelforge') }}</h1>
-      <p>{{ __('A simplified dashboard for staff to manage table reservations without accessing wp-admin.', 'pixelforge') }}</p>
     </div>
 
     @if ($notice !== '')
@@ -75,7 +74,7 @@
       <div class="booking-admin__grid">
         <div class="booking-admin__card">
           <h2>{{ __('Create booking', 'pixelforge') }}</h2>
-          <p class="booking-admin__muted">{{ __('Add a new booking without opening the WordPress dashboard.', 'pixelforge') }}</p>
+          <p class="booking-admin__muted">{{ __('Add a new booking.', 'pixelforge') }}</p>
 
           <form class="booking-admin__form" action="{{ admin_url('admin-post.php') }}" method="post">
             @php(wp_nonce_field(\PixelForge\BookingAdmin\BOOKING_NONCE_ACTION))
@@ -171,7 +170,7 @@
           <div class="booking-admin__card-header">
             <div>
               <h2>{{ __('Existing bookings', 'pixelforge') }}</h2>
-              <p class="booking-admin__muted">{{ __('Review, update, or trash bookings without opening the main dashboard.', 'pixelforge') }}</p>
+              <p class="booking-admin__muted">{{ __('Review, update, or cancel bookings.', 'pixelforge') }}</p>
             </div>
             <span class="booking-admin__pill">{{ count($panel['bookings']) }} {{ __('records', 'pixelforge') }}</span>
           </div>
