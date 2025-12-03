@@ -84,6 +84,113 @@ const initCarouselSliders = async () => {
   });
 };
 
+const initHomeGalleryCarousel = async () => {
+  const $gallerySliders = $('[data-home-gallery-slider]');
+
+  if (!$gallerySliders.length) {
+    return;
+  }
+
+  await loadSlick();
+
+  if (typeof $gallerySliders.slick !== 'function') {
+    return;
+  }
+
+  $gallerySliders.each((index, slider) => {
+    const $slider = $(slider);
+
+    if ($slider.hasClass('slick-initialized')) {
+      return;
+    }
+
+    $slider.slick({
+      dots: true,
+      arrows: true,
+      autoplay: true,
+      autoplaySpeed: 3500,
+      slidesToShow: 1,
+      slidesToScroll: 1,
+      adaptiveHeight: true,
+      fade: false,
+    });
+  });
+};
+
+const initHomeGalleryLightbox = () => {
+  const lightbox = document.querySelector('[data-home-gallery-lightbox]');
+
+  if (!lightbox) {
+    return;
+  }
+
+  const lightboxImage = lightbox.querySelector('.home-gallery-lightbox__image');
+  const lightboxCaption = lightbox.querySelector('[data-home-gallery-lightbox-caption]');
+  const closeButtons = lightbox.querySelectorAll('[data-home-gallery-lightbox-close]');
+
+  const closeLightbox = () => {
+    lightbox.hidden = true;
+    document.body.style.overflow = '';
+
+    if (lightboxImage) {
+      lightboxImage.src = '';
+      lightboxImage.alt = '';
+    }
+
+    if (lightboxCaption) {
+      lightboxCaption.textContent = '';
+    }
+  };
+
+  const openLightbox = (src, alt, caption) => {
+    if (!lightboxImage) {
+      return;
+    }
+
+    lightboxImage.src = src;
+    lightboxImage.alt = alt || '';
+
+    if (lightboxCaption) {
+      lightboxCaption.textContent = caption || '';
+      lightboxCaption.hidden = !caption;
+    }
+
+    lightbox.hidden = false;
+    document.body.style.overflow = 'hidden';
+  };
+
+  document.querySelectorAll('[data-lightbox-src]').forEach((image) => {
+    image.addEventListener('click', (event) => {
+      event.preventDefault();
+
+      const target = event.currentTarget;
+      const src = target.getAttribute('data-lightbox-src') || target.getAttribute('src');
+      const alt = target.getAttribute('alt') || '';
+      const caption = target.getAttribute('data-lightbox-caption') || '';
+
+      if (src) {
+        openLightbox(src, alt, caption);
+      }
+    });
+  });
+
+  closeButtons.forEach((button) => {
+    button.addEventListener('click', () => closeLightbox());
+  });
+
+  lightbox.addEventListener('click', (event) => {
+    if (event.target === lightbox) {
+      closeLightbox();
+    }
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && lightbox && !lightbox.hidden) {
+      closeLightbox();
+    }
+  });
+};
+
 const initBookingMenuSliders = async () => {
   await loadSlick();
 
@@ -130,8 +237,12 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     initCarouselSliders().catch((error) => console.error('Failed to init carousel', error));
     initBookingMenuSliders().catch((error) => console.error('Failed to init booking menu slider', error));
+    initHomeGalleryCarousel().catch((error) => console.error('Failed to init home gallery slider', error));
+    initHomeGalleryLightbox();
   });
 } else {
   initCarouselSliders().catch((error) => console.error('Failed to init carousel', error));
   initBookingMenuSliders().catch((error) => console.error('Failed to init booking menu slider', error));
+  initHomeGalleryCarousel().catch((error) => console.error('Failed to init home gallery slider', error));
+  initHomeGalleryLightbox();
 }

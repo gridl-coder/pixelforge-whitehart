@@ -13,7 +13,15 @@ function register_home_metabox(): void
         'id' => 'home_register_metabox',
         'title' => esc_html__('Home Hero Content', 'pixelforge'),
         'object_types' => ['page'],
-        'show_on' => ['key' => 'front-page', 'value' => 'true'],
+        'show_on_cb' => static function ($cmb): bool {
+            $frontPageId = (int) get_option('page_on_front');
+
+            if (! $frontPageId) {
+                return false;
+            }
+
+            return (int) $cmb->object_id === $frontPageId;
+        },
     ]);
 
     $cmb_home->add_field([
@@ -107,4 +115,52 @@ function register_home_metabox(): void
         ),
         'preview_size' => 'medium',
     ));
+
+    $gallery_group_id = $cmb_home->add_field([
+        'id' => 'home_gallery_images',
+        'type' => 'group',
+        'repeatable' => true,
+        'options' => [
+            'group_title' => esc_html__('Gallery Image {#}', 'pixelforge'),
+            'add_button' => esc_html__('Add Gallery Image', 'pixelforge'),
+            'remove_button' => esc_html__('Remove Image', 'pixelforge'),
+            'closed' => true,
+            'sortable' => true,
+        ],
+    ]);
+
+    $cmb_home->add_group_field($gallery_group_id, [
+        'name' => esc_html__('Image', 'pixelforge'),
+        'id' => 'image',
+        'type' => 'file',
+        'options' => [
+            'url' => false,
+        ],
+        'text' => [
+            'add_upload_file_text' => esc_html__('Add Image', 'pixelforge'),
+        ],
+        'query_args' => [
+            'type' => [
+                'image/gif',
+                'image/jpg',
+                'image/png',
+                'image/jpeg',
+            ],
+        ],
+        'preview_size' => 'medium',
+    ]);
+
+    $cmb_home->add_group_field($gallery_group_id, [
+        'name' => esc_html__('Alt text', 'pixelforge'),
+        'id' => 'alt',
+        'type' => 'text',
+        'sanitization_cb' => 'sanitize_text_field',
+    ]);
+
+    $cmb_home->add_group_field($gallery_group_id, [
+        'name' => esc_html__('Caption', 'pixelforge'),
+        'id' => 'caption',
+        'type' => 'text',
+        'sanitization_cb' => 'sanitize_text_field',
+    ]);
 }
