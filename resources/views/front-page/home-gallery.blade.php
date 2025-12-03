@@ -11,7 +11,9 @@
       </div>
 
       <p class="home-gallery__copy lead">
-        {{ __('A few snapshots from the bar, the kitchen, and our events. Drop by, say hello, and make your own memories with us.', 'pixelforge') }}
+        {{ __('A few snapshots from the bar, our events and food that we serve.', 'pixelforge') }} <br/>
+        {{ __('Drop by, say hello, and make your own memories with us.', 'pixelforge') }}
+
       </p>
     </div>
   </div>

@@ -88,11 +88,26 @@ const initHomeGalleryCarousel = async () => {
       dots: true,
       arrows: true,
       autoplay: true,
-      autoplaySpeed: 3500,
-      slidesToShow: 1,
+      autoplaySpeed: 2500,
+      slidesToShow: 6,
       slidesToScroll: 1,
-      adaptiveHeight: true,
+      adaptiveHeight: false,
       fade: false,
+      centerMode: true,
+      responsive: [
+        {
+          breakpoint: 1200,
+          settings: { slidesToShow: 6 },
+        },
+        {
+          breakpoint: 992,
+          settings: { slidesToShow: 3 },
+        },
+        {
+          breakpoint: 576,
+          settings: { slidesToShow: 1 },
+        },
+      ],
     });
   });
 };

@@ -21,15 +21,23 @@
 
         </div>
         <div class="nav_dec"><span></span></div>
-        @if (!empty($alesImage['url']))
-          <img src="{{ esc_url($alesImage['url']) }}" class="img-fluid"
-               alt="{{ esc_attr($alesImage['alt']) }}" loading="lazy">
-        @endif
-        <div class="nav_dec"><span></span></div>
 
-        @if (!empty($guestPopup['url']))
-          <img class="img-fluid food-banner__poster" src="{{ esc_url($guestPopup['url']) }}"
-               alt="{{ esc_attr($guestPopup['alt']) }}" loading="lazy"/>
+
+      </div>
+      <div class="col-md-5 food-banner-image text-center">
+
+        @if (!empty($menuCarousel))
+          <div class="carousel-slider">
+            @foreach ($menuCarousel as $slide)
+              <div class="carousel-slider__slide">
+                <img class="img-fluid" src="{{ esc_url($slide['url']) }}" alt="{{ esc_attr($slide['title']) }}"
+                     loading="lazy"/>
+                @if (!empty($slide['title']))
+                  <span>{{ $slide['title'] }}</span>
+                @endif
+              </div>
+            @endforeach
+          </div>
         @endif
 
       </div>
