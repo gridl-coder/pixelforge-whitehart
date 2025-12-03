@@ -84,7 +84,6 @@
             <label class="booking-form__field col-md-4">
               <span class="booking-form__label form-label">{{ __('Date', 'pixelforge') }}</span>
               <input class="booking-form__input form-control" type="date" name="pixelforge_booking_date" value="{{ $old['date'] ?? '' }}" min="{{ $minDate }}" required>
-              <div class="booking-form__day-legend" id="booking_day_legend" aria-live="polite"></div>
             </label>
 
             <label class="booking-form__field col-md-4">
@@ -181,7 +180,6 @@
         const minDateString = @json($minDate);
         const ajaxUrl = form.data('ajax-url');
         const unavailableDateMessage = @json(__('Selected date is unavailable for this menu.', 'pixelforge'));
-        const availabilityEveryDay = @json(__('Available every day', 'pixelforge'));
         const availabilityNotSet = @json(__('Service times not set', 'pixelforge'));
         const unavailableSectionMessage = @json(__('Selected area is fully booked for this date.', 'pixelforge'));
         const alerts = {
@@ -189,7 +187,6 @@
           success: $('.booking-form__alert--success'),
         };
         const menuMeta = $('#booking_menu_meta');
-        const dayLegend = $('#booking_day_legend');
 
         let currentStep = 0;
 
@@ -273,44 +270,35 @@
           return allowedDays.includes(dayNames[date.getDay()]);
         };
 
-        const renderDayLegend = (allowedDays = []) => {
-          if (!dayLegend.length) {
-            return;
-          }
-
-          dayLegend.empty();
-
-          dayNames.forEach((day) => {
+        const renderDayLegend = (allowedDays = []) =>
+          dayNames.map((day) => {
             const allowed = allowedDays.length === 0 || allowedDays.includes(day);
             const label = dayLabels[day] || day.charAt(0).toUpperCase() + day.slice(1);
 
-            dayLegend.append(
-              $('<span/>')
-                .addClass('booking-form__day')
-                .toggleClass('is-allowed', allowed)
-                .toggleClass('is-blocked', !allowed)
-                .text(label),
-            );
+            return $('<span/>')
+              .addClass('booking-form__day')
+              .toggleClass('is-allowed', allowed)
+              .toggleClass('is-blocked', !allowed)
+              .text(label);
           });
-        };
 
         const updateMenuMeta = () => {
           const menuId = menuSelect.val();
           const allowedDays = menuDays[menuId] || [];
           const window = menuWindows[menuId];
 
-          const allowedText = allowedDays.length
-            ? allowedDays.map((day) => dayLabels[day] || day).join(', ')
-            : availabilityEveryDay;
           const windowText = window ? `${window.start} – ${window.end}` : availabilityNotSet;
-
-          renderDayLegend(allowedDays);
 
           if (!menuMeta.length) {
             return;
           }
 
-          menuMeta.text(`${allowedText} · ${windowText}`);
+          menuMeta.empty().append([
+            ...renderDayLegend(allowedDays),
+            $('<span/>')
+              .addClass('booking-form__meta-window')
+              .text(windowText),
+          ]);
         };
 
         const updateDateForMenu = () => {

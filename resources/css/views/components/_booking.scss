@@ -294,16 +294,18 @@
     }
 
     &__meta {
-      margin-top: 6px;
+      margin-top: 8px;
       color: rgba(#fff, 0.75);
       font-size: 0.95rem;
-    }
-
-    &__day-legend {
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
-      margin-top: 8px;
+      align-items: center;
+    }
+
+    &__meta-window {
+      color: rgba(#fff, 0.85);
+      font-weight: 600;
     }
 
     &__day {
