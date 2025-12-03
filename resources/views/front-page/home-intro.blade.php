@@ -6,6 +6,29 @@
          loading="lazy"/>
   @endif
 
+  <div class="parallax-decorations" aria-hidden="true">
+    <span class="parallax-decorations__item parallax-decorations__item--script"
+          data-parallax
+          data-parallax-depth="0.45"
+          data-parallax-distance="180">
+      {{ __('Seasonal flavours', 'pixelforge') }}
+    </span>
+
+    <span class="parallax-decorations__item parallax-decorations__item--badge"
+          data-parallax
+          data-parallax-depth="0.25"
+          data-parallax-distance="140">
+      {{ __('Cornwall crafted', 'pixelforge') }}
+    </span>
+
+    <span class="parallax-decorations__item parallax-decorations__item--sparkle"
+          data-parallax
+          data-parallax-depth="0.6"
+          data-parallax-distance="160">
+      ★
+    </span>
+  </div>
+
   <div class="home-intro-inner">
     <h1>
       <span class="home-intro__heading-prefix">{{ __('Welcome to', 'pixelforge') }}</span>

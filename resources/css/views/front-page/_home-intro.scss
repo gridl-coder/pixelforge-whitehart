@@ -95,6 +95,64 @@
 
 }
 
+.parallax-decorations {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  font-family: 'Cormorant Garamond', serif;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+
+  &__item {
+    position: absolute;
+    color: $brand_yellow;
+    opacity: 0.75;
+    text-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+    transform: translate3d(0, 0, 0);
+    will-change: transform;
+  }
+
+  &__item--script {
+    top: 12%;
+    left: 8%;
+    font-size: clamp(1.1rem, 2vw + 0.5rem, 2rem);
+    font-style: italic;
+  }
+
+  &__item--badge {
+    top: 18%;
+    right: 10%;
+    padding: 10px 16px;
+    border: 1px dashed rgba($brand_yellow, 0.5);
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.45);
+    font-size: clamp(0.85rem, 1vw + 0.65rem, 1.2rem);
+  }
+
+  &__item--sparkle {
+    bottom: 16%;
+    right: 22%;
+    font-size: clamp(1.6rem, 2vw + 1rem, 2.4rem);
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.35));
+  }
+
+  @include media-breakpoint-down(sm) {
+    &__item--script {
+      top: 16%;
+      left: 12%;
+    }
+
+    &__item--badge {
+      right: 6%;
+    }
+
+    &__item--sparkle {
+      right: 14%;
+    }
+  }
+}
+
 .amenities-list {
   margin: 0 0 0 0;
   padding: 0;

@@ -21,6 +21,7 @@ const loadSlick = async () => {
 const navButton = document.getElementById('navButton');
 const mainNav = document.getElementById('mainNav');
 const navCloseButtons = document.querySelectorAll('[data-nav-close]');
+const header = document.getElementById('masthead');
 
 const toggleNavigation = (force) => {
   if (!mainNav || !navButton) {
@@ -49,6 +50,50 @@ if (navButton && mainNav) {
     link.addEventListener('click', () => toggleNavigation(false));
   });
 }
+
+const getScrollOffset = () => {
+  const isMobileHeaderFixed = window.matchMedia('(max-width: 575.98px)').matches;
+
+  if (!header || !isMobileHeaderFixed) {
+    return 0;
+  }
+
+  return header.getBoundingClientRect().height + 12;
+};
+
+const initSmoothAnchorScroll = () => {
+  const anchorLinks = document.querySelectorAll('a[href^="#"]:not([href="#"])');
+
+  if (!anchorLinks.length) {
+    return;
+  }
+
+  anchorLinks.forEach((link) => {
+    link.addEventListener('click', (event) => {
+      const targetId = link.getAttribute('href');
+
+      if (!targetId || targetId === '#' || link.getAttribute('target') === '_blank') {
+        return;
+      }
+
+      const targetElement = document.querySelector(targetId);
+
+      if (!targetElement) {
+        return;
+      }
+
+      event.preventDefault();
+
+      const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+      const offsetPosition = targetPosition - getScrollOffset();
+
+      window.scrollTo({
+        top: Math.max(offsetPosition, 0),
+        behavior: 'smooth',
+      });
+    });
+  });
+};
 
 const enableJsClass = () => {
   const html = document.documentElement;
@@ -228,14 +273,60 @@ const initBookingMenuSliders = async () => {
   });
 };
 
+const initParallaxDecorations = async () => {
+  const parallaxElements = document.querySelectorAll('[data-parallax]');
+
+  if (!parallaxElements.length) {
+    return;
+  }
+
+  const [{ default: ScrollMagic }, { gsap }] = await Promise.all([
+    import('scrollmagic'),
+    import('gsap'),
+  ]);
+
+  const controller = new ScrollMagic.Controller();
+
+  parallaxElements.forEach((element) => {
+    const depth = parseFloat(element.getAttribute('data-parallax-depth')) || 0.35;
+    const distance = parseInt(element.getAttribute('data-parallax-distance'), 10) || 140;
+
+    const scene = new ScrollMagic.Scene({
+      triggerElement: element,
+      triggerHook: 1,
+      duration: '160%',
+    })
+      .on('progress', (progressEvent) => {
+        const progress = progressEvent.progress * 2 - 1; // range: -1 to 1
+        const translateValue = progress * distance * depth;
+
+        gsap.to(element, {
+          y: translateValue,
+          opacity: 0.65 + Math.abs(progress) * 0.25,
+          overwrite: 'auto',
+          duration: 0.3,
+          ease: 'power1.out',
+        });
+      })
+      .addTo(controller);
+
+    // Ensure initial state is set before scrolling
+    scene.refresh();
+  });
+};
+
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     initBookingMenuSliders().catch((error) => console.error('Failed to init booking menu slider', error));
     initHomeGalleryCarousel().catch((error) => console.error('Failed to init home gallery slider', error));
     initHomeGalleryLightbox();
+    initSmoothAnchorScroll();
+    initParallaxDecorations().catch((error) => console.error('Failed to init parallax decorations', error));
   });
 } else {
   initBookingMenuSliders().catch((error) => console.error('Failed to init booking menu slider', error));
   initHomeGalleryCarousel().catch((error) => console.error('Failed to init home gallery slider', error));
   initHomeGalleryLightbox();
+  initSmoothAnchorScroll();
+  initParallaxDecorations().catch((error) => console.error('Failed to init parallax decorations', error));
 }
