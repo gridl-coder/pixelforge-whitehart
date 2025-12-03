@@ -6,6 +6,9 @@
 @php($panel = \PixelForge\BookingAdmin\get_panel_context())
 @php($notice = sanitize_text_field(wp_unslash($_GET['booking_admin_notice'] ?? '')))
 @php($error = isset($_GET['booking_admin_error']) ? wp_kses_post(wp_unslash($_GET['booking_admin_error'])) : '')
+@php($today = wp_date('Y-m-d', time(), wp_timezone()))
+@php($currentMonth = wp_date('Y-m', time(), wp_timezone()))
+@php($currentWeek = wp_date('o-\\WW', time(), wp_timezone()))
 
 @extends('layouts.booking-admin')
 
@@ -186,13 +189,62 @@
 
         <div class="booking-admin__panel" id="booking-panel-list" data-panel="list" role="tabpanel" aria-label="{{ __('View bookings', 'pixelforge') }}">
           <div class="booking-admin__card">
-            <div class="booking-admin__card-header">
-              <div>
-                <h2>{{ __('Existing bookings', 'pixelforge') }}</h2>
-                <p class="booking-admin__muted">{{ __('Review, update, or cancel bookings.', 'pixelforge') }}</p>
-              </div>
-              <span class="booking-admin__pill">{{ count($panel['bookings']) }} {{ __('records', 'pixelforge') }}</span>
+          <div class="booking-admin__card-header booking-admin__card-header--stacked">
+            <div>
+              <h2>{{ __('Existing bookings', 'pixelforge') }}</h2>
+              <p class="booking-admin__muted">{{ __('Review, update, or cancel bookings.', 'pixelforge') }}</p>
             </div>
+            <div class="booking-admin__export">
+              <span class="booking-admin__pill">{{ count($panel['bookings']) }} {{ __('records', 'pixelforge') }}</span>
+
+              <form class="booking-admin__export-form" action="{{ admin_url('admin-post.php') }}" method="post" data-export-form>
+                @php(wp_nonce_field(\PixelForge\BookingAdmin\EXPORT_NONCE_ACTION))
+                <input type="hidden" name="action" value="pixelforge_booking_admin_export">
+                <input type="hidden" name="redirect_to" value="{{ esc_url($redirect) }}">
+
+                <label class="booking-admin__field booking-admin__field--compact">
+                  <span>{{ __('Export', 'pixelforge') }}</span>
+                  <select name="period" data-export-range>
+                    <option value="day">{{ __('By day', 'pixelforge') }}</option>
+                    <option value="week">{{ __('By week', 'pixelforge') }}</option>
+                    <option value="month">{{ __('By month', 'pixelforge') }}</option>
+                    <option value="custom">{{ __('Custom range', 'pixelforge') }}</option>
+                  </select>
+                </label>
+
+                <div class="booking-admin__export-inputs">
+                  <label class="booking-admin__field booking-admin__field--compact" data-export-field="day">
+                    <span>{{ __('Date', 'pixelforge') }}</span>
+                    <input type="date" name="range_start" value="{{ $today }}" required>
+                  </label>
+
+                  <label class="booking-admin__field booking-admin__field--compact" data-export-field="week" hidden>
+                    <span>{{ __('Week', 'pixelforge') }}</span>
+                    <input type="week" name="range_week" value="{{ $currentWeek }}" disabled required>
+                  </label>
+
+                  <label class="booking-admin__field booking-admin__field--compact" data-export-field="month" hidden>
+                    <span>{{ __('Month', 'pixelforge') }}</span>
+                    <input type="month" name="range_month" value="{{ $currentMonth }}" disabled required>
+                  </label>
+
+                  <div class="booking-admin__field-grid booking-admin__field-grid--tight" data-export-field="custom" hidden>
+                    <label class="booking-admin__field booking-admin__field--compact">
+                      <span>{{ __('Start', 'pixelforge') }}</span>
+                      <input type="date" name="range_start" value="{{ $today }}" disabled required>
+                    </label>
+
+                    <label class="booking-admin__field booking-admin__field--compact">
+                      <span>{{ __('End', 'pixelforge') }}</span>
+                      <input type="date" name="range_end" value="{{ $today }}" disabled required>
+                    </label>
+                  </div>
+                </div>
+
+                <button class="booking-admin__button" type="submit">{{ __('Export PDF', 'pixelforge') }}</button>
+              </form>
+            </div>
+          </div>
 
             @if ($panel['bookings'] === [])
               <p class="booking-admin__muted">{{ __('No bookings found yet.', 'pixelforge') }}</p>
@@ -399,6 +451,31 @@
         const tabs = Array.from(document.querySelectorAll('[data-panel-toggle]'));
         const panels = Array.from(document.querySelectorAll('[data-panel]'));
         const panelContainer = document.querySelector('[data-panel-container]');
+        const exportForm = document.querySelector('[data-export-form]');
+
+        if (exportForm) {
+          const rangeSelect = exportForm.querySelector('[data-export-range]');
+          const fields = Array.from(exportForm.querySelectorAll('[data-export-field]'));
+
+          function toggleExportFields() {
+            const target = rangeSelect ? rangeSelect.value : '';
+
+            fields.forEach(function (field) {
+              const isActive = field.getAttribute('data-export-field') === target;
+              field.hidden = !isActive;
+
+              Array.from(field.querySelectorAll('input')).forEach(function (input) {
+                input.disabled = !isActive;
+              });
+            });
+          }
+
+          if (rangeSelect) {
+            rangeSelect.addEventListener('change', toggleExportFields);
+          }
+
+          toggleExportFields();
+        }
 
         function setActivePanel(target) {
           tabs.forEach(function (link) {

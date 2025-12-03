@@ -2,7 +2,10 @@
 
 namespace PixelForge\BookingAdmin;
 
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use DateTimeImmutable;
+use DateTimeZone;
 use PixelForge\PostTypes\BookingMenu;
 use PixelForge\PostTypes\BookingSection;
 use PixelForge\PostTypes\BookingTable;
@@ -16,11 +19,13 @@ use function PixelForge\Bookings\schedule_booking_reminder;
 
 const LOGIN_NONCE_ACTION = 'pixelforge_booking_admin_login';
 const BOOKING_NONCE_ACTION = 'pixelforge_booking_admin_manage';
+const EXPORT_NONCE_ACTION = 'pixelforge_booking_admin_export';
 
 add_action('admin_post_nopriv_pixelforge_booking_admin_login', __NAMESPACE__ . '\\handle_login');
 add_action('admin_post_pixelforge_booking_admin_create', __NAMESPACE__ . '\\handle_create');
 add_action('admin_post_pixelforge_booking_admin_update', __NAMESPACE__ . '\\handle_update');
 add_action('admin_post_pixelforge_booking_admin_delete', __NAMESPACE__ . '\\handle_delete');
+add_action('admin_post_pixelforge_booking_admin_export', __NAMESPACE__ . '\\handle_export');
 add_action('admin_init', __NAMESPACE__ . '\\restrict_staff_admin_access');
 add_filter('login_redirect', __NAMESPACE__ . '\\redirect_staff_login', 10, 3);
 
@@ -157,6 +162,45 @@ function handle_delete(): void
     wp_trash_post($bookingId);
 
     wp_safe_redirect(add_query_arg('booking_admin_notice', 'deleted', $redirect));
+    exit;
+}
+
+function handle_export(): void
+{
+    if (!current_user_can('edit_posts')) {
+        wp_safe_redirect(add_query_arg('booking_admin_error', rawurlencode(__('You do not have permission to export bookings.', 'pixelforge')), home_url('/')));
+        exit;
+    }
+
+    check_admin_referer(EXPORT_NONCE_ACTION);
+
+    $redirect = get_redirect_target($_POST['redirect_to'] ?? home_url('/'));
+    $period = sanitize_key($_POST['period'] ?? 'day');
+    $date = sanitize_text_field(wp_unslash($_POST['range_start'] ?? ''));
+    $end = sanitize_text_field(wp_unslash($_POST['range_end'] ?? ''));
+    $week = sanitize_text_field(wp_unslash($_POST['range_week'] ?? ''));
+    $month = sanitize_text_field(wp_unslash($_POST['range_month'] ?? ''));
+
+    $range = normalize_export_range($period, $date, $end, $week, $month);
+
+    if (is_wp_error($range)) {
+        wp_safe_redirect(add_query_arg('booking_admin_error', rawurlencode($range->get_error_message()), $redirect));
+        exit;
+    }
+
+    $bookings = get_bookings_in_range($range['start'], $range['end']);
+    $html = render_booking_export_html($bookings, $range['label']);
+
+    $options = new Options();
+    $options->set('isRemoteEnabled', true);
+    $pdf = new Dompdf($options);
+    $pdf->loadHtml($html, 'UTF-8');
+    $pdf->setPaper('A4', 'portrait');
+    $pdf->render();
+
+    $filename = sprintf('bookings-%s-to-%s.pdf', wp_date('Ymd', $range['start'], wp_timezone()), wp_date('Ymd', $range['end'], wp_timezone()));
+
+    $pdf->stream($filename, ['Attachment' => true]);
     exit;
 }
 
@@ -327,6 +371,222 @@ function format_booking(WP_Post $booking): array
         'verified' => (bool)get_post_meta($booking->ID, 'table_booking_verified', true),
         'table_label' => get_table_labels($details['table_ids']),
     ];
+}
+
+function normalize_export_range(string $period, string $startDate, string $endDate, string $weekValue, string $monthValue)
+{
+    $timezone = wp_timezone();
+    $today = new DateTimeImmutable('now', $timezone);
+
+    switch ($period) {
+        case 'day':
+            $date = create_date_from_input($startDate !== '' ? $startDate : $today->format('Y-m-d'), $timezone);
+
+            if (!$date) {
+                return new \WP_Error('booking_invalid_date', __('Please choose a valid day to export.', 'pixelforge'));
+            }
+
+            $end = $date->setTime(23, 59, 59);
+            $label = sprintf(__('Bookings for %s', 'pixelforge'), wp_date('M j, Y', $date->getTimestamp(), $timezone));
+            break;
+        case 'week':
+            $week = $weekValue !== '' ? $weekValue : $today->format('o-\WW');
+            $date = create_date_from_week_input($week, $timezone);
+
+            if (!$date) {
+                return new \WP_Error('booking_invalid_week', __('Please choose a valid week to export.', 'pixelforge'));
+            }
+
+            $end = $date->modify('+6 days')->setTime(23, 59, 59);
+            $label = sprintf(__('Bookings for week of %s', 'pixelforge'), wp_date('M j, Y', $date->getTimestamp(), $timezone));
+            break;
+        case 'month':
+            $month = $monthValue !== '' ? $monthValue : $today->format('Y-m');
+            $date = create_date_from_month_input($month, $timezone);
+
+            if (!$date) {
+                return new \WP_Error('booking_invalid_month', __('Please choose a valid month to export.', 'pixelforge'));
+            }
+
+            $end = $date->modify('last day of this month')->setTime(23, 59, 59);
+            $label = sprintf(__('Bookings for %s', 'pixelforge'), wp_date('F Y', $date->getTimestamp(), $timezone));
+            break;
+        case 'custom':
+            $start = create_date_from_input($startDate !== '' ? $startDate : $today->format('Y-m-d'), $timezone);
+            $endDateObject = create_date_from_input($endDate !== '' ? $endDate : $startDate, $timezone);
+
+            if (!$start || !$endDateObject) {
+                return new \WP_Error('booking_invalid_range', __('Please enter a valid date range to export.', 'pixelforge'));
+            }
+
+            $date = $start;
+            $end = $endDateObject->setTime(23, 59, 59);
+            $label = sprintf(
+                __('Bookings from %1$s to %2$s', 'pixelforge'),
+                wp_date('M j, Y', $date->getTimestamp(), $timezone),
+                wp_date('M j, Y', $end->getTimestamp(), $timezone)
+            );
+            break;
+        default:
+            return new \WP_Error('booking_invalid_period', __('Please select a valid export period.', 'pixelforge'));
+    }
+
+    if ($date->getTimestamp() > $end->getTimestamp()) {
+        return new \WP_Error('booking_invalid_range_order', __('The start date must be before the end date.', 'pixelforge'));
+    }
+
+    return [
+        'start' => $date->getTimestamp(),
+        'end' => $end->getTimestamp(),
+        'label' => $label,
+    ];
+}
+
+function create_date_from_input(string $value, DateTimeZone $timezone): ?DateTimeImmutable
+{
+    if ($value === '') {
+        return null;
+    }
+
+    $date = DateTimeImmutable::createFromFormat('Y-m-d', $value, $timezone);
+
+    if (!$date) {
+        return null;
+    }
+
+    return $date->setTime(0, 0);
+}
+
+function create_date_from_week_input(string $value, DateTimeZone $timezone): ?DateTimeImmutable
+{
+    if ($value === '') {
+        return null;
+    }
+
+    $date = DateTimeImmutable::createFromFormat('o-\WW', $value, $timezone);
+
+    if (!$date) {
+        return null;
+    }
+
+    return $date->setTime(0, 0);
+}
+
+function create_date_from_month_input(string $value, DateTimeZone $timezone): ?DateTimeImmutable
+{
+    if ($value === '' || !preg_match('/^\d{4}-\d{2}$/', $value)) {
+        return null;
+    }
+
+    $date = DateTimeImmutable::createFromFormat('Y-m-d', $value . '-01', $timezone);
+
+    if (!$date) {
+        return null;
+    }
+
+    return $date->setTime(0, 0);
+}
+
+function get_bookings_in_range(int $startTimestamp, int $endTimestamp): array
+{
+    $bookings = get_posts([
+        'post_type' => TableBooking::KEY,
+        'post_status' => ['publish', 'draft', 'pending'],
+        'numberposts' => -1,
+        'orderby' => 'meta_value_num',
+        'meta_key' => 'table_booking_datetime',
+        'order' => 'ASC',
+        'meta_query' => [
+            [
+                'key' => 'table_booking_datetime',
+                'value' => [$startTimestamp, $endTimestamp],
+                'compare' => 'BETWEEN',
+                'type' => 'NUMERIC',
+            ],
+        ],
+    ]);
+
+    return array_map(__NAMESPACE__ . '\\format_booking', $bookings);
+}
+
+function render_booking_export_html(array $bookings, string $title): string
+{
+    $timezone = wp_timezone();
+    $count = count($bookings);
+
+    ob_start();
+    ?>
+    <!doctype html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <style>
+          body { font-family: Arial, sans-serif; color: #111; font-size: 12px; margin: 24px; }
+          h1 { font-size: 20px; margin-bottom: 4px; }
+          p.meta { margin: 0 0 16px 0; color: #555; }
+          table { width: 100%; border-collapse: collapse; }
+          th, td { padding: 8px; border: 1px solid #ddd; text-align: left; }
+          th { background: #f5f5f5; font-weight: bold; }
+          tr:nth-child(even) td { background: #fafafa; }
+          .status { font-weight: 600; }
+          .status--confirmed { color: #0f5132; }
+          .status--pending { color: #6c2c00; }
+        </style>
+      </head>
+      <body>
+        <h1><?php echo esc_html(__('Table bookings report', 'pixelforge')); ?></h1>
+        <p class="meta">
+          <?php echo esc_html($title); ?> ·
+          <?php echo esc_html(sprintf(__('Generated %s', 'pixelforge'), wp_date('M j, Y H:i', time(), $timezone))); ?> ·
+          <?php echo esc_html(sprintf(_n('%s booking', '%s bookings', $count, 'pixelforge'), $count)); ?>
+        </p>
+
+        <?php if ($bookings === []) : ?>
+          <p><?php echo esc_html(__('No bookings found for this range.', 'pixelforge')); ?></p>
+        <?php else : ?>
+          <table>
+            <thead>
+              <tr>
+                <th><?php echo esc_html(__('Guest', 'pixelforge')); ?></th>
+                <th><?php echo esc_html(__('Contact', 'pixelforge')); ?></th>
+                <th><?php echo esc_html(__('Date & time', 'pixelforge')); ?></th>
+                <th><?php echo esc_html(__('Party', 'pixelforge')); ?></th>
+                <th><?php echo esc_html(__('Menu', 'pixelforge')); ?></th>
+                <th><?php echo esc_html(__('Section', 'pixelforge')); ?></th>
+                <th><?php echo esc_html(__('Table', 'pixelforge')); ?></th>
+                <th><?php echo esc_html(__('Status', 'pixelforge')); ?></th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php foreach ($bookings as $booking) : ?>
+                <?php $details = $booking['details']; ?>
+                <tr>
+                  <td><?php echo esc_html($details['name']); ?></td>
+                  <td>
+                    <?php echo esc_html($details['email']); ?><br>
+                    <?php echo esc_html($details['phone']); ?>
+                  </td>
+                  <td>
+                    <?php echo esc_html($details['timestamp'] ? wp_date('M j, Y', $details['timestamp'], $timezone) : '—'); ?><br>
+                    <?php echo esc_html($details['timestamp'] ? wp_date('H:i', $details['timestamp'], $timezone) : ''); ?>
+                  </td>
+                  <td><?php echo esc_html($details['party_size']); ?></td>
+                  <td><?php echo esc_html($details['menu_name'] ?: '—'); ?></td>
+                  <td><?php echo esc_html($details['section_name'] ?: '—'); ?></td>
+                  <td><?php echo esc_html($booking['table_label'] ?: '—'); ?></td>
+                  <td class="status <?php echo $booking['verified'] ? 'status--confirmed' : 'status--pending'; ?>">
+                    <?php echo esc_html($booking['verified'] ? __('Confirmed', 'pixelforge') : __('Pending', 'pixelforge')); ?>
+                  </td>
+                </tr>
+              <?php endforeach; ?>
+            </tbody>
+          </table>
+        <?php endif; ?>
+      </body>
+    </html>
+    <?php
+
+    return (string)ob_get_clean();
 }
 
 function get_redirect_target(string $value): string
