@@ -1,6 +1,6 @@
 .home-gallery {
   position: relative;
-  padding: 40px 15px 60px;
+  padding: 40px 15px 15px;
   text-align: center;
   background: white;
 
@@ -29,6 +29,7 @@
   &__header {
     max-width: 820px;
     margin: 0 auto 25px;
+    color: $brand_dark;
   }
 
   &__subtitle {
@@ -59,19 +60,36 @@
       height: 100%;
     }
 
+    .slick-arrow {
+      left: 18px;
+
+      &:before {
+        font-size: 50px !important;
+        position: relative;
+        top: 4px;
+      }
+
+      &.slick-next {
+        right: 18px;
+        left: unset;
+      }
+    }
+
     .slick-list {
-      border-radius: 16px;
     }
   }
 
   &__slide {
     position: relative;
-    min-height: 320px;
-    max-height: 640px;
-    background: #f8f7f3;
+    //min-height: 320px;
+    //max-height: 640px;
 
     @include media-breakpoint-up(md) {
       min-height: 420px;
+      width: 100% !important;
+      display: inline-block;
+      padding: 15px;
+      margin: 0 2%;
     }
   }
 
@@ -81,6 +99,8 @@
     display: block;
     object-fit: cover;
     cursor: pointer;
+    border: 5px solid white;
+
   }
 
   &__empty {
@@ -101,10 +121,10 @@
   }
 
   .slick-dots {
-    bottom: 16px;
+    bottom: -15px;
 
     li button:before {
-      color: white;
+    //  color: white;
       opacity: 0.75;
     }
 

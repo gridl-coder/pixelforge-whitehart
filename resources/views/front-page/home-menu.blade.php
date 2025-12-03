@@ -21,11 +21,6 @@
 
         </div>
         <div class="nav_dec"><span></span></div>
-        @if (!empty($alesImage['url']))
-          <img src="{{ esc_url($alesImage['url']) }}" class="img-fluid"
-               alt="{{ esc_attr($alesImage['alt']) }}" loading="lazy">
-        @endif
-        <div class="nav_dec"><span></span></div>
 
 
       </div>
@@ -43,11 +38,6 @@
               </div>
             @endforeach
           </div>
-        @endif
-
-        @if (!empty($guestPopup['url']))
-          <img class="img-fluid food-banner__poster" src="{{ esc_url($guestPopup['url']) }}"
-               alt="{{ esc_attr($guestPopup['alt']) }}" loading="lazy"/>
         @endif
 
       </div>

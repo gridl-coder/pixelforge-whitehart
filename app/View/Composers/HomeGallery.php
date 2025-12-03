@@ -127,6 +127,30 @@ class HomeGallery extends Composer
                 'path' => 'resources/images/events/31-10-halloween.jpg',
                 'alt' => __('Halloween event poster', 'pixelforge'),
             ],
+            [
+                'path' => 'resources/images/hart-main-1.png',
+                'alt' => __('Exterior of The White Hart', 'pixelforge'),
+            ],
+            [
+                'path' => 'resources/images/hart--lamb-shank.png',
+                'alt' => __('Lamb shank plated meal', 'pixelforge'),
+            ],
+            [
+                'path' => 'resources/images/large-breakfast.jpg',
+                'alt' => __('Large breakfast plate', 'pixelforge'),
+            ],
+            [
+                'path' => 'resources/images/events/1-11-25-saturday-night-party.jpg',
+                'alt' => __('Saturday night party poster', 'pixelforge'),
+            ],
+            [
+                'path' => 'resources/images/events/26-10-matt-bowen.jpg',
+                'alt' => __('Matt Bowen event poster', 'pixelforge'),
+            ],
+            [
+                'path' => 'resources/images/events/31-10-halloween.jpg',
+                'alt' => __('Halloween event poster', 'pixelforge'),
+            ],
         ];
 
         return array_map(function (array $image): array {
