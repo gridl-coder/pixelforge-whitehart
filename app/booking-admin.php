@@ -191,17 +191,28 @@ function handle_export(): void
     $bookings = get_bookings_in_range($range['start'], $range['end']);
     $html = render_booking_export_html($bookings, $range['label']);
 
-    $options = new Options();
-    $options->set('isRemoteEnabled', true);
-    $pdf = new Dompdf($options);
-    $pdf->loadHtml($html, 'UTF-8');
-    $pdf->setPaper('A4', 'portrait');
-    $pdf->render();
+    try {
+        $options = new Options();
+        $options->set('isRemoteEnabled', true);
+        $pdf = new Dompdf($options);
+        $pdf->loadHtml($html, 'UTF-8');
+        $pdf->setPaper('A4', 'portrait');
+        $pdf->render();
 
-    $filename = sprintf('bookings-%s-to-%s.pdf', wp_date('Ymd', $range['start'], wp_timezone()), wp_date('Ymd', $range['end'], wp_timezone()));
+        $filename = sprintf('bookings-%s-to-%s.pdf', wp_date('Ymd', $range['start'], wp_timezone()), wp_date('Ymd', $range['end'], wp_timezone()));
 
-    $pdf->stream($filename, ['Attachment' => true]);
-    exit;
+        $pdf->stream($filename, ['Attachment' => true]);
+        exit;
+    } catch (\Throwable $e) {
+        error_log(sprintf('[Pixelforge Booking Admin] PDF export failed: %s', $e->getMessage()));
+
+        wp_safe_redirect(add_query_arg(
+            'booking_admin_error',
+            rawurlencode(__('Unable to generate the bookings PDF right now. Please try again later.', 'pixelforge')),
+            $redirect
+        ));
+        exit;
+    }
 }
 
 function restrict_staff_admin_access(): void
