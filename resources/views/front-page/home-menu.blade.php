@@ -5,7 +5,7 @@
     <div class="row">
 
 
-      <div class="col-md-7 food-banner-content">
+      <div class="col-12 food-banner-content">
 
         <div class="boxed-container boxed-container--muted">
 
