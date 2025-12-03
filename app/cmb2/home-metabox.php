@@ -3,6 +3,7 @@
 namespace PixelForge\CMB2;
 
 add_action('cmb2_admin_init', __NAMESPACE__ . '\register_home_metabox');
+add_action('cmb2_after_form', __NAMESPACE__ . '\enable_home_gallery_sorting', 10, 2);
 
 function register_home_metabox(): void
 {
@@ -13,7 +14,15 @@ function register_home_metabox(): void
         'id' => 'home_register_metabox',
         'title' => esc_html__('Home Hero Content', 'pixelforge'),
         'object_types' => ['page'],
-        'show_on' => ['key' => 'front-page', 'value' => 'true'],
+        'show_on_cb' => static function ($cmb): bool {
+            $frontPageId = (int) get_option('page_on_front');
+
+            if (! $frontPageId) {
+                return false;
+            }
+
+            return (int) $cmb->object_id === $frontPageId;
+        },
     ]);
 
     $cmb_home->add_field([
@@ -107,4 +116,95 @@ function register_home_metabox(): void
         ),
         'preview_size' => 'medium',
     ));
+
+    $gallery_group_id = $cmb_home->add_field([
+        'id' => 'home_gallery_images',
+        'type' => 'group',
+        'repeatable' => true,
+        'options' => [
+            'group_title' => esc_html__('Gallery Image {#}', 'pixelforge'),
+            'add_button' => esc_html__('Add Gallery Image', 'pixelforge'),
+            'remove_button' => esc_html__('Remove Image', 'pixelforge'),
+            'closed' => true,
+            'sortable' => true,
+        ],
+    ]);
+
+    $cmb_home->add_group_field($gallery_group_id, [
+        'name' => esc_html__('Image', 'pixelforge'),
+        'id' => 'image',
+        'type' => 'file',
+        'options' => [
+            'url' => false,
+        ],
+        'text' => [
+            'add_upload_file_text' => esc_html__('Add Image', 'pixelforge'),
+        ],
+        'query_args' => [
+            'type' => [
+                'image/gif',
+                'image/jpg',
+                'image/png',
+                'image/jpeg',
+            ],
+        ],
+        'preview_size' => 'medium',
+    ]);
+
+    $cmb_home->add_group_field($gallery_group_id, [
+        'name' => esc_html__('Alt text', 'pixelforge'),
+        'id' => 'alt',
+        'type' => 'text',
+        'sanitization_cb' => 'sanitize_text_field',
+    ]);
+
+    $cmb_home->add_group_field($gallery_group_id, [
+        'name' => esc_html__('Caption', 'pixelforge'),
+        'id' => 'caption',
+        'type' => 'text',
+        'sanitization_cb' => 'sanitize_text_field',
+    ]);
+}
+
+function enable_home_gallery_sorting($postId, $cmb): void
+{
+    unset($postId);
+
+    if (!isset($cmb->cmb_id) || $cmb->cmb_id !== 'home_register_metabox') {
+        return;
+    }
+
+    wp_register_script(
+        'pixelforge-home-gallery-sortable',
+        false,
+        ['jquery', 'jquery-ui-sortable'],
+        null,
+        true
+    );
+
+    $script = <<<'JS'
+        (function($) {
+          const sortableSelector = '#home_register_metabox .cmb-group-list';
+
+          const makeSortable = () => {
+            const $list = $(sortableSelector);
+
+            if (!$list.length || !$list.sortable) {
+              return;
+            }
+
+            $list.sortable({
+              handle: '.cmb-group-title, .cmbhandle',
+              items: '> .cmb-repeatable-grouping',
+              placeholder: 'cmb-row cmb-repeatable-grouping cmb-group-placeholder',
+            });
+          };
+
+          $(document).on('cmb2_add_row', makeSortable);
+          $(document).ready(makeSortable);
+        })(jQuery);
+    JS;
+
+    wp_add_inline_script('pixelforge-home-gallery-sortable', $script);
+    wp_enqueue_script('pixelforge-home-gallery-sortable');
 }
