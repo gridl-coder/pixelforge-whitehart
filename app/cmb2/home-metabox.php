@@ -3,6 +3,7 @@
 namespace PixelForge\CMB2;
 
 add_action('cmb2_admin_init', __NAMESPACE__ . '\register_home_metabox');
+add_action('cmb2_after_form', __NAMESPACE__ . '\enable_home_gallery_sorting', 10, 2);
 
 function register_home_metabox(): void
 {
@@ -163,4 +164,47 @@ function register_home_metabox(): void
         'type' => 'text',
         'sanitization_cb' => 'sanitize_text_field',
     ]);
+}
+
+function enable_home_gallery_sorting($postId, $cmb): void
+{
+    unset($postId);
+
+    if (!isset($cmb->cmb_id) || $cmb->cmb_id !== 'home_register_metabox') {
+        return;
+    }
+
+    wp_register_script(
+        'pixelforge-home-gallery-sortable',
+        false,
+        ['jquery', 'jquery-ui-sortable'],
+        null,
+        true
+    );
+
+    $script = <<<'JS'
+        (function($) {
+          const sortableSelector = '#home_register_metabox .cmb-group-list';
+
+          const makeSortable = () => {
+            const $list = $(sortableSelector);
+
+            if (!$list.length || !$list.sortable) {
+              return;
+            }
+
+            $list.sortable({
+              handle: '.cmb-group-title, .cmbhandle',
+              items: '> .cmb-repeatable-grouping',
+              placeholder: 'cmb-row cmb-repeatable-grouping cmb-group-placeholder',
+            });
+          };
+
+          $(document).on('cmb2_add_row', makeSortable);
+          $(document).ready(makeSortable);
+        })(jQuery);
+    JS;
+
+    wp_add_inline_script('pixelforge-home-gallery-sortable', $script);
+    wp_enqueue_script('pixelforge-home-gallery-sortable');
 }
