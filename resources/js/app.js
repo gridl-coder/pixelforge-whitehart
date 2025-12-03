@@ -18,25 +18,25 @@ const loadSlick = async () => {
   await import('slick-carousel');
 };
 
-const navButton = document.getElementById('navButton');
-const mainNav = document.getElementById('mainNav');
-const navCloseButtons = document.querySelectorAll('[data-nav-close]');
-const header = document.getElementById('masthead');
+const initNavigation = () => {
+  const navButton = document.getElementById('navButton');
+  const mainNav = document.getElementById('mainNav');
+  const navCloseButtons = document.querySelectorAll('[data-nav-close]');
+  const navLinks = document.querySelectorAll('.main-nav-list a');
 
-const toggleNavigation = (force) => {
-  if (!mainNav || !navButton) {
+  if (!navButton || !mainNav) {
     return;
   }
 
-  const shouldOpen = typeof force === 'boolean'
-    ? force
-    : !mainNav.classList.contains('open');
+  const toggleNavigation = (force) => {
+    const shouldOpen = typeof force === 'boolean'
+      ? force
+      : !mainNav.classList.contains('open');
 
-  mainNav.classList.toggle('open', shouldOpen);
-  navButton.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
-};
+    mainNav.classList.toggle('open', shouldOpen);
+    navButton.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+  };
 
-if (navButton && mainNav) {
   navButton.addEventListener('click', (event) => {
     event.preventDefault();
     toggleNavigation();
@@ -46,12 +46,19 @@ if (navButton && mainNav) {
     button.addEventListener('click', () => toggleNavigation(false));
   });
 
-  document.querySelectorAll('.main-nav-list a').forEach((link) => {
+  navLinks.forEach((link) => {
     link.addEventListener('click', () => toggleNavigation(false));
   });
+};
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initNavigation);
+} else {
+  initNavigation();
 }
 
 const getScrollOffset = () => {
+  const header = document.getElementById('masthead');
   const isMobileHeaderFixed = window.matchMedia('(max-width: 575.98px)').matches;
 
   if (!header || !isMobileHeaderFixed) {
