@@ -1,4 +1,4 @@
-<section class="home-gallery">
+<section class="home-gallery" id="home-gallery">
   <div class="container">
     <div class="home-gallery__header">
       <h1>

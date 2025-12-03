@@ -10,7 +10,7 @@
 
     @include('front-page.home-menu')
 
-    <div class="booking-form-container" >
+    <div class="booking-form-container">
 
       <div class="container pt-5" id="table-booking">
         <h1>
@@ -42,7 +42,7 @@
     </div>
 
 
-    <section class="global-contact">
+    <section class="global-contact" id="home-contact">
 
       <div class="boxed-container mb-4">
 

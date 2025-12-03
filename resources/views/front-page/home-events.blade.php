@@ -1,4 +1,4 @@
-<section id="events" class="home-events">
+<section id="home-events" class="home-events">
   <div class="home-events__gallery">
     @include('front-page.home-gallery')
   </div>

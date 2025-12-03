@@ -1,4 +1,4 @@
-<section class="food-banner">
+<section class="food-banner" id="home-menu">
 
   <div class="container food-banner__container">
 
@@ -20,7 +20,6 @@
 
 
         </div>
-        <div class="nav_dec"><span></span></div>
 
 
       </div>
@@ -44,13 +43,14 @@
     </div>
   </div>
 </section>
-<div class="brush-dec2"></div>
 
-<div class="container text-center pt-5 pb-5">
-  <h1>
-    Our Menus
-  </h1>
-  <div class="section-separator">
+<div class="our-menus">
+  <div class="brush-dec2"></div>
+  <div class="container text-center pt-5 pb-5">
+    <h1>
+      Our Menus
+    </h1>
+    <div class="section-separator">
       <span><svg fill="#cbba57" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 75" width="60" height="60"
                  aria-hidden="true" focusable="false">
   <g data-name="Layer 1">
@@ -59,17 +59,17 @@
   </g>
 </svg>
 </span>
+    </div>
+    <?= do_shortcode('[pixelforge_booking_menus]'); ?>
+    <a href="#table-booking" class="btn mb-3 mt-3">Book a table</a>
+
+
   </div>
-  <?= do_shortcode('[pixelforge_booking_menus]'); ?>
-  <a href="#table-booking" class="btn mb-3 mt-3">Book a table</a>
-
-
+  <div class="brush-dec"></div>
 </div>
-<div class="brush-dec"></div>
+
 
 <section class="stage-menu">
-
-  <br id="menu" class="stage-anchor"/>
 
   <div class="boxed-container boxed-container--menu">
 
