@@ -1,96 +1,62 @@
-# PixelForge table booking playbook (manager edition)
+# PixelForge White Hart Theme
 
-This document explains how to run the PixelForge table booking system day to day. It is written for business owners and venue managers rather than developers.
+PixelForge White Hart is a custom WordPress theme built for pubs that need simple content publishing plus a full booking workflow. The theme disables the block editor in favor of classic editing, registers preset pages (Home, About, News, Contact), and ships with booking tools, events, SEO defaults, and seasonal styling toggles.
 
-## What the system does
+## Requirements
+- WordPress with PHP 8.1+.
+- CMB2 plugin (for theme options and metaboxes).
+- Brevo API key if you want booking confirmation emails.
 
-- Publishes a public booking form you can place on any page.
-- Prevents double bookings by assigning guests to specific tables and time slots.
-- Sends verification links to customers (email via Brevo + SMS via seven.io) so only confirmed bookings stay on the calendar.
-- Lets staff manage bookings from either WordPress admin or a simplified Booking Admin Panel.
+## Installation & Activation
+1. Upload the theme folder to your WordPress `/wp-content/themes` directory or install the packaged ZIP via **Appearance → Themes → Add New**.
+2. Activate the theme. On activation, the theme creates the Home, About Us, News (blog), and Contact pages and assigns the Home page as the front page. It also seeds a “mastnav” menu and maps it to the Masthead location.
+3. In **Settings → Reading**, confirm “Your homepage displays” is set to the Home page if you changed it later.
+4. Install and activate the CMB2 plugin so the theme’s option pages and metaboxes appear.
 
-## Daily tasks at a glance
+## Theme Options (Appearance → PixelForge Options)
+- **Business Logo / Email / Telephone / Address**: Stored once and reused across templates.
+- **Homepage Seasonal Theme**: Switch to “Christmas” to add festive styling to the homepage; leave “Off” for the default look.
+- **Enable Table Bookings**: Uncheck to hide the booking form and availability checks on the front end.
+- **Booking Data Tools**: “Delete all booking data” wipes booking records, tables, sections, and menus.
+- **Brevo Email**: Add your Brevo transactional API key plus sender email/name to send confirmation emails to guests.
+- **SEO Defaults**: Site-wide meta description/keywords plus Open Graph title/description/image and Twitter username used when pages don’t define their own values.
 
-1) **Check availability** – the public form shows available times based on your tables, sections, and menus.
-2) **Review new bookings** – customers submit a request, receive a verification link, and you get an email notification.
-3) **Track confirmations** – when customers click the link, the booking is marked **Confirmed** and a follow-up email is sent to both sides.
-4) **Manage changes** – staff can add, edit, or trash bookings from the Booking Admin Panel without entering wp-admin.
+## Content & Navigation
+- **Pages**: Edit the auto-created Home, About Us, News, and Contact pages under **Pages**. Use classic editor content plus featured images as needed.
+- **Menus**: Manage the “Masthead Navigation” menu under **Appearance → Menus** and assign it to the Masthead location. A Primary Navigation location is also available for secondary links.
+- **Blog/News**: Publish standard Posts under **Posts**; the News page is set as the posts index.
+- **Events**: Use the **Events** custom post type for promotions or live acts. Add a featured image, excerpt, and body content; categories/tags are available.
 
-## Initial setup
+## Booking System
+The booking workflow is built from four custom post types:
+- **Table Sections** (`Booking Section`): Create areas such as Bar, Garden, or Function Room.
+- **Tables** (`Booking Table`): Assign each table to a section, set seat count, and add internal notes.
+- **Booking Menus**: Define bookable menus (e.g., Sunday Roast) with start/end times and available days, plus optional imagery and descriptions.
+- **Table Bookings**: Customer reservations saved privately; viewable in WP Admin and via the Booking Admin page template.
 
-Complete these steps once when the site launches or whenever the floor plan changes.
+### Front-End Booking & Availability
+- Add the booking form to any page or template with the `[pixelforge_table_booking]` shortcode. Guests choose a menu, date/time, section, and party size; availability checks run via AJAX before saving.
+- Use `[pixelforge_booking_menus]` to output a slider of menus showing their available days and time window.
+- If bookings are disabled in Theme Options, the form is replaced with a notice that bookings are unavailable.
 
-### 1) Define areas and tables
-- In WordPress, go to **Table Sections** and add areas such as *Bar*, *Window*, or *Function Room*. Optional internal notes help staff seat guests correctly.
-- Next, open **Tables** and create one entry per table:
-  - Select its **Section**.
-  - Fill in **Seats** (total capacity).
-  - Add **Table Notes** if staff need extra context (e.g., high-top, wheelchair-friendly).
+### Booking Admin Panel (Front-End)
+- Create a new page and assign the **Booking Admin Panel** template. Staff with `edit_posts` capability can sign in to add, list, and calendar-view bookings from the front end. Non-staff see a login form.
+- Actions include creating a booking (guest details, party size, menu, section, tables, date/time, notes), editing or deleting existing bookings, and viewing the calendar tab for quick date navigation.
+- Customers receive confirmation links; staff can also log out directly from the panel header.
 
-### 2) Set booking windows (menus)
-- Go to **Booking Menus** and add one per service (e.g., *Breakfast*, *Evening*, *Christmas Menu*).
-- For each menu set:
-  - **Start Time** and **End Time** in 24-hour format; bookings are enforced in 90-minute slots.
-  - Optional **Available Days** to limit which weekdays the menu accepts bookings. Leave empty to allow every day.
-  - Use the content/excerpt to describe the menu for editors (not shown on the public form).
+### Booking Notifications & Data
+- Confirmation emails use your Brevo credentials. The sender defaults to site name if no custom sender is set.
+- Bookings and availability rely on a 90-minute slot length. Slots are generated per menu using each menu’s start/end time and allowed days.
+- Table bookings are stored as private posts; details (customer info, menu/section/table choices, time, notes) are view-only in the editor to preserve data integrity.
 
-### 3) Publish the booking form
-- Edit any page and add the shortcode `[pixelforge_table_booking]` (use the *Shortcode* block in the block editor if needed).
-- The form reads your published Sections, Tables, and Booking Menus to present valid options and time slots.
+## Managing SEO & Performance
+- The theme injects classic-editor styles and loads Vite-built assets. Avoid editing files in `public/build`; run `npm run build` if you modify assets.
+- SEO defaults from Theme Options populate meta tags and Open Graph data. Individual pages can override these values via their SEO metabox.
 
-### 4) Choose who gets notified
-- Go to **PixelForge Options → Business Email** to set where admin notifications are sent (falls back to the WordPress admin email).
-- Configure **Brevo Email** for outgoing emails and **seven (SMS)** for text messages.
-
-## How bookings flow
-
-1) **Customer submits the form** with a menu, date, section, party size, and hour slot.
-2) The system finds the first table in that section with enough seats that is free for the chosen hour.
-3) A booking is saved as *pending verification* and an email (plus SMS if enabled) is sent with a confirmation link.
-4) The admin/business email receives the booking summary noting it awaits verification.
-5) When the customer clicks the link, the booking is marked **Confirmed** and both customer and admin receive confirmation emails.
-6) Booked tables are blocked for their 90-minute window to prevent double bookings.
-
-If the system cannot find an available table, it suggests the next available slot (up to 7 days ahead) when possible.
-
-## Managing bookings (WordPress dashboards)
-
-- **Table Bookings list** – shows every reservation with menu, section, tables, and timestamps. Trash or delete an entry to free the slot.
-- **Booking Admin Panel** – a page template that provides a simplified interface for staff (see the staff guide for details). Staff accounts need the ability to edit posts; deleting bookings requires the delete capability.
-
-## Controlling the booking form
-
-- Toggle public bookings under **PixelForge Options → Enable Table Bookings**. When unchecked, the front-end form and availability calendar are hidden and AJAX availability checks return unavailable.
-- The availability calendar respects the site timezone in **Settings → General**.
-
-## PixelForge Options (business settings)
-
-Access these under **PixelForge Options** in WordPress:
-
-- **Business Logo** – used as the header/hero fallback image.
-- **Business Email** – where admin booking notifications are delivered.
-- **Business Telephone** and **Business Address** – surfaced in theme templates.
-- **Enable Table Bookings** – hides/shows the public form and availability checks.
-- **Booking Data Tools** – one-click, permanent deletion of all booking data (sections, tables, menus, bookings). Use with caution.
-- **Brevo Email** – configure API key, sender email/name for confirmations. If Brevo is missing, the system falls back to standard WordPress email.
-- **seven (SMS)** – configure API key, gateway URL (usually default), optional sender ID, plus the default country code used to normalise phone numbers for SMS confirmations.
-- **SEO & Social Defaults** – default meta description, keywords, Open Graph title/description/image, and Twitter username used across the site when individual pages do not override them.
-
-## Tips and troubleshooting
-
-- **Menus need times** – menus without valid start/end times or without any published tables/sections will not present usable slots.
-- **Customer already booked** – the same email/phone cannot hold overlapping active bookings.
-- **Delivery issues** – if confirmations do not arrive, check the Business Email value and your mail transport. For SMS, confirm the seven API key, gateway URL, and sender settings are valid.
-- **Timezone** – booking times and availability use the site timezone; update it in **Settings → General** if needed.
-- **Data cleanup** – use **Booking Data Tools** only when resetting the system; it removes all booking-related records and cannot be undone.
-
-## Quick reference: where to go
-
-- Publish/hide form: **PixelForge Options → Enable Table Bookings**
-- Notification recipients: **PixelForge Options → Business Email**
-- Email sender: **PixelForge Options → Brevo Email**
-- SMS sender: **PixelForge Options → seven (SMS)**
-- Manage bookings (full WordPress): **Table Bookings** post type
-- Manage bookings (staff-friendly): page using **Booking Admin Panel** template
-- Define seating: **Table Sections** and **Tables** post types
-- Define service windows: **Booking Menus** post type
+## Typical Pub Manager Workflow
+1. **Initial setup**: Activate the theme, install CMB2, and fill out PixelForge Options (logo, contact info, booking toggle, Brevo details, SEO defaults).
+2. **Set up booking data**: Create Sections, Tables, and Booking Menus with times/days. Add a Booking Admin Panel page for staff.
+3. **Publish content**: Edit Home/About/Contact, publish blog posts to News, and add Events for promotions.
+4. **Embed booking form**: Add `[pixelforge_table_booking]` to the Contact page (or another page) and publish; optionally add `[pixelforge_booking_menus]` near it.
+5. **Operate bookings**: Staff use the Booking Admin Panel to add/update bookings and check the calendar; customers submit via the public form and receive Brevo-powered confirmations.
+6. **Maintenance**: Temporarily disable bookings from Theme Options if capacity is limited, or use the delete tool before re-opening with fresh data.
