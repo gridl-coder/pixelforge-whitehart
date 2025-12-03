@@ -14,21 +14,39 @@
         {{ __('A few snapshots from the bar, the kitchen, and our events. Drop by, say hello, and make your own memories with us.', 'pixelforge') }}
       </p>
     </div>
+  </div>
 
-    <div class="home-gallery__grid">
-      @forelse ($homeGallery['images'] as $image)
-        <figure class="home-gallery__item">
-          <img class="home-gallery__image"
-               src="{{ esc_url($image['url']) }}"
-               alt="{{ esc_attr($image['alt']) }}"
-               loading="lazy">
-          @if (!empty($image['caption']))
-            <figcaption class="home-gallery__caption">{{ $image['caption'] }}</figcaption>
-          @endif
-        </figure>
-      @empty
-        <p class="home-gallery__empty">{{ __('Check back soon for our latest photos.', 'pixelforge') }}</p>
-      @endforelse
+  @if (!empty($homeGallery['images']))
+    <div class="home-gallery__carousel">
+      <div class="home-gallery__slider" data-home-gallery-slider>
+        @foreach ($homeGallery['images'] as $image)
+          <figure class="home-gallery__slide">
+            <img class="home-gallery__image"
+                 src="{{ esc_url($image['url']) }}"
+                 alt="{{ esc_attr($image['alt']) }}"
+                 loading="lazy"
+                 data-lightbox-src="{{ esc_url($image['url']) }}"
+                 data-lightbox-caption="{{ esc_attr($image['caption'] ?? '') }}">
+            @if (!empty($image['caption']))
+              <figcaption class="home-gallery__caption">{{ $image['caption'] }}</figcaption>
+            @endif
+          </figure>
+        @endforeach
+      </div>
+    </div>
+  @else
+    <div class="container">
+      <p class="home-gallery__empty">{{ __('Check back soon for our latest photos.', 'pixelforge') }}</p>
+    </div>
+  @endif
+
+  <div class="home-gallery-lightbox" data-home-gallery-lightbox hidden>
+    <button type="button" class="home-gallery-lightbox__close" data-home-gallery-lightbox-close aria-label="{{ __('Close image', 'pixelforge') }}">
+      &times;
+    </button>
+    <div class="home-gallery-lightbox__content">
+      <img class="home-gallery-lightbox__image" src="" alt="">
+      <p class="home-gallery-lightbox__caption" data-home-gallery-lightbox-caption></p>
     </div>
   </div>
 </section>

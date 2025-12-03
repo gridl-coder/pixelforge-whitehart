@@ -44,22 +44,35 @@
     margin: 20px auto 0;
   }
 
-  &__grid {
-    display: grid;
-    gap: 15px;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    margin-top: 20px;
+  &__carousel {
+    margin: 20px calc(-50vw + 50%) 0;
+    position: relative;
+    width: 100vw;
 
-    @include media-breakpoint-up(md) {
-      gap: 20px;
+    @include media-breakpoint-up(lg) {
+      margin-top: 40px;
     }
   }
 
-  &__item {
+  &__slider {
+    .slick-slide {
+      height: 100%;
+    }
+
+    .slick-list {
+      border-radius: 16px;
+    }
+  }
+
+  &__slide {
     position: relative;
-    overflow: hidden;
-    border-radius: 12px;
+    min-height: 320px;
+    max-height: 640px;
     background: #f8f7f3;
+
+    @include media-breakpoint-up(md) {
+      min-height: 420px;
+    }
   }
 
   &__image {
@@ -67,15 +80,102 @@
     height: 100%;
     display: block;
     object-fit: cover;
-  }
-
-  &__caption {
-    margin: 10px 12px 12px;
-    color: #2b2b2b;
-    font-weight: 600;
+    cursor: pointer;
   }
 
   &__empty {
     grid-column: 1 / -1;
+  }
+
+  &__caption {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: 0;
+    padding: 16px 20px;
+    color: white;
+    font-weight: 700;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.8) 100%);
+  }
+
+  .slick-dots {
+    bottom: 16px;
+
+    li button:before {
+      color: white;
+      opacity: 0.75;
+    }
+
+    li.slick-active button:before {
+      opacity: 1;
+      color: $brand_yellow;
+    }
+  }
+
+  .slick-arrow {
+    z-index: 3;
+    width: 52px;
+    height: 52px;
+    background: rgba(0, 0, 0, 0.55);
+    border-radius: 50%;
+
+    &:before {
+      font-size: 22px;
+      line-height: 52px;
+      color: white;
+    }
+
+    &:hover,
+    &:focus {
+      background: rgba(0, 0, 0, 0.75);
+    }
+  }
+}
+
+.home-gallery-lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 9999;
+
+  &__content {
+    max-width: min(1200px, 100%);
+    width: 100%;
+    text-align: center;
+  }
+
+  &__image {
+    max-height: 80vh;
+    width: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+    background: #111;
+  }
+
+  &__caption {
+    margin-top: 12px;
+    color: white;
+    font-weight: 600;
+  }
+
+  &__close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: rgba(0, 0, 0, 0.65);
+    border: 0;
+    color: white;
+    font-size: 32px;
+    line-height: 1;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    cursor: pointer;
   }
 }
