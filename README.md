@@ -29,7 +29,7 @@ PixelForge White Hart is a custom WordPress theme built for pubs that need simpl
 
 ## Booking System
 The booking workflow is built from four custom post types:
-- **Table Sections** (`Booking Section`): Create areas such as Bar, Garden, or Function Room.
+- **Table Sections** (`Booking Section`): Create areas such as Bar, or Function Room.
 - **Tables** (`Booking Table`): Assign each table to a section, set seat count, and add internal notes.
 - **Booking Menus**: Define bookable menus (e.g., Sunday Roast) with start/end times and available days, plus optional imagery and descriptions.
 - **Table Bookings**: Customer reservations saved privately; viewable in WP Admin and via the Booking Admin page template.

@@ -46,7 +46,7 @@
         </nav>
       @endif
 
-      <div class="quick-links col-12 col-md-3 d-md-none">
+      <div class="quick-links col-12 col-md-3">
 
         <ul>
           @if (!empty($companyProfile['phone']))

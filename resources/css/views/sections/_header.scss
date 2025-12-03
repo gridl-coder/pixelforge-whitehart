@@ -216,9 +216,15 @@ $z-quick-links: 20;
     z-index: $z-quick-links;
 
     @include media-breakpoint-up(sm) {
-      position: relative;
       background: none;
-      padding: 10px 0 0;
+      padding: 0;
+      width: 220px;
+      right: 15px;
+      left: unset;
+      top: 10px;
+      position: absolute;
+      text-align: right;
+
     }
 
     li {
@@ -237,11 +243,14 @@ $z-quick-links: 20;
       }
 
       @include media-breakpoint-up(sm) {
-
-        font-size: 3em;
         width: auto;
-        margin-left: 6px;
-        margin-right: 6px;
+        margin-left: 25px;
+        line-height: normal;
+
+        a {
+          padding: 0;
+          display: block;
+        }
       }
 
     }
@@ -253,7 +262,7 @@ $z-quick-links: 20;
       width: 100%;
       position: relative;
       @include media-breakpoint-up(md) {
-        background: $brand_yellow;
+        color: $brand_yellow;
 
       }
 
@@ -263,7 +272,6 @@ $z-quick-links: 20;
         path {
           fill: $brand_yellow;
           @include media-breakpoint-up(md) {
-            fill: black;
           }
         }
       }
@@ -271,11 +279,12 @@ $z-quick-links: 20;
       @include media-breakpoint-up(md) {
         margin: 0 4px;
         border-radius: 40px;
-        height: 40px;
-        width: 40px;
-        line-height: 40px;
-        top: 5px;
+        height: auto;
+        width: auto;
+        line-height: normal;
+        top: 0;
       }
+
     }
   }
 }
