@@ -64,26 +64,6 @@ if (document.readyState === 'loading') {
   enableJsClass();
 }
 
-const initCarouselSliders = async () => {
-  await loadSlick();
-
-  const $carousels = $('.carousel-slider');
-
-  if (!$carousels.length || typeof $carousels.slick !== 'function') {
-    return;
-  }
-
-  $carousels.slick({
-    dots: true,
-    arrows: false,
-    adaptiveHeight: false,
-    autoplay: true,
-    autoplaySpeed: 2000,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-  });
-};
-
 const initHomeGalleryCarousel = async () => {
   const $gallerySliders = $('[data-home-gallery-slider]');
 
@@ -235,13 +215,11 @@ const initBookingMenuSliders = async () => {
 
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
-    initCarouselSliders().catch((error) => console.error('Failed to init carousel', error));
     initBookingMenuSliders().catch((error) => console.error('Failed to init booking menu slider', error));
     initHomeGalleryCarousel().catch((error) => console.error('Failed to init home gallery slider', error));
     initHomeGalleryLightbox();
   });
 } else {
-  initCarouselSliders().catch((error) => console.error('Failed to init carousel', error));
   initBookingMenuSliders().catch((error) => console.error('Failed to init booking menu slider', error));
   initHomeGalleryCarousel().catch((error) => console.error('Failed to init home gallery slider', error));
   initHomeGalleryLightbox();

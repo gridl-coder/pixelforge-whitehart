@@ -115,23 +115,6 @@
   }
 }
 
-.carousel-slider__slide {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  align-items: center;
-
-  padding: 0 15%;
-  @include media-breakpoint-up(md) {
-    padding:0;
-  }
-  span {
-    color: $brand_dark;
-    font-weight: 600;
-    font-size: .95rem;
-  }
-}
-
 /**
  * Section Separator
  */

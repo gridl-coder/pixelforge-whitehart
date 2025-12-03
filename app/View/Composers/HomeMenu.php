@@ -9,8 +9,6 @@ use function filter_var;
 use function get_post_meta;
 use function get_the_ID;
 use function get_theme_file_uri;
-use function maybe_unserialize;
-use function sanitize_text_field;
 use function wp_get_attachment_image_url;
 
 class HomeMenu extends Composer
@@ -24,7 +22,6 @@ class HomeMenu extends Composer
         $postId = (int) get_the_ID();
 
         return [
-            'menuCarousel' => $this->carouselSlides($postId),
             'guestPopup' => $this->imageField($postId, 'home_guestpopup_image', __('Guest food events at The White Hart', 'pixelforge')),
             'alesImage' => [
                 'url' => esc_url_raw(get_theme_file_uri('resources/images/new-ales.jpg')),
@@ -32,33 +29,6 @@ class HomeMenu extends Composer
             ],
             'serviceTimes' => $this->serviceTimes(),
         ];
-    }
-
-    private function carouselSlides(int $postId): array
-    {
-        if (! $postId) {
-            return [];
-        }
-
-        $rawSlides = maybe_unserialize(get_post_meta($postId, 'home_menu_carousel', true));
-
-        if (! is_array($rawSlides)) {
-            return [];
-        }
-
-        return array_values(array_filter(array_map(function (array $slide): ?array {
-            $title = isset($slide['menu_image_title']) ? sanitize_text_field($slide['menu_image_title']) : '';
-            $url = $this->normalizeImage($slide['menu_image'] ?? null);
-
-            if (! $url) {
-                return null;
-            }
-
-            return [
-                'url' => $url,
-                'title' => $title,
-            ];
-        }, $rawSlides)));
     }
 
     private function imageField(int $postId, string $metaKey, string $defaultAlt): ?array

@@ -5,7 +5,7 @@
     <div class="row">
 
 
-      <div class="col-md-7 food-banner-content">
+      <div class="col-12 food-banner-content">
 
         <div class="boxed-container boxed-container--muted">
 
@@ -26,24 +26,6 @@
                alt="{{ esc_attr($alesImage['alt']) }}" loading="lazy">
         @endif
         <div class="nav_dec"><span></span></div>
-
-
-      </div>
-      <div class="col-md-5 food-banner-image text-center">
-
-        @if (!empty($menuCarousel))
-          <div class="carousel-slider">
-            @foreach ($menuCarousel as $slide)
-              <div class="carousel-slider__slide">
-                <img class="img-fluid" src="{{ esc_url($slide['url']) }}" alt="{{ esc_attr($slide['title']) }}"
-                     loading="lazy"/>
-                @if (!empty($slide['title']))
-                  <span>{{ $slide['title'] }}</span>
-                @endif
-              </div>
-            @endforeach
-          </div>
-        @endif
 
         @if (!empty($guestPopup['url']))
           <img class="img-fluid food-banner__poster" src="{{ esc_url($guestPopup['url']) }}"
