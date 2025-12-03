@@ -15,6 +15,7 @@ use WP_User;
 use function PixelForge\Bookings\get_booking_details;
 use function PixelForge\Bookings\get_table_labels;
 use function PixelForge\Bookings\normalize_table_ids;
+use function PixelForge\Bookings\send_booking_cancellation_email;
 use function PixelForge\Bookings\schedule_booking_reminder;
 
 const LOGIN_NONCE_ACTION = 'pixelforge_booking_admin_login';
@@ -25,6 +26,7 @@ add_action('admin_post_nopriv_pixelforge_booking_admin_login', __NAMESPACE__ . '
 add_action('admin_post_pixelforge_booking_admin_create', __NAMESPACE__ . '\\handle_create');
 add_action('admin_post_pixelforge_booking_admin_update', __NAMESPACE__ . '\\handle_update');
 add_action('admin_post_pixelforge_booking_admin_delete', __NAMESPACE__ . '\\handle_delete');
+add_action('admin_post_pixelforge_booking_admin_cancel', __NAMESPACE__ . '\\handle_cancel');
 add_action('admin_post_pixelforge_booking_admin_export', __NAMESPACE__ . '\\handle_export');
 add_action('admin_init', __NAMESPACE__ . '\\restrict_staff_admin_access');
 add_filter('login_redirect', __NAMESPACE__ . '\\redirect_staff_login', 10, 3);
@@ -162,6 +164,30 @@ function handle_delete(): void
     wp_trash_post($bookingId);
 
     wp_safe_redirect(add_query_arg('booking_admin_notice', 'deleted', $redirect));
+    exit;
+}
+
+function handle_cancel(): void
+{
+    if (!current_user_can('delete_posts')) {
+        wp_safe_redirect(add_query_arg('booking_admin_error', rawurlencode(__('You do not have permission to delete bookings.', 'pixelforge')), home_url('/')));
+        exit;
+    }
+
+    check_admin_referer(BOOKING_NONCE_ACTION);
+
+    $redirect = get_redirect_target($_POST['redirect_to'] ?? home_url('/'));
+    $bookingId = absint($_POST['booking_id'] ?? 0);
+
+    if ($bookingId === 0 || !current_user_can('delete_post', $bookingId)) {
+        wp_safe_redirect(add_query_arg('booking_admin_error', rawurlencode(__('We could not find that booking.', 'pixelforge')), $redirect));
+        exit;
+    }
+
+    send_booking_cancellation_email($bookingId);
+    wp_trash_post($bookingId);
+
+    wp_safe_redirect(add_query_arg('booking_admin_notice', 'cancelled', $redirect));
     exit;
 }
 

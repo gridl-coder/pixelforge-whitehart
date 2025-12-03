@@ -957,6 +957,47 @@ function send_booking_reminder(int $bookingId): void
     update_post_meta($bookingId, 'table_booking_reminder_sent', time());
 }
 
+function send_booking_cancellation_email(int $bookingId): void
+{
+    $details = get_booking_details($bookingId);
+
+    if (!is_email($details['email'])) {
+        return;
+    }
+
+    $summary = build_booking_summary($bookingId, $details);
+    $subject = __('Your table booking has been cancelled', 'pixelforge');
+
+    $textBody = build_booking_email_text([
+        'intro' => __(
+            'Your booking has been cancelled. If this is unexpected, please contact us to arrange a new time.',
+            'pixelforge'
+        ),
+        'summary' => $summary,
+    ]);
+
+    $htmlBody = build_booking_email_html([
+        'title' => $subject,
+        'intro' => __(
+            'Your booking has been cancelled. If this is unexpected, please contact us to arrange a new time.',
+            'pixelforge'
+        ),
+        'summary' => $summary,
+    ]);
+
+    $sent = send_email([
+        'to' => $details['email'],
+        'toName' => $details['name'],
+        'subject' => $subject,
+        'text' => $textBody,
+        'html' => $htmlBody,
+    ]);
+
+    if (!$sent) {
+        wp_mail($details['email'], $subject, $textBody);
+    }
+}
+
 function build_booking_summary(int $bookingId, array $details): string
 {
     $lines = [

@@ -44,6 +44,9 @@
           @case('deleted')
             {{ __('Booking moved to trash.', 'pixelforge') }}
             @break
+          @case('cancelled')
+            {{ __('Booking cancelled and customer notified.', 'pixelforge') }}
+            @break
           @default
             {{ __('Action completed.', 'pixelforge') }}
         @endswitch
@@ -379,6 +382,14 @@
                         <div class="booking-admin__actions">
                           <button class="booking-admin__button" type="submit">{{ __('Update booking', 'pixelforge') }}</button>
                         </div>
+                      </form>
+
+                      <form class="booking-admin__actions" action="{{ admin_url('admin-post.php') }}" method="post" onsubmit="return confirm('{{ __('Cancel this booking and email the customer?', 'pixelforge') }}');">
+                        @php(wp_nonce_field(\PixelForge\BookingAdmin\BOOKING_NONCE_ACTION))
+                        <input type="hidden" name="action" value="pixelforge_booking_admin_cancel">
+                        <input type="hidden" name="booking_id" value="{{ $booking['id'] }}">
+                        <input type="hidden" name="redirect_to" value="{{ esc_url($redirect) }}">
+                        <button class="booking-admin__button booking-admin__button--danger" type="submit">{{ __('Cancel booking', 'pixelforge') }}</button>
                       </form>
 
                       <form class="booking-admin__actions" action="{{ admin_url('admin-post.php') }}" method="post" onsubmit="return confirm('{{ __('Move this booking to the trash?', 'pixelforge') }}');">
