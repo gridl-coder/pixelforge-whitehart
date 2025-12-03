@@ -26,6 +26,7 @@ class HomeEvents extends Composer
 {
     protected static $views = [
         'front-page.home-events',
+        'front-page.event-next',
     ];
 
     public function with(): array
