@@ -13,7 +13,7 @@ $z-quick-links: 20;
   font-family: $brand_font_heading;
   height: 90px;
 
-  @include media-breakpoint-up(sm) {
+  @include media-breakpoint-up(md) {
     position: relative;
     height: auto;
   }
@@ -215,7 +215,7 @@ $z-quick-links: 20;
     right: 0;
     z-index: $z-quick-links;
 
-    @include media-breakpoint-up(sm) {
+    @include media-breakpoint-up(md) {
       background: none;
       padding: 0;
       width: 220px;
@@ -242,7 +242,7 @@ $z-quick-links: 20;
         display: block;
       }
 
-      @include media-breakpoint-up(sm) {
+      @include media-breakpoint-up(md) {
         width: auto;
         margin-left: 25px;
         line-height: normal;

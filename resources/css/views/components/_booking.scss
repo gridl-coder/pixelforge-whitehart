@@ -294,28 +294,35 @@
     }
 
     &__meta {
-      margin-top: 8px;
+      margin-top: 15px;
       color: rgba(#fff, 0.75);
       font-size: 0.95rem;
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
       align-items: center;
+      @include media-breakpoint-up(md) {
+
+      }
     }
 
     &__meta-window {
-      color: rgba(#fff, 0.85);
-      font-weight: 600;
+      color: #ffffff;
+      font-weight: 700;
+      display: block;
+      width: 100%;
+      font-size: large;
+      text-align: center;
     }
 
     &__day {
-      padding: 4px 8px;
+      padding: 3px 6px;
       border-radius: 10px;
       border: 1px solid rgba(#fff, 0.12);
       background: rgba(#fff, 0.06);
       color: rgba(#fff, 0.65);
       font-weight: 600;
-      font-size: 0.9rem;
+      font-size: 0.8rem;
 
       &.is-allowed {
         background: rgba($brand_yellow, 0.2);
@@ -399,7 +406,6 @@
   }
 
   .booking-menu-shortcode__item {
-    background: rgba($brand_dark, 0.02);
     border: 1px solid rgba($brand_dark, 0.08);
     border-radius: 12px;
     height: 100%;

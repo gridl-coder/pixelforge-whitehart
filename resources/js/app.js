@@ -273,47 +273,6 @@ const initBookingMenuSliders = async () => {
   });
 };
 
-const initParallaxDecorations = async () => {
-  const parallaxElements = document.querySelectorAll('[data-parallax]');
-
-  if (!parallaxElements.length) {
-    return;
-  }
-
-  const [{ default: ScrollMagic }, { gsap }] = await Promise.all([
-    import('scrollmagic'),
-    import('gsap'),
-  ]);
-
-  const controller = new ScrollMagic.Controller();
-
-  parallaxElements.forEach((element) => {
-    const depth = parseFloat(element.getAttribute('data-parallax-depth')) || 0.35;
-    const distance = parseInt(element.getAttribute('data-parallax-distance'), 10) || 140;
-
-    const scene = new ScrollMagic.Scene({
-      triggerElement: element,
-      triggerHook: 1,
-      duration: '160%',
-    })
-      .on('progress', (progressEvent) => {
-        const progress = progressEvent.progress * 2 - 1; // range: -1 to 1
-        const translateValue = progress * distance * depth;
-
-        gsap.to(element, {
-          y: translateValue,
-          opacity: 0.65 + Math.abs(progress) * 0.25,
-          overwrite: 'auto',
-          duration: 0.3,
-          ease: 'power1.out',
-        });
-      })
-      .addTo(controller);
-
-    // Ensure initial state is set before scrolling
-    scene.refresh();
-  });
-};
 
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
@@ -321,12 +280,10 @@ if (document.readyState === 'loading') {
     initHomeGalleryCarousel().catch((error) => console.error('Failed to init home gallery slider', error));
     initHomeGalleryLightbox();
     initSmoothAnchorScroll();
-    initParallaxDecorations().catch((error) => console.error('Failed to init parallax decorations', error));
   });
 } else {
   initBookingMenuSliders().catch((error) => console.error('Failed to init booking menu slider', error));
   initHomeGalleryCarousel().catch((error) => console.error('Failed to init home gallery slider', error));
   initHomeGalleryLightbox();
   initSmoothAnchorScroll();
-  initParallaxDecorations().catch((error) => console.error('Failed to init parallax decorations', error));
 }

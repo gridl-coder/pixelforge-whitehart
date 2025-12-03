@@ -14,7 +14,7 @@
 
       <div class="container pt-5" id="table-booking">
         <h1>
-          <span class="subtitle">Book a Table at The White Hart.</span>
+          <span class="subtitle">Eat at The White Hart.</span>
           Table Booking
         </h1>
 

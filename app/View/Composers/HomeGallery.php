@@ -27,7 +27,7 @@ class HomeGallery extends Composer
 
         return [
             'homeGallery' => [
-                'subtitle' => __('A glimpse around the Hart', 'pixelforge'),
+                'subtitle' => __('Some photos from the Hart', 'pixelforge'),
                 'title' => __('Gallery', 'pixelforge'),
                 'images' => $this->galleryImages($postId),
             ],

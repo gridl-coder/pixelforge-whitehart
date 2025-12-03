@@ -15,7 +15,7 @@
               <p><strong>{{ $time['label'] }}</strong><br/>{{ $time['hours'] }}</p>
             @endforeach
 
-            <a href="#table-booking" class="btn">Book a table</a>
+            <a href="#table-booking" class="btnnpm i">Book a table</a>
           </div>
 
 

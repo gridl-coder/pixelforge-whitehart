@@ -21,7 +21,7 @@
     right: 0;
   }
 
-  @include media-breakpoint-up(sm) {
+  @include media-breakpoint-up(md) {
     padding-top: 30px;
   }
 
@@ -32,7 +32,7 @@
     left: 0;
     width: 100%;
     z-index: -1;
-    @include media-breakpoint-up(sm) {
+    @include media-breakpoint-up(md) {
       top: -250px;
 
     }
@@ -48,7 +48,7 @@
     border: 1px dashed rgba(255, 255, 255, 0.5);
     padding: 15px 15px 0 15px;
 
-    @include media-breakpoint-up(sm) {
+    @include media-breakpoint-up(md) {
       margin: 35px auto 35px auto
     }
 
@@ -57,7 +57,7 @@
       font-weight: 500;
       text-transform: uppercase;
 
-      @include media-breakpoint-up(sm) {
+      @include media-breakpoint-up(md) {
         margin-bottom: 1rem;
         font-size: 3.5rem;
         line-height: 1.4;
@@ -65,7 +65,7 @@
     }
 
     p {
-      font-size: 0.9rem;
+      font-size: 0.8rem;
       display: block;
       padding: 0 30px;
     }
@@ -76,7 +76,7 @@
     margin: 30px auto 0 auto;
     background: url("@images/hart-bg.png") no-repeat -49% -2%;
 
-    @include media-breakpoint-up(sm) {
+    @include media-breakpoint-up(md) {
       background: url("@images/hart-bg.png") no-repeat right 13%;
     }
   }
@@ -137,7 +137,7 @@
     filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.35));
   }
 
-  @include media-breakpoint-down(sm) {
+  @include media-breakpoint-down(md) {
     &__item--script {
       top: 16%;
       left: 12%;
@@ -160,7 +160,7 @@
   text-align: center;
 
 
-  @include media-breakpoint-up(sm) {
+  @include media-breakpoint-up(md) {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
@@ -173,7 +173,7 @@
     margin: 0 10px 20px 10px;
     font-size: 11px;
 
-    @include media-breakpoint-up(sm) {
+    @include media-breakpoint-up(md) {
       width: 25%;
       margin: 15px;
       font-size: 14px;
