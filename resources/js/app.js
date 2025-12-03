@@ -19,36 +19,48 @@ const loadSlick = async () => {
 };
 
 const initNavigation = () => {
-  const navButton = document.getElementById('navButton');
-  const mainNav = document.getElementById('mainNav');
-  const navCloseButtons = document.querySelectorAll('[data-nav-close]');
-  const navLinks = document.querySelectorAll('.main-nav-list a');
-
-  if (!navButton || !mainNav) {
+  if (!document.getElementById('navButton') || !document.getElementById('mainNav')) {
     return;
   }
 
   const toggleNavigation = (force) => {
+    const navButtonRef = document.getElementById('navButton');
+    const mainNavRef = document.getElementById('mainNav');
+
+    if (!navButtonRef || !mainNavRef) {
+      return;
+    }
+
     const shouldOpen = typeof force === 'boolean'
       ? force
-      : !mainNav.classList.contains('open');
+      : !mainNavRef.classList.contains('open');
 
-    mainNav.classList.toggle('open', shouldOpen);
-    navButton.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+    mainNavRef.classList.toggle('open', shouldOpen);
+    navButtonRef.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
   };
 
-  navButton.addEventListener('click', (event) => {
-    event.preventDefault();
-    toggleNavigation();
-  });
+  document.addEventListener('click', (event) => {
+    const clickTarget = event.target;
 
-  navCloseButtons.forEach((button) => {
-    button.addEventListener('click', () => toggleNavigation(false));
-  });
+    if (!clickTarget) {
+      return;
+    }
 
-  navLinks.forEach((link) => {
-    link.addEventListener('click', () => toggleNavigation(false));
-  });
+    if (clickTarget.closest('#navButton')) {
+      event.preventDefault();
+      toggleNavigation();
+      return;
+    }
+
+    if (clickTarget.closest('[data-nav-close]')) {
+      toggleNavigation(false);
+      return;
+    }
+
+    if (clickTarget.closest('.main-nav-list a')) {
+      toggleNavigation(false);
+    }
+  }, { passive: false });
 };
 
 if (document.readyState === 'loading') {
