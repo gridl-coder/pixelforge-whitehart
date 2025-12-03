@@ -25,6 +25,7 @@
   "require": {
     "php": ">=8.2",
     "cmb2/cmb2": "^2.11",
+    "dompdf/dompdf": "^3.1",
     "getbrevo/brevo-php": "^2.0",
     "roots/acorn": "^5.0"
   },
