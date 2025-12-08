@@ -19,11 +19,11 @@
 
       @if (is_user_logged_in() && current_user_can('edit_posts'))
         <nav class="booking-admin__tabs" aria-label="{{ __('Booking admin pages', 'pixelforge') }}">
-          <a class="booking-admin__tab is-active" href="#booking-create" data-panel-toggle="create" role="tab" aria-controls="booking-panel-create" aria-selected="true">
-            {{ __('Add booking', 'pixelforge') }}
-          </a>
-          <a class="booking-admin__tab" href="#booking-view" data-panel-toggle="list" role="tab" aria-controls="booking-panel-list" aria-selected="false">
+          <a class="booking-admin__tab is-active" href="#booking-view" data-panel-toggle="list" role="tab" aria-controls="booking-panel-list" aria-selected="true">
             {{ __('View bookings', 'pixelforge') }}
+          </a>
+          <a class="booking-admin__tab" href="#booking-create" data-panel-toggle="create" role="tab" aria-controls="booking-panel-create" aria-selected="false">
+            {{ __('Add booking', 'pixelforge') }}
           </a>
           <a class="booking-admin__tab" href="#booking-calendar" data-panel-toggle="calendar" role="tab" aria-controls="booking-panel-calendar" aria-selected="false">
             {{ __('Calendar', 'pixelforge') }}
@@ -92,7 +92,7 @@
       </div>
 
       <div class="booking-admin__panels" data-panel-container>
-        <div class="booking-admin__panel is-active" id="booking-panel-create" data-panel="create" role="tabpanel" aria-label="{{ __('Add booking', 'pixelforge') }}">
+        <div class="booking-admin__panel" id="booking-panel-create" data-panel="create" role="tabpanel" aria-label="{{ __('Add booking', 'pixelforge') }}">
           <div class="booking-admin__card">
             <h2>{{ __('Create booking', 'pixelforge') }}</h2>
             <p class="booking-admin__muted">{{ __('Add a new booking.', 'pixelforge') }}</p>
@@ -190,7 +190,7 @@
           </div>
         </div>
 
-        <div class="booking-admin__panel" id="booking-panel-list" data-panel="list" role="tabpanel" aria-label="{{ __('View bookings', 'pixelforge') }}">
+        <div class="booking-admin__panel is-active" id="booking-panel-list" data-panel="list" role="tabpanel" aria-label="{{ __('View bookings', 'pixelforge') }}">
           <div class="booking-admin__card">
           <div class="booking-admin__card-header booking-admin__card-header--stacked">
             <div>
@@ -513,7 +513,7 @@
           panelContainer.setAttribute('data-panels-ready', 'true');
         }
 
-        setActivePanel('create');
+        setActivePanel('list');
 
         const calendarWrapper = document.querySelector('[data-booking-calendar]');
 
@@ -593,7 +593,7 @@
             getBookingsForDay(year, month, day).forEach(function (booking) {
               const tag = document.createElement('div');
               tag.className = 'booking-admin__calendar-event' + (booking.status === 'confirmed' ? ' is-confirmed' : '');
-              tag.innerHTML = '<strong>' + booking.time + '</strong> ' + booking.name + ' · ' + booking.party_size + ' ' + '{{ __('guests', 'pixelforge') }}';
+              tag.innerHTML = '<strong>x' + booking.party_size + '</strong> @ ' + booking.time;
               tag.setAttribute('tabindex', '0');
               tag.setAttribute('role', 'button');
               tag.setAttribute('aria-label', '{{ __('View booking', 'pixelforge') }}');

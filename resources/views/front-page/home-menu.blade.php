@@ -16,6 +16,7 @@
             @endforeach
 
             <a href="#table-booking" class="btnnpm i">Book a table</a>
+            <a href="https://whitehartbodmin.square.site/" class="btnnpm i" target="_blank" rel="noopener noreferrer">Order Breakfast/Sunday Roast Delivery</a>
           </div>
 
 
