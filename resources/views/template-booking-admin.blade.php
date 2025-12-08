@@ -9,195 +9,256 @@
 @php($today = wp_date('Y-m-d', time(), wp_timezone()))
 @php($currentMonth = wp_date('Y-m', time(), wp_timezone()))
 @php($currentWeek = wp_date('o-\\WW', time(), wp_timezone()))
+@php($totalBookings = count($panel['bookings']))
+@php($confirmedBookings = count(array_filter($panel['bookings'], function ($booking) { return !empty($booking['verified']); })))
+@php($pendingBookings = max($totalBookings - $confirmedBookings, 0))
 
 @extends('layouts.booking-admin')
 
 @section('content')
   <section class="booking-admin">
-    <div class="booking-admin__header">
-      <h1>{{ __('Table Booking Admin', 'pixelforge') }}</h1>
+    <div class="booking-admin__shell">
+      <div class="booking-admin__hero">
+        <div class="booking-admin__hero-main">
+          <div>
+            <p class="booking-admin__eyebrow">{{ __('Galaxy Tab ready', 'pixelforge') }}</p>
+            <h1>{{ __('Table Booking Admin', 'pixelforge') }}</h1>
+            <p class="booking-admin__muted booking-admin__hero-copy">{{ __('Streamlined, touch-friendly tools for quick reservations, edits, and calendar checks.', 'pixelforge') }}</p>
 
-      @if (is_user_logged_in() && current_user_can('edit_posts'))
-        <nav class="booking-admin__tabs" aria-label="{{ __('Booking admin pages', 'pixelforge') }}">
-          <a class="booking-admin__tab is-active" href="#booking-view" data-panel-toggle="list" role="tab" aria-controls="booking-panel-list" aria-selected="true">
-            {{ __('View bookings', 'pixelforge') }}
-          </a>
-          <a class="booking-admin__tab" href="#booking-create" data-panel-toggle="create" role="tab" aria-controls="booking-panel-create" aria-selected="false">
-            {{ __('Add booking', 'pixelforge') }}
-          </a>
-          <a class="booking-admin__tab" href="#booking-calendar" data-panel-toggle="calendar" role="tab" aria-controls="booking-panel-calendar" aria-selected="false">
-            {{ __('Calendar', 'pixelforge') }}
-          </a>
-        </nav>
-      @endif
-    </div>
-
-    @if ($notice !== '')
-      <div class="booking-admin__notice booking-admin__notice--success">
-        @switch($notice)
-          @case('created')
-            {{ __('Booking created successfully.', 'pixelforge') }}
-            @break
-          @case('updated')
-            {{ __('Booking updated successfully.', 'pixelforge') }}
-            @break
-          @case('deleted')
-            {{ __('Booking moved to trash.', 'pixelforge') }}
-            @break
-          @case('cancelled')
-            {{ __('Booking cancelled and customer notified.', 'pixelforge') }}
-            @break
-          @default
-            {{ __('Action completed.', 'pixelforge') }}
-        @endswitch
-      </div>
-    @endif
-
-    @if ($error !== '')
-      <div class="booking-admin__notice booking-admin__notice--error">{!! $error !!}</div>
-    @endif
-
-    @if (! is_user_logged_in())
-      <div class="booking-admin__card">
-        <h2>{{ __('Staff Login', 'pixelforge') }}</h2>
-        <p class="booking-admin__muted">{{ __('Sign in with your staff account to view and manage table bookings.', 'pixelforge') }}</p>
-
-        <form class="booking-admin__form" action="{{ admin_url('admin-post.php') }}" method="post">
-          @php(wp_nonce_field(\PixelForge\BookingAdmin\LOGIN_NONCE_ACTION))
-          <input type="hidden" name="action" value="pixelforge_booking_admin_login">
-          <input type="hidden" name="redirect_to" value="{{ esc_url($redirect) }}">
-
-          <label class="booking-admin__field">
-            <span>{{ __('Username', 'pixelforge') }}</span>
-            <input type="text" name="username" required autocomplete="username">
-          </label>
-
-          <label class="booking-admin__field">
-            <span>{{ __('Password', 'pixelforge') }}</span>
-            <input type="password" name="password" required autocomplete="current-password">
-          </label>
-
-          <button class="booking-admin__button" type="submit">{{ __('Sign in', 'pixelforge') }}</button>
-        </form>
-      </div>
-    @elseif (! current_user_can('edit_posts'))
-      <div class="booking-admin__card">
-        <h2>{{ __('No access', 'pixelforge') }}</h2>
-        <p class="booking-admin__muted">{{ __('Your account cannot manage bookings. Please contact an administrator.', 'pixelforge') }}</p>
-      </div>
-    @else
-      <div class="booking-admin__topbar">
-        <span>{{ sprintf(__('Signed in as %s', 'pixelforge'), wp_get_current_user()->display_name ?: wp_get_current_user()->user_login) }}</span>
-        <a class="booking-admin__button booking-admin__button--ghost" href="{{ wp_logout_url($redirect) }}">{{ __('Log out', 'pixelforge') }}</a>
-      </div>
-
-      <div class="booking-admin__panels" data-panel-container>
-        <div class="booking-admin__panel" id="booking-panel-create" data-panel="create" role="tabpanel" aria-label="{{ __('Add booking', 'pixelforge') }}">
-          <div class="booking-admin__card">
-            <h2>{{ __('Create booking', 'pixelforge') }}</h2>
-            <p class="booking-admin__muted">{{ __('Add a new booking.', 'pixelforge') }}</p>
-
-            <form class="booking-admin__form" action="{{ admin_url('admin-post.php') }}" method="post">
-              @php(wp_nonce_field(\PixelForge\BookingAdmin\BOOKING_NONCE_ACTION))
-              <input type="hidden" name="action" value="pixelforge_booking_admin_create">
-              <input type="hidden" name="redirect_to" value="{{ esc_url($redirect) }}">
-
-              <label class="booking-admin__field">
-                <span>{{ __('Guest name', 'pixelforge') }}</span>
-                <input type="text" name="name" required>
-              </label>
-
-              <div class="booking-admin__field-grid">
-                <label class="booking-admin__field">
-                  <span>{{ __('Email', 'pixelforge') }}</span>
-                  <input type="email" name="email" required>
-                </label>
-
-                <label class="booking-admin__field">
-                  <span>{{ __('Phone', 'pixelforge') }}</span>
-                  <input type="tel" name="phone" required>
-                </label>
-
-                <label class="booking-admin__field">
-                  <span>{{ __('Party size', 'pixelforge') }}</span>
-                  <select name="party_size" required>
-                    @for ($partySize = 2; $partySize <= 12; $partySize += 1)
-                      <option value="{{ $partySize }}">{{ $partySize }}</option>
-                    @endfor
-                  </select>
-                </label>
+            @if (is_user_logged_in() && current_user_can('edit_posts'))
+              <div class="booking-admin__hero-actions">
+                <button class="booking-admin__button" type="button" data-panel-toggle="create">
+                  {{ __('Add booking', 'pixelforge') }}
+                </button>
+                <button class="booking-admin__button booking-admin__button--ghost" type="button" data-panel-toggle="calendar">
+                  {{ __('Open calendar', 'pixelforge') }}
+                </button>
               </div>
+            @endif
+          </div>
 
-              <div class="booking-admin__field-grid">
-                <label class="booking-admin__field">
-                  <span>{{ __('Menu', 'pixelforge') }}</span>
-                  <select name="menu" required>
-                    <option value="">{{ __('Select a menu', 'pixelforge') }}</option>
-                    @foreach ($panel['menus'] as $menu)
-                      <option value="{{ $menu->ID }}">{{ $menu->post_title }}</option>
-                    @endforeach
-                  </select>
-                </label>
-
-                <label class="booking-admin__field">
-                  <span>{{ __('Section', 'pixelforge') }}</span>
-                  <select name="section" required>
-                    <option value="">{{ __('Select a section', 'pixelforge') }}</option>
-                    @foreach ($panel['sections'] as $section)
-                      <option value="{{ $section->ID }}">{{ $section->post_title }}</option>
-                    @endforeach
-                  </select>
-                </label>
-
-                <label class="booking-admin__field">
-                  <span>{{ __('Tables', 'pixelforge') }}</span>
-                  <select name="table_ids[]" multiple required>
-                    @foreach ($panel['tables'] as $table)
-                      @php($tableSeats = get_post_meta($table->ID, 'booking_table_seats', true))
-                      @php($tableSection = get_post_meta($table->ID, 'booking_table_section', true))
-                      <option value="{{ $table->ID }}">
-                        {{ $table->post_title }}
-                        @if ($tableSection)
-                          ({{ get_the_title($tableSection) }})
-                        @endif
-                        — {{ sprintf(__('Seats: %s', 'pixelforge'), $tableSeats ?: '—') }}
-                      </option>
-                    @endforeach
-                  </select>
-                </label>
-
-              </div>
-
-              <div class="booking-admin__field-grid">
-                <label class="booking-admin__field">
-                  <span>{{ __('Date', 'pixelforge') }}</span>
-                  <input type="date" name="date" required>
-                </label>
-
-                <label class="booking-admin__field">
-                  <span>{{ __('Time', 'pixelforge') }}</span>
-                  <input type="time" name="time" required>
-                </label>
-              </div>
-
-              <label class="booking-admin__field">
-                <span>{{ __('Notes', 'pixelforge') }}</span>
-                <textarea name="notes" rows="3" placeholder="{{ __('Allergies, accessibility needs, etc.', 'pixelforge') }}"></textarea>
-              </label>
-
-              <button class="booking-admin__button" type="submit">{{ __('Save booking', 'pixelforge') }}</button>
-            </form>
+          <div class="booking-admin__hero-card">
+            <div class="booking-admin__hero-chip">{{ __('Live overview', 'pixelforge') }}</div>
+            <p class="booking-admin__hero-highlight">{{ sprintf(__('%s bookings ready to action', 'pixelforge'), $totalBookings) }}</p>
+            <p class="booking-admin__muted">{{ __('Optimised for quick tablet workflows. Use the tabs below to jump between modes.', 'pixelforge') }}</p>
           </div>
         </div>
 
-        <div class="booking-admin__panel is-active" id="booking-panel-list" data-panel="list" role="tabpanel" aria-label="{{ __('View bookings', 'pixelforge') }}">
-          <div class="booking-admin__card">
-          <div class="booking-admin__card-header booking-admin__card-header--stacked">
-            <div>
-              <h2>{{ __('Existing bookings', 'pixelforge') }}</h2>
-              <p class="booking-admin__muted">{{ __('Review, update, or cancel bookings.', 'pixelforge') }}</p>
+        @if (is_user_logged_in() && current_user_can('edit_posts'))
+          <div class="booking-admin__stats">
+            <div class="booking-admin__stat">
+              <span>{{ __('Pending', 'pixelforge') }}</span>
+              <strong>{{ $pendingBookings }}</strong>
+              <small>{{ __('Awaiting confirmation', 'pixelforge') }}</small>
             </div>
-            <div class="booking-admin__export">
+            <div class="booking-admin__stat">
+              <span>{{ __('Confirmed', 'pixelforge') }}</span>
+              <strong>{{ $confirmedBookings }}</strong>
+              <small>{{ __('Ready to seat', 'pixelforge') }}</small>
+            </div>
+            <div class="booking-admin__stat">
+              <span>{{ __('Total', 'pixelforge') }}</span>
+              <strong>{{ $totalBookings }}</strong>
+              <small>{{ __('All active records', 'pixelforge') }}</small>
+            </div>
+          </div>
+        @endif
+      </div>
+
+      @if ($notice !== '')
+        <div class="booking-admin__notice booking-admin__notice--success">
+          @switch($notice)
+            @case('created')
+              {{ __('Booking created successfully.', 'pixelforge') }}
+              @break
+            @case('updated')
+              {{ __('Booking updated successfully.', 'pixelforge') }}
+              @break
+            @case('deleted')
+              {{ __('Booking moved to trash.', 'pixelforge') }}
+              @break
+            @case('cancelled')
+              {{ __('Booking cancelled and customer notified.', 'pixelforge') }}
+              @break
+            @default
+              {{ __('Action completed.', 'pixelforge') }}
+          @endswitch
+        </div>
+      @endif
+
+      @if ($error !== '')
+        <div class="booking-admin__notice booking-admin__notice--error">{!! $error !!}</div>
+      @endif
+
+      @if (! is_user_logged_in())
+        <div class="booking-admin__surface">
+          <div class="booking-admin__card">
+            <h2>{{ __('Staff Login', 'pixelforge') }}</h2>
+            <p class="booking-admin__muted">{{ __('Sign in with your staff account to view and manage table bookings.', 'pixelforge') }}</p>
+
+            <form class="booking-admin__form" action="{{ admin_url('admin-post.php') }}" method="post">
+              @php(wp_nonce_field(\PixelForge\BookingAdmin\LOGIN_NONCE_ACTION))
+              <input type="hidden" name="action" value="pixelforge_booking_admin_login">
+              <input type="hidden" name="redirect_to" value="{{ esc_url($redirect) }}">
+
+              <label class="booking-admin__field">
+                <span>{{ __('Username', 'pixelforge') }}</span>
+                <input type="text" name="username" required autocomplete="username">
+              </label>
+
+              <label class="booking-admin__field">
+                <span>{{ __('Password', 'pixelforge') }}</span>
+                <input type="password" name="password" required autocomplete="current-password">
+              </label>
+
+              <button class="booking-admin__button" type="submit">{{ __('Sign in', 'pixelforge') }}</button>
+            </form>
+          </div>
+        </div>
+      @elseif (! current_user_can('edit_posts'))
+        <div class="booking-admin__surface">
+          <div class="booking-admin__card">
+            <h2>{{ __('No access', 'pixelforge') }}</h2>
+            <p class="booking-admin__muted">{{ __('Your account cannot manage bookings. Please contact an administrator.', 'pixelforge') }}</p>
+          </div>
+        </div>
+      @else
+        <div class="booking-admin__surface">
+          <div class="booking-admin__topbar">
+            <div>
+              <p class="booking-admin__muted">{{ __('Signed in as', 'pixelforge') }}</p>
+              <strong>{{ wp_get_current_user()->display_name ?: wp_get_current_user()->user_login }}</strong>
+            </div>
+            <div class="booking-admin__topbar-actions">
+              <a class="booking-admin__pill" href="#booking-panel-list" data-panel-toggle="list">{{ __('Bookings', 'pixelforge') }}</a>
+              <a class="booking-admin__button booking-admin__button--ghost" href="{{ wp_logout_url($redirect) }}">{{ __('Log out', 'pixelforge') }}</a>
+            </div>
+          </div>
+
+          <nav class="booking-admin__tabs" aria-label="{{ __('Booking admin pages', 'pixelforge') }}">
+            <button class="booking-admin__tab is-active" type="button" data-panel-toggle="list" role="tab" aria-controls="booking-panel-list" aria-selected="true">
+              {{ __('View bookings', 'pixelforge') }}
+            </button>
+            <button class="booking-admin__tab" type="button" data-panel-toggle="create" role="tab" aria-controls="booking-panel-create" aria-selected="false">
+              {{ __('Add booking', 'pixelforge') }}
+            </button>
+            <button class="booking-admin__tab" type="button" data-panel-toggle="calendar" role="tab" aria-controls="booking-panel-calendar" aria-selected="false">
+              {{ __('Calendar', 'pixelforge') }}
+            </button>
+          </nav>
+
+          <div class="booking-admin__panels" data-panel-container>
+            <div class="booking-admin__panel" id="booking-panel-create" data-panel="create" role="tabpanel" aria-label="{{ __('Add booking', 'pixelforge') }}">
+              <div class="booking-admin__card">
+                <div class="booking-admin__card-header">
+                  <div>
+                    <h2>{{ __('Create booking', 'pixelforge') }}</h2>
+                    <p class="booking-admin__muted">{{ __('Add a new booking.', 'pixelforge') }}</p>
+                  </div>
+                  <span class="booking-admin__pill">{{ __('New', 'pixelforge') }}</span>
+                </div>
+
+                <form class="booking-admin__form" action="{{ admin_url('admin-post.php') }}" method="post">
+                  @php(wp_nonce_field(\PixelForge\BookingAdmin\BOOKING_NONCE_ACTION))
+                  <input type="hidden" name="action" value="pixelforge_booking_admin_create">
+                  <input type="hidden" name="redirect_to" value="{{ esc_url($redirect) }}">
+
+                  <label class="booking-admin__field">
+                    <span>{{ __('Guest name', 'pixelforge') }}</span>
+                    <input type="text" name="name" required>
+                  </label>
+
+                  <div class="booking-admin__field-grid">
+                    <label class="booking-admin__field">
+                      <span>{{ __('Email', 'pixelforge') }}</span>
+                      <input type="email" name="email" required>
+                    </label>
+
+                    <label class="booking-admin__field">
+                      <span>{{ __('Phone', 'pixelforge') }}</span>
+                      <input type="tel" name="phone" required>
+                    </label>
+
+                    <label class="booking-admin__field">
+                      <span>{{ __('Party size', 'pixelforge') }}</span>
+                      <select name="party_size" required>
+                        @for ($partySize = 2; $partySize <= 12; $partySize += 1)
+                          <option value="{{ $partySize }}">{{ $partySize }}</option>
+                        @endfor
+                      </select>
+                    </label>
+                  </div>
+
+                  <div class="booking-admin__field-grid">
+                    <label class="booking-admin__field">
+                      <span>{{ __('Menu', 'pixelforge') }}</span>
+                      <select name="menu" required>
+                        <option value="">{{ __('Select a menu', 'pixelforge') }}</option>
+                        @foreach ($panel['menus'] as $menu)
+                          <option value="{{ $menu->ID }}">{{ $menu->post_title }}</option>
+                        @endforeach
+                      </select>
+                    </label>
+
+                    <label class="booking-admin__field">
+                      <span>{{ __('Section', 'pixelforge') }}</span>
+                      <select name="section" required>
+                        <option value="">{{ __('Select a section', 'pixelforge') }}</option>
+                        @foreach ($panel['sections'] as $section)
+                          <option value="{{ $section->ID }}">{{ $section->post_title }}</option>
+                        @endforeach
+                      </select>
+                    </label>
+
+                    <label class="booking-admin__field">
+                      <span>{{ __('Tables', 'pixelforge') }}</span>
+                      <select name="table_ids[]" multiple required>
+                        @foreach ($panel['tables'] as $table)
+                          @php($tableSeats = get_post_meta($table->ID, 'booking_table_seats', true))
+                          @php($tableSection = get_post_meta($table->ID, 'booking_table_section', true))
+                          <option value="{{ $table->ID }}">
+                            {{ $table->post_title }}
+                            @if ($tableSection)
+                              ({{ get_the_title($tableSection) }})
+                            @endif
+                            — {{ sprintf(__('Seats: %s', 'pixelforge'), $tableSeats ?: '—') }}
+                          </option>
+                        @endforeach
+                      </select>
+                    </label>
+
+                  </div>
+
+                  <div class="booking-admin__field-grid">
+                    <label class="booking-admin__field">
+                      <span>{{ __('Date', 'pixelforge') }}</span>
+                      <input type="date" name="date" required>
+                    </label>
+
+                    <label class="booking-admin__field">
+                      <span>{{ __('Time', 'pixelforge') }}</span>
+                      <input type="time" name="time" required>
+                    </label>
+                  </div>
+
+                  <label class="booking-admin__field">
+                    <span>{{ __('Notes', 'pixelforge') }}</span>
+                    <textarea name="notes" rows="3" placeholder="{{ __('Allergies, accessibility needs, etc.', 'pixelforge') }}"></textarea>
+                  </label>
+
+                  <button class="booking-admin__button" type="submit">{{ __('Save booking', 'pixelforge') }}</button>
+                </form>
+              </div>
+            </div>
+
+            <div class="booking-admin__panel is-active" id="booking-panel-list" data-panel="list" role="tabpanel" aria-label="{{ __('View bookings', 'pixelforge') }}">
+              <div class="booking-admin__card">
+                <div class="booking-admin__card-header booking-admin__card-header--stacked">
+                  <div>
+                    <h2>{{ __('Existing bookings', 'pixelforge') }}</h2>
+                    <p class="booking-admin__muted">{{ __('Review, update, or cancel bookings.', 'pixelforge') }}</p>
+                  </div>
+                  <div class="booking-admin__export">
               <span class="booking-admin__pill">{{ count($panel['bookings']) }} {{ __('records', 'pixelforge') }}</span>
 
               <form class="booking-admin__export-form" action="{{ admin_url('admin-post.php') }}" method="post" data-export-form>
@@ -453,7 +514,9 @@
           </div>
         </div>
       </div>
+      </div>
     @endif
+    </div>
   </section>
 
   @if (is_user_logged_in() && current_user_can('edit_posts'))
