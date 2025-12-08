@@ -17,45 +17,53 @@
 
 @section('content')
   <section class="booking-admin">
-    <div class="booking-admin__frame">
-      <header class="booking-admin__appbar">
-        <div>
-          <p class="booking-admin__eyebrow">{{ __('Bodmin Jail Hotel', 'pixelforge') }}</p>
-          <h1>{{ __('Table booking console', 'pixelforge') }}</h1>
-          <p class="booking-admin__muted booking-admin__hero-copy">{{ __('An edge-to-edge workspace tuned for quick tablet moves: add, confirm, and review bookings without feeling boxed in.', 'pixelforge') }}</p>
+    <div class="booking-admin__shell">
+      <div class="booking-admin__hero">
+        <div class="booking-admin__hero-main">
+          <div>
+            <p class="booking-admin__eyebrow">{{ __('Galaxy Tab ready', 'pixelforge') }}</p>
+            <h1>{{ __('Table Booking Admin', 'pixelforge') }}</h1>
+            <p class="booking-admin__muted booking-admin__hero-copy">{{ __('Streamlined, touch-friendly tools for quick reservations, edits, and calendar checks.', 'pixelforge') }}</p>
+
+            @if (is_user_logged_in() && current_user_can('edit_posts'))
+              <div class="booking-admin__hero-actions">
+                <button class="booking-admin__button" type="button" data-panel-toggle="create">
+                  {{ __('Add booking', 'pixelforge') }}
+                </button>
+                <button class="booking-admin__button booking-admin__button--ghost" type="button" data-panel-toggle="calendar">
+                  {{ __('Open calendar', 'pixelforge') }}
+                </button>
+              </div>
+            @endif
+          </div>
+
+          <div class="booking-admin__hero-card">
+            <div class="booking-admin__hero-chip">{{ __('Live overview', 'pixelforge') }}</div>
+            <p class="booking-admin__hero-highlight">{{ sprintf(__('%s bookings ready to action', 'pixelforge'), $totalBookings) }}</p>
+            <p class="booking-admin__muted">{{ __('Optimised for quick tablet workflows. Use the tabs below to jump between modes.', 'pixelforge') }}</p>
+          </div>
         </div>
 
         @if (is_user_logged_in() && current_user_can('edit_posts'))
-          <div class="booking-admin__quick-actions">
-            <button class="booking-admin__button" type="button" data-panel-toggle="create">
-              {{ __('Add booking', 'pixelforge') }}
-            </button>
-            <button class="booking-admin__button booking-admin__button--ghost" type="button" data-panel-toggle="calendar">
-              {{ __('Calendar', 'pixelforge') }}
-            </button>
+          <div class="booking-admin__stats">
+            <div class="booking-admin__stat">
+              <span>{{ __('Pending', 'pixelforge') }}</span>
+              <strong>{{ $pendingBookings }}</strong>
+              <small>{{ __('Awaiting confirmation', 'pixelforge') }}</small>
+            </div>
+            <div class="booking-admin__stat">
+              <span>{{ __('Confirmed', 'pixelforge') }}</span>
+              <strong>{{ $confirmedBookings }}</strong>
+              <small>{{ __('Ready to seat', 'pixelforge') }}</small>
+            </div>
+            <div class="booking-admin__stat">
+              <span>{{ __('Total', 'pixelforge') }}</span>
+              <strong>{{ $totalBookings }}</strong>
+              <small>{{ __('All active records', 'pixelforge') }}</small>
+            </div>
           </div>
         @endif
-      </header>
-
-      @if (is_user_logged_in() && current_user_can('edit_posts'))
-        <div class="booking-admin__pulse">
-          <div class="booking-admin__pulse-item">
-            <span>{{ __('Pending', 'pixelforge') }}</span>
-            <strong>{{ $pendingBookings }}</strong>
-            <small>{{ __('Needs attention', 'pixelforge') }}</small>
-          </div>
-          <div class="booking-admin__pulse-item">
-            <span>{{ __('Confirmed', 'pixelforge') }}</span>
-            <strong>{{ $confirmedBookings }}</strong>
-            <small>{{ __('Ready to seat', 'pixelforge') }}</small>
-          </div>
-          <div class="booking-admin__pulse-item">
-            <span>{{ __('Total bookings', 'pixelforge') }}</span>
-            <strong>{{ $totalBookings }}</strong>
-            <small>{{ __('Live records', 'pixelforge') }}</small>
-          </div>
-        </div>
-      @endif
+      </div>
 
       @if ($notice !== '')
         <div class="booking-admin__notice booking-admin__notice--success">
