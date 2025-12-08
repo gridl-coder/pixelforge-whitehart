@@ -15,8 +15,8 @@
               <p><strong>{{ $time['label'] }}</strong><br/>{{ $time['hours'] }}</p>
             @endforeach
 
-            <a href="#table-booking" class="btnnpm i">Book a table</a>
-            <a href="https://whitehartbodmin.square.site/" class="btnnpm i" target="_blank" rel="noopener noreferrer">Order Breakfast/Sunday Roast Delivery</a>
+            <a href="#table-booking" class="btn mb-3 mt-3">Book a table</a>
+            <a href="https://whitehartbodmin.square.site/" class="btn mb-3 mt-3" target="_blank" rel="noopener noreferrer">Order Breakfast/Sunday Roast Delivery</a>
           </div>
 
 
@@ -63,6 +63,7 @@
     </div>
     <?= do_shortcode('[pixelforge_booking_menus]'); ?>
     <a href="#table-booking" class="btn mb-3 mt-3">Book a table</a>
+    <a href="https://whitehartbodmin.square.site/" class="btn mb-3 mt-3" target="_blank" rel="noopener noreferrer">Order Breakfast/Sunday Roast Delivery</a>
 
 
   </div>
@@ -98,8 +99,9 @@
       </div>
       <p class="menu-times-main">
         Our Main Menu is served <strong>Mon / Tue / Wed / Thur: 9:00 - 13:00 </strong><br/>
-        <a href="#table-booking" class="btn mb-3">Book a table</a><br/>
-
+        <a href="#table-booking" class="btn mb-3 mt-3">Book a table</a>
+        <a href="https://whitehartbodmin.square.site/" class="btn mb-3 mt-3" target="_blank" rel="noopener noreferrer">Order Breakfast/Sunday Roast Delivery</a>
+<br/>
         <em> Takeaway Service Available.</em>
       </p>
       <div class="nav_dec"><span></span></div>
@@ -222,7 +224,8 @@
 
           </div>
         </div>
-        <a href="#table-booking" class="btn mb-3">Book a table</a>
+        <a href="#table-booking" class="btn mb-3 mt-3">Book a table</a>
+        <a href="https://whitehartbodmin.square.site/" class="btn mb-3 mt-3" target="_blank" rel="noopener noreferrer">Order Breakfast/Sunday Roast Delivery</a>
 
         <div>
           <p><strong> Allergen Information:</strong> Our kitchen deals with a variety of allergens
