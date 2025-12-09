@@ -2,54 +2,59 @@
 
   <div class="container food-banner__container">
 
-    <div class="row align-items-center">
+
+    <div class=" food-banner-content">
+
+      <div class="boxed-container boxed-container--muted">
 
 
-      <div class="col-md-6 col-12 food-banner-content">
+        <div class="boxed-content-item text-start">
+          <div class="row">
+            <div class="col-md-8 col-12">
+              <h1>{{ __('Food Service Times', 'pixelforge') }}</h1>
+              @foreach ($serviceTimes as $time)
+                <p><strong>{{ $time['label'] }}</strong><br/>{{ $time['hours'] }}</p>
+              @endforeach
 
-        <div class="boxed-container boxed-container--muted">
 
-          <div class="boxed-content-item text-start">
-            <h1>{{ __('Food Service Times', 'pixelforge') }}</h1>
-            @foreach ($serviceTimes as $time)
-              <p><strong>{{ $time['label'] }}</strong><br/>{{ $time['hours'] }}</p>
-            @endforeach
+            </div>
 
-            <a href="#table-booking" class="btn mb-3 mt-3">Book a table</a>
-            <a href="https://whitehartbodmin.square.site/" class="btn mb-3 mt-3" target="_blank" rel="noopener noreferrer">Order Breakfast/Sunday Roast Delivery</a>
+            @if (!empty($foodBannerSlider))
+              <div class="col-md-4 food-banner-image text-center">
+
+                <div class="carousel-slider" data-food-banner-slider>
+                  @foreach ($foodBannerSlider as $slide)
+                    <figure class="carousel-slider__slide">
+                      <img
+                        class="img-fluid"
+                        src="{{ esc_url($slide['url']) }}"
+                        alt="{{ esc_attr($slide['alt']) }}"
+                        loading="lazy"
+                        data-lightbox-src="{{ esc_url($slide['url']) }}"
+                        data-lightbox-caption="{{ esc_attr($slide['caption'] ?? '') }}"
+                        data-lightbox-gallery="food-banner"
+                        data-lightbox-id="{{ $loop->index }}"
+                      />
+                      @if (!empty($slide['caption']))
+                        <figcaption>{{ $slide['caption'] }}</figcaption>
+                      @endif
+                    </figure>
+                  @endforeach
+                </div>
+
+              </div>
+            @endif
+
+
           </div>
-
-
+          <p class="text-center">
+            <a href="#table-booking" class="btn mb-3 mt-3">Book a table</a>
+            <a href="https://whitehartbodmin.square.site/" class="btn mb-3 mt-3" target="_blank"
+               rel="noopener noreferrer">Order Food Delivery</a>
+          </p>
         </div>
-
 
       </div>
-
-      @if (!empty($foodBannerSlider))
-        <div class="col-md-6 food-banner-image text-center">
-
-          <div class="carousel-slider" data-food-banner-slider>
-            @foreach ($foodBannerSlider as $slide)
-              <figure class="carousel-slider__slide">
-                <img
-                  class="img-fluid"
-                  src="{{ esc_url($slide['url']) }}"
-                  alt="{{ esc_attr($slide['alt']) }}"
-                  loading="lazy"
-                  data-lightbox-src="{{ esc_url($slide['url']) }}"
-                  data-lightbox-caption="{{ esc_attr($slide['caption'] ?? '') }}"
-                  data-lightbox-gallery="food-banner"
-                  data-lightbox-id="{{ $loop->index }}"
-                />
-                @if (!empty($slide['caption']))
-                  <figcaption>{{ $slide['caption'] }}</figcaption>
-                @endif
-              </figure>
-            @endforeach
-          </div>
-
-        </div>
-      @endif
     </div>
   </div>
 </section>
@@ -72,7 +77,8 @@
     </div>
     <?= do_shortcode('[pixelforge_booking_menus]'); ?>
     <a href="#table-booking" class="btn mb-3 mt-3">Book a table</a>
-    <a href="https://whitehartbodmin.square.site/" class="btn mb-3 mt-3" target="_blank" rel="noopener noreferrer">Order Breakfast/Sunday Roast Delivery</a>
+    <a href="https://whitehartbodmin.square.site/" class="btn mb-3 mt-3" target="_blank" rel="noopener noreferrer">Order
+      Food Delivery</a>
 
 
   </div>
@@ -109,8 +115,9 @@
       <p class="menu-times-main">
         Our Main Menu is served <strong>Mon / Tue / Wed / Thur: 9:00 - 13:00 </strong><br/>
         <a href="#table-booking" class="btn mb-3 mt-3">Book a table</a>
-        <a href="https://whitehartbodmin.square.site/" class="btn mb-3 mt-3" target="_blank" rel="noopener noreferrer">Order Breakfast/Sunday Roast Delivery</a>
-<br/>
+        <a href="https://whitehartbodmin.square.site/" class="btn mb-3 mt-3" target="_blank" rel="noopener noreferrer">Order
+          Food Delivery</a>
+        <br/>
         <em> Takeaway Service Available.</em>
       </p>
       <div class="nav_dec"><span></span></div>
@@ -234,7 +241,8 @@
           </div>
         </div>
         <a href="#table-booking" class="btn mb-3 mt-3">Book a table</a>
-        <a href="https://whitehartbodmin.square.site/" class="btn mb-3 mt-3" target="_blank" rel="noopener noreferrer">Order Breakfast/Sunday Roast Delivery</a>
+        <a href="https://whitehartbodmin.square.site/" class="btn mb-3 mt-3" target="_blank" rel="noopener noreferrer">Order
+          Food Delivery</a>
 
         <div>
           <p><strong> Allergen Information:</strong> Our kitchen deals with a variety of allergens

@@ -63,10 +63,9 @@
       z-index: 3;
       width: 25px;
       height: 25px;
-      background: rgba(0, 0, 0, 0.55);
       border-radius: 50%;
       cursor: pointer;
-
+      background: none !important;
       left: 18px;
 
       @include media-breakpoint-up(md) {
@@ -107,7 +106,6 @@
 
       &:hover,
       &:focus {
-        background: rgba(0, 0, 0, 0.75);
       }
     }
   }

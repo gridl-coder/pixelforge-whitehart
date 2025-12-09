@@ -34,7 +34,8 @@
 
 
             <?= do_shortcode('[pixelforge_table_booking]'); ?>
-
+          <p class="text-center"><a href="https://whitehartbodmin.square.site/" class="btn mb-3 mt-3" target="_blank"
+                                    rel="noopener noreferrer">Order Food Delivery</a></p>
 
         </div>
 
