@@ -702,9 +702,8 @@ const initBookingForms = () => {
         }
 
         const params = new URLSearchParams({
-          action: 'pixelforge_get_booked_slots',
-          menu_id: menuId,
-          section_id: sectionId,
+          action: 'pixelforge_check_table_availability',
+          menu: menuId,
           date,
           party_size: partySize,
         });
@@ -715,15 +714,41 @@ const initBookingForms = () => {
         fetch(`${ajaxUrl}?${params.toString()}`)
           .then((response) => response.json())
           .then((data) => {
-            const availableSlots = Array.isArray(data.available)
-              ? data.available
+            const availableSections = Array.isArray(data.availableSections)
+              ? data.availableSections.map(Number)
               : [];
+
+            const sectionSlots = typeof data.availableSlots === 'object' && data.availableSlots
+              ? data.availableSlots
+              : {};
+
+            const availableSlots = Array.isArray(sectionSlots[sectionId])
+              ? sectionSlots[sectionId]
+              : [];
+
+            if (availableSections.length) {
+              sectionSelect.find('option').each((optionIndex, option) => {
+                const optionValue = Number(option.value);
+                option.disabled = !availableSections.includes(optionValue);
+              });
+            }
+
+            if (data.date) {
+              dateInput.val(data.date);
+            }
 
             rebuildTimes();
 
             timeSelect.find('option').each((optionIndex, option) => {
               option.disabled = !availableSlots.includes(option.value);
             });
+
+            if (data.unavailableDate) {
+              notice.text(unavailableDateMessage).addClass('is-visible');
+              dateInput.addClass('booking-form__input--unavailable');
+              timeSelect.attr('disabled', 'disabled');
+              return;
+            }
 
             if (availableSlots.length === 0) {
               if (dateInput.val()) {
