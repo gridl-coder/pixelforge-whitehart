@@ -10,6 +10,7 @@ add_filter('jpeg_quality', __NAMESPACE__ . '\\set_editor_image_quality');
 add_filter('image_editor_output_format', __NAMESPACE__ . '\\force_modern_image_formats');
 add_filter('upload_mimes', __NAMESPACE__ . '\\allow_additional_image_mimes');
 add_filter('script_loader_tag', __NAMESPACE__ . '\\defer_theme_scripts', 10, 3);
+add_filter('wp_headers', __NAMESPACE__ . '\\add_client_cache_headers');
 
 function disable_emojis(): void
 {
@@ -83,4 +84,39 @@ function defer_theme_scripts(string $tag, string $handle, string $src): string
     }
 
     return $tag;
+}
+
+function add_client_cache_headers(array $headers): array
+{
+    if (is_user_logged_in() || is_admin() || is_search() || is_404() || is_feed() || is_preview()) {
+        return $headers;
+    }
+
+    $cacheableStatuses = [200, 203, 206];
+
+    if (isset($GLOBALS['wp']->query_vars['error']) || (isset($headers['Status']) && ! in_array((int) $headers['Status'], $cacheableStatuses, true))) {
+        return $headers;
+    }
+
+    $maxAge = 600;
+
+    if (! isset($headers['Cache-Control'])) {
+        $headers['Cache-Control'] = sprintf('public, max-age=%1$d, s-maxage=%1$d', $maxAge);
+    }
+
+    if (! isset($headers['Expires'])) {
+        $headers['Expires'] = gmdate('D, d M Y H:i:s', time() + $maxAge) . ' GMT';
+    }
+
+    if (! isset($headers['Last-Modified'])) {
+        $lastModified = get_lastpostmodified('GMT') ?: gmdate('Y-m-d H:i:s');
+        $headers['Last-Modified'] = gmdate('D, d M Y H:i:s', strtotime($lastModified)) . ' GMT';
+    }
+
+    if (! isset($headers['ETag'])) {
+        $etagSeed = home_url('/') . '|' . ($headers['Last-Modified'] ?? '') . '|' . wp_cache_get_last_changed('posts');
+        $headers['ETag'] = '"' . md5($etagSeed) . '"';
+    }
+
+    return $headers;
 }
