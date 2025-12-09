@@ -13,7 +13,7 @@ use Roots\Acorn\Application;
 |
 */
 
-if (! file_exists($composer = __DIR__.'/vendor/autoload.php')) {
+if (! file_exists($composer = __DIR__ . '/vendor/autoload.php')) {
     wp_die(__('Error locating autoloader. Please run <code>composer install</code>.', 'pixelforge'));
 }
 
@@ -66,14 +66,17 @@ collect([
     'cmb2/seo-metabox',
     'performance',
     'health',
+    // Load our LocalBusiness structured data to inject schema into wp_head.
+    'localbusiness-schema',
     'seo',
 ])
     ->each(function ($file) {
-        if (! locate_template($file = "app/{$file}.php", true, true)) {
+        // Build the relative file path (app/<file>.php) without using brace syntax
+        $filepath = 'app/' . $file . '.php';
+        if (! locate_template($filepath, true, true)) {
             wp_die(
                 /* translators: %s is replaced with the relative file path */
-                sprintf(__('Error locating <code>%s</code> for inclusion.', 'pixelforge'), $file)
+                sprintf(__('Error locating <code>%s</code> for inclusion.', 'pixelforge'), $filepath)
             );
         }
     });
-

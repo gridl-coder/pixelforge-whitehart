@@ -16,7 +16,21 @@ use function is_front_page;
 use function sprintf;
 use function wp_get_attachment_image_url;
 use function esc_url;
+use function wp_get_attachment_metadata;
+use function wp_get_attachment_image_srcset;
+use function wp_get_attachment_image_sizes;
 
+/**
+ * View composer for the home introduction section.
+ *
+ * This class builds the data array used by the front‑page.home‑intro
+ * Blade template. In addition to returning the hero image URL and
+ * alternate text, it now also attempts to provide width and height
+ * attributes for the image. Providing explicit dimensions helps the
+ * browser reserve the correct amount of space while the image loads,
+ * reducing cumulative layout shift (CLS) as recommended by the
+ * PageSpeed Insights report.
+ */
 class HomeIntro extends Composer
 {
     private const FEATURES = [
@@ -63,6 +77,13 @@ class HomeIntro extends Composer
         return (int) get_option('page_on_front');
     }
 
+    /**
+     * Resolve a WordPress media field into a structured array containing the
+     * URL, alt text and (where possible) the image’s intrinsic dimensions.
+     *
+     * @param mixed $value A WP media field value (array, numeric ID or URL).
+     * @return array|null An associative array with keys: url, alt, width, height, srcset, sizes.
+     */
     private function resolveMediaUrl($value): ?array
     {
         $alt = sprintf(__('%s hero image', 'pixelforge'), get_bloginfo('name'));
@@ -76,28 +97,94 @@ class HomeIntro extends Composer
             }
 
             if ($url) {
+                // Attempt to extract width and height. Prefer attachment metadata
+                // for performance, falling back to getimagesize if necessary.
+                $width = null;
+                $height = null;
+                $srcset = null;
+                $sizesAttr = null;
+                if ($attachmentId) {
+                    $metadata = wp_get_attachment_metadata((int) $attachmentId);
+                    if (is_array($metadata) && ! empty($metadata['width']) && ! empty($metadata['height'])) {
+                        $width = (int) $metadata['width'];
+                        $height = (int) $metadata['height'];
+                    }
+                    // Build responsive image attributes for modern browsers.
+                    $srcset = wp_get_attachment_image_srcset((int) $attachmentId, 'full') ?: null;
+                    $sizesAttr = wp_get_attachment_image_sizes((int) $attachmentId, 'full') ?: null;
+                }
+                // Fallback: try to read dimensions directly from the image URL if we still lack dimensions.
+                if ($url && ($width === null || $height === null)) {
+                    $size = @getimagesize($url);
+                    if (is_array($size)) {
+                        $width = $size[0] ?? $width;
+                        $height = $size[1] ?? $height;
+                    }
+                }
                 return [
                     'url' => $url,
                     'alt' => $alt,
+                    'width' => $width,
+                    'height' => $height,
+                    'srcset' => $srcset,
+                    'sizes' => $sizesAttr,
                 ];
             }
         }
 
         if (is_numeric($value)) {
-            $url = wp_get_attachment_image_url((int) $value, 'full');
+            $attachmentId = (int) $value;
+            $url = wp_get_attachment_image_url($attachmentId, 'full');
 
             if ($url) {
+                $width = null;
+                $height = null;
+                $srcset = null;
+                $sizesAttr = null;
+                $metadata = wp_get_attachment_metadata($attachmentId);
+                if (is_array($metadata) && ! empty($metadata['width']) && ! empty($metadata['height'])) {
+                    $width = (int) $metadata['width'];
+                    $height = (int) $metadata['height'];
+                }
+                // Build responsive image attributes.
+                $srcset = wp_get_attachment_image_srcset($attachmentId, 'full') ?: null;
+                $sizesAttr = wp_get_attachment_image_sizes($attachmentId, 'full') ?: null;
+                if ($url && ($width === null || $height === null)) {
+                    $size = @getimagesize($url);
+                    if (is_array($size)) {
+                        $width = $size[0] ?? $width;
+                        $height = $size[1] ?? $height;
+                    }
+                }
                 return [
                     'url' => $url,
                     'alt' => $alt,
+                    'width' => $width,
+                    'height' => $height,
+                    'srcset' => $srcset,
+                    'sizes' => $sizesAttr,
                 ];
             }
         }
 
         if (is_string($value) && $value !== '') {
+            // For custom URLs, attempt to derive the image size to provide
+            // explicit dimensions and reduce layout shift. We cannot generate
+            // responsive srcset attributes for arbitrary URLs.
+            $width = null;
+            $height = null;
+            $size = @getimagesize($value);
+            if (is_array($size)) {
+                $width = $size[0] ?? null;
+                $height = $size[1] ?? null;
+            }
             return [
                 'url' => $value,
                 'alt' => $alt,
+                'width' => $width,
+                'height' => $height,
+                'srcset' => null,
+                'sizes' => null,
             ];
         }
 
