@@ -609,13 +609,19 @@ const initBookingForms = () => {
           daysList.appendTo(menuMeta);
         }
 
-        Object.values(windows || {}).forEach((windowValue) => {
-          menuMeta.append(
-            $('<p/>')
-              .text(windowValue)
-              .addClass('booking-form__meta-window'),
-          );
-        });
+        if (windows) {
+          const windowLabel = typeof windows === 'object'
+            ? windows.label || (windows.start && windows.end ? `${windows.start} - ${windows.end}` : '')
+            : windows;
+
+          if (windowLabel) {
+            menuMeta.append(
+              $('<p/>')
+                .text(windowLabel)
+                .addClass('booking-form__meta-window'),
+            );
+          }
+        }
       };
 
       const updateMenuMeta = () => {

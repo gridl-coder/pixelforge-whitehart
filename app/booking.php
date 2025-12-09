@@ -75,13 +75,20 @@ function render_booking_form_shortcode(): string
         $menuSlots[$menu->ID] = build_menu_slots((int)$menu->ID);
 
         $days = get_post_meta((int)$menu->ID, 'booking_menu_days', true);
-        $menuDays[$menu->ID] = is_array($days) ? array_values(array_map('strtolower', $days)) : [];
+        $selectedDays = is_array($days) ? array_map('strtolower', $days) : [];
+        $useAllDays = $selectedDays === [];
+
+        foreach (array_keys($dayOptions) as $dayKey) {
+            $isActive = $useAllDays || in_array($dayKey, $selectedDays, true);
+            $menuDays[$menu->ID][$dayKey] = $isActive ? '1' : '0';
+        }
 
         $window = get_menu_time_window((int)$menu->ID);
         $menuWindows[$menu->ID] = $window
             ? [
                 'start' => $window['start']->format('H:i'),
                 'end' => $window['end']->format('H:i'),
+                'label' => sprintf('%s - %s', $window['start']->format('H:i'), $window['end']->format('H:i')),
             ]
             : null;
     }
