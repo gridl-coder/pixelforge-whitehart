@@ -28,7 +28,9 @@
                  alt="{{ esc_attr($image['alt']) }}"
                  loading="lazy"
                  data-lightbox-src="{{ esc_url($image['url']) }}"
-                 data-lightbox-caption="{{ esc_attr($image['caption'] ?? '') }}">
+                 data-lightbox-caption="{{ esc_attr($image['caption'] ?? '') }}"
+                 data-lightbox-gallery="home-gallery"
+                 data-lightbox-id="{{ $loop->index }}">
             @if (!empty($image['caption']))
               <figcaption class="home-gallery__caption">{{ $image['caption'] }}</figcaption>
             @endif
@@ -45,6 +47,12 @@
   <div class="home-gallery-lightbox" data-home-gallery-lightbox hidden>
     <button type="button" class="home-gallery-lightbox__close" data-home-gallery-lightbox-close aria-label="{{ __('Close image', 'pixelforge') }}">
       &times;
+    </button>
+    <button type="button" class="home-gallery-lightbox__nav home-gallery-lightbox__nav--prev" data-home-gallery-lightbox-prev aria-label="{{ __('Previous image', 'pixelforge') }}">
+      &#8249;
+    </button>
+    <button type="button" class="home-gallery-lightbox__nav home-gallery-lightbox__nav--next" data-home-gallery-lightbox-next aria-label="{{ __('Next image', 'pixelforge') }}">
+      &#8250;
     </button>
     <div class="home-gallery-lightbox__content">
       <img class="home-gallery-lightbox__image" src="" alt="">

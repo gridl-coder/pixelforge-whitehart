@@ -2,10 +2,10 @@
 
   <div class="container food-banner__container">
 
-    <div class="row">
+    <div class="row align-items-center">
 
 
-      <div class="col-12 food-banner-content">
+      <div class="col-md-6 col-12 food-banner-content">
 
         <div class="boxed-container boxed-container--muted">
 
@@ -24,23 +24,32 @@
 
 
       </div>
-      <div class="col-md-5 food-banner-image text-center">
 
-        @if (!empty($menuCarousel))
-          <div class="carousel-slider">
-            @foreach ($menuCarousel as $slide)
-              <div class="carousel-slider__slide">
-                <img class="img-fluid" src="{{ esc_url($slide['url']) }}" alt="{{ esc_attr($slide['title']) }}"
-                     loading="lazy"/>
-                @if (!empty($slide['title']))
-                  <span>{{ $slide['title'] }}</span>
+      @if (!empty($foodBannerSlider))
+        <div class="col-md-6 food-banner-image text-center">
+
+          <div class="carousel-slider" data-food-banner-slider>
+            @foreach ($foodBannerSlider as $slide)
+              <figure class="carousel-slider__slide">
+                <img
+                  class="img-fluid"
+                  src="{{ esc_url($slide['url']) }}"
+                  alt="{{ esc_attr($slide['alt']) }}"
+                  loading="lazy"
+                  data-lightbox-src="{{ esc_url($slide['url']) }}"
+                  data-lightbox-caption="{{ esc_attr($slide['caption'] ?? '') }}"
+                  data-lightbox-gallery="food-banner"
+                  data-lightbox-id="{{ $loop->index }}"
+                />
+                @if (!empty($slide['caption']))
+                  <figcaption>{{ $slide['caption'] }}</figcaption>
                 @endif
-              </div>
+              </figure>
             @endforeach
           </div>
-        @endif
 
-      </div>
+        </div>
+      @endif
     </div>
   </div>
 </section>

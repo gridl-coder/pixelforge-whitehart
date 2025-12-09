@@ -77,6 +77,54 @@ function register_home_metabox(): void
         'preview_size' => 'medium',
     ]);
 
+    $food_banner_slider_group = $cmb_home->add_field([
+        'id' => 'home_food_banner_images',
+        'type' => 'group',
+        'repeatable' => true,
+        'options' => [
+            'group_title' => esc_html__('Food Banner Image {#}', 'pixelforge'),
+            'add_button' => esc_html__('Add Food Banner Image', 'pixelforge'),
+            'remove_button' => esc_html__('Remove Image', 'pixelforge'),
+            'closed' => true,
+            'sortable' => true,
+        ],
+    ]);
+
+    $cmb_home->add_group_field($food_banner_slider_group, [
+        'name' => esc_html__('Image', 'pixelforge'),
+        'id' => 'image',
+        'type' => 'file',
+        'options' => [
+            'url' => false,
+        ],
+        'text' => [
+            'add_upload_file_text' => esc_html__('Add Image', 'pixelforge'),
+        ],
+        'query_args' => [
+            'type' => [
+                'image/gif',
+                'image/jpg',
+                'image/png',
+                'image/jpeg',
+            ],
+        ],
+        'preview_size' => 'medium',
+    ]);
+
+    $cmb_home->add_group_field($food_banner_slider_group, [
+        'name' => esc_html__('Alt text', 'pixelforge'),
+        'id' => 'alt',
+        'type' => 'text',
+        'sanitization_cb' => 'sanitize_text_field',
+    ]);
+
+    $cmb_home->add_group_field($food_banner_slider_group, [
+        'name' => esc_html__('Caption', 'pixelforge'),
+        'id' => 'caption',
+        'type' => 'text',
+        'sanitization_cb' => 'sanitize_text_field',
+    ]);
+
     $gallery_group_id = $cmb_home->add_field([
         'id' => 'home_gallery_images',
         'type' => 'group',
