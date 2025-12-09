@@ -8,7 +8,10 @@
         <a href="{{ esc_url(home_url('/')) }}" title="{{ esc_attr($companyProfile['name'] ?? get_bloginfo('name')) }}">
           @if (!empty($companyProfile['logo']['url']))
             <img class="img-fluid" src="{{ esc_url($companyProfile['logo']['url']) }}"
-                 alt="{{ esc_attr($companyProfile['logo']['alt']) }}">
+                 alt="{{ esc_attr($companyProfile['logo']['alt']) }}"
+                 decoding="async"
+                 loading="eager"
+                 fetchpriority="high">
           @else
             <span class="main-logo__text">{{ $companyProfile['name'] ?? get_bloginfo('name') }}</span>
           @endif

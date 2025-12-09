@@ -30,8 +30,10 @@ function remove_unused_scripts(): void
 function add_performance_hints(array $hints, string $relation): array
 {
     if ($relation === 'preconnect') {
-        $hints[] = 'https://fonts.gstatic.com';
-        $hints[] = 'https://fonts.googleapis.com';
+        $hints = array_filter(
+            $hints,
+            static fn($hint) => ! in_array($hint, ['https://fonts.gstatic.com', 'https://fonts.googleapis.com'], true)
+        );
     }
 
     return array_values(array_unique($hints));

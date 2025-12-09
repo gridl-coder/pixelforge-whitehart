@@ -34,6 +34,8 @@
                         src="{{ esc_url($slide['url']) }}"
                         alt="{{ esc_attr($slide['alt']) }}"
                         loading="lazy"
+                        decoding="async"
+                        sizes="(min-width: 992px) 320px, 80vw"
                         data-lightbox-src="{{ esc_url($slide['url']) }}"
                         data-lightbox-caption="{{ esc_attr($slide['caption'] ?? '') }}"
                         data-lightbox-gallery="food-banner"

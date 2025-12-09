@@ -36,6 +36,8 @@
                   class="events-list__image img-fluid img-thumbnail img-rounded"
                   alt="{{ esc_attr($event['title']) }}"
                   loading="lazy"
+                  decoding="async"
+                  sizes="(min-width: 992px) 360px, 48vw"
                   itemprop="image">
             </a>
           @endif
