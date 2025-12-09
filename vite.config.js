@@ -506,6 +506,7 @@ export default defineConfig({
     preprocessorOptions: {
       scss: {
         quietDeps: true,
+        includePaths: [path.resolve(__dirname, 'node_modules')],
         silenceDeprecations: ['import', 'global-builtin', 'function-units', 'color-functions', 'abs-percent'],
       },
     },
