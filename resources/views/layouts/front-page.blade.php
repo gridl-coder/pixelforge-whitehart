@@ -13,7 +13,7 @@
         href="<?= get_template_directory_uri(); ?>/resources/images/favicons/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16"
         href="<?= get_template_directory_uri(); ?>/resources/images/favicons/favicon-16x16.png">
-  <link rel="manifest" href="<?= get_template_directory_uri(); ?>/resources/images/favicons/site.webmanifest">
+  <link rel="manifest" href="<?= get_template_directory_uri(); ?>/public/build/manifest.json">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

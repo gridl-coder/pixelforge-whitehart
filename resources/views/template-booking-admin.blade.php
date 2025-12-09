@@ -593,7 +593,7 @@
             getBookingsForDay(year, month, day).forEach(function (booking) {
               const tag = document.createElement('div');
               tag.className = 'booking-admin__calendar-event' + (booking.status === 'confirmed' ? ' is-confirmed' : '');
-              tag.innerHTML = '<strong>x' + booking.party_size + '</strong> @ ' + booking.time;
+              tag.innerHTML = '<strong>x' + booking.party_size + ' @ ' + booking.time + '</strong>';
               tag.setAttribute('tabindex', '0');
               tag.setAttribute('role', 'button');
               tag.setAttribute('aria-label', '{{ __('View booking', 'pixelforge') }}');

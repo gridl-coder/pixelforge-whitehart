@@ -153,7 +153,7 @@ const initHomeGalleryCarousel = async () => {
       arrows: true,
       autoplay: true,
       autoplaySpeed: 2500,
-      slidesToShow: 6,
+      slidesToShow: 4,
       slidesToScroll: 1,
       adaptiveHeight: false,
       fade: false,
@@ -161,7 +161,7 @@ const initHomeGalleryCarousel = async () => {
       responsive: [
         {
           breakpoint: 1200,
-          settings: { slidesToShow: 6 },
+          settings: { slidesToShow: 4 },
         },
         {
           breakpoint: 992,

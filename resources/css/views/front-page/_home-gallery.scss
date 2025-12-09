@@ -2,6 +2,7 @@
   position: relative;
   padding: 40px 15px 15px;
   text-align: center;
+  overflow-x: hidden;
   background: white;
 
   &:after {
@@ -13,12 +14,7 @@
     width: 100%;
     content: '';
     display: block;
-    background: url('@images/brush-dec_2.png');
-    background-attachment: scroll;
-    background-origin: content-box;
-    background-position: 50%;
-    background-repeat: repeat;
-    background-size: cover;
+    background: url('@images/brush-dec_2.png') 50% 0 / cover repeat;
     z-index: 20;
   }
 
@@ -52,6 +48,7 @@
 
     @include media-breakpoint-up(lg) {
       margin-top: 40px;
+      padding: 0 90px;
     }
   }
 
@@ -61,31 +58,64 @@
     }
 
     .slick-arrow {
+      position: absolute;
+      top: 50%;
+      z-index: 3;
+      width: 25px;
+      height: 25px;
+      background: rgba(0, 0, 0, 0.55);
+      border-radius: 50%;
+      cursor: pointer;
+
       left: 18px;
 
+      @include media-breakpoint-up(md) {
+        left: -70px;
+        width: 52px;
+        height: 52px;
+      }
+
       &:before {
-        font-size: 50px;
-        position: relative;
-        top: 2px;
+        content: '';
+        display: block;
+        width: 50px;
+        height: 50px;
+        font-size: 18px;
+        line-height: 22px;
+        background: url("@images/chevron-left.svg") no-repeat center center;
+        background-size: contain;
+        color: white;
+
+        @include media-breakpoint-up(md) {
+          font-size: 50px;
+          line-height: 52px;
+        }
       }
 
       &.slick-next {
+        left: auto;
         right: 18px;
-        left: unset;
-      }
-    }
 
-    .slick-list {
+        @include media-breakpoint-up(md) {
+          right: -70px;
+        }
+
+        &:before {
+          background-image: url("@images/chevron-right.svg");
+        }
+      }
+
+      &:hover,
+      &:focus {
+        background: rgba(0, 0, 0, 0.75);
+      }
     }
   }
 
   &__slide {
     position: relative;
-    //min-height: 320px;
-    //max-height: 640px;
 
     @include media-breakpoint-up(md) {
-      min-height: 420px;
       width: 100% !important;
       display: inline-block;
       padding: 15px;
@@ -100,7 +130,6 @@
     object-fit: cover;
     cursor: pointer;
     border: 5px solid white;
-
   }
 
   &__empty {
@@ -117,52 +146,23 @@
     color: white;
     font-weight: 700;
     text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
-    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.8) 100%);
+    background: linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0) 0%,
+        rgba(0, 0, 0, 0.8) 100%
+    );
   }
 
   .slick-dots {
-
-
-      bottom: -15px;
+    bottom: -15px;
 
     li button:before {
-    //  color: white;
       opacity: 0.75;
     }
 
     li.slick-active button:before {
       opacity: 1;
       color: $brand_yellow;
-    }
-  }
-
-  .slick-arrow {
-    z-index: 3;
-    width: 25px;
-    height: 25px;
-    bottom: -27px;
-    top: unset;
-    @include media-breakpoint-up(md) {
-
-      width: 52px;
-      height: 52px;
-    }
-    background: rgba(0, 0, 0, 0.55);
-    border-radius: 50%;
-
-    &:before {
-      font-size: 18px;
-      line-height: 22px;
-      @include media-breakpoint-up(md) {
-        font-size: 50px;
-        line-height: 52px;
-      }
-        color: white;
-    }
-
-    &:hover,
-    &:focus {
-      background: rgba(0, 0, 0, 0.75);
     }
   }
 }
