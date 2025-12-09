@@ -9,10 +9,14 @@ use function filter_var;
 use function get_post_meta;
 use function get_the_ID;
 use function get_theme_file_uri;
+use function maybe_unserialize;
+use function sanitize_text_field;
 use function wp_get_attachment_image_url;
 
 class HomeMenu extends Composer
 {
+    private const DEFAULT_ALT = 'White Hart food banner image';
+
     protected static $views = [
         'front-page.home-menu',
     ];
@@ -28,7 +32,74 @@ class HomeMenu extends Composer
                 'alt' => __('New ales available at The White Hart', 'pixelforge'),
             ],
             'serviceTimes' => $this->serviceTimes(),
+            'foodBannerSlider' => $this->foodBannerSlider($postId),
         ];
+    }
+
+    private function foodBannerSlider(int $postId): array
+    {
+        if ($postId) {
+            $rawSlides = maybe_unserialize(get_post_meta($postId, 'home_food_banner_images', true));
+
+            if (is_array($rawSlides)) {
+                $slides = array_filter(array_map(fn ($slide) => $this->normalizeSlide($slide), $rawSlides));
+
+                if (! empty($slides)) {
+                    return array_values($slides);
+                }
+            }
+        }
+
+        return [];
+    }
+
+    private function normalizeSlide($value): ?array
+    {
+        $defaultAlt = __(self::DEFAULT_ALT, 'pixelforge');
+
+        if (is_array($value)) {
+            $url = $value['url'] ?? $value['image'] ?? null;
+            $attachmentId = $value['id'] ?? $value['ID'] ?? null;
+            $alt = isset($value['alt']) ? sanitize_text_field($value['alt']) : ($value['title'] ?? $defaultAlt);
+
+            if (! $url && $attachmentId) {
+                $url = wp_get_attachment_image_url((int) $attachmentId, 'large');
+            }
+
+            if ($url) {
+                return [
+                    'url' => esc_url_raw($url),
+                    'alt' => $alt ?: $defaultAlt,
+                    'caption' => isset($value['caption']) ? sanitize_text_field($value['caption']) : '',
+                ];
+            }
+        }
+
+        if (is_numeric($value)) {
+            $url = wp_get_attachment_image_url((int) $value, 'large');
+
+            if ($url) {
+                return [
+                    'url' => esc_url_raw($url),
+                    'alt' => $defaultAlt,
+                    'caption' => '',
+                ];
+            }
+        }
+
+        if (is_string($value) && $value !== '') {
+            $url = esc_url_raw($value);
+
+            if (filter_var($url, FILTER_VALIDATE_URL)) {
+                return [
+                    'url' => $url,
+                    'alt' => $defaultAlt,
+                    'caption' => '',
+                ];
+            }
+        }
+
+        return null;
     }
 
     private function imageField(int $postId, string $metaKey, string $defaultAlt): ?array
