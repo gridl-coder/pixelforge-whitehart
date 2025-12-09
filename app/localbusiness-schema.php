@@ -93,13 +93,15 @@ function output_localbusiness_schema(): void
     }
 
     // Encode the PHP array into JSON while preserving slashes and
-    // avoiding escaping of Unicode characters. Escaping ensures that
-    // the script is safe to output in an HTML context.
+    // avoiding escaping of Unicode characters. The encoded JSON is
+    // printed directly within a <script type="application/ld+json">
+    // block; avoid esc_js here because it would escape quotation marks
+    // and break the JSON-LD syntax expected by search engines.
     $json = wp_json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
     if (! $json) {
         return;
     }
 
-    echo "\n    <!-- LocalBusiness schema -->\n    <script type=\"application/ld+json\">" . esc_js($json) . "</script>\n";
+    echo "\n    <!-- LocalBusiness schema -->\n    <script type=\"application/ld+json\">{$json}</script>\n";
 }

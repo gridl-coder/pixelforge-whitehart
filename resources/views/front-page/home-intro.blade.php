@@ -63,32 +63,3 @@
   </div>
 
 </section>
-
-{{--
-  Add LocalBusiness structured data for SEO.
-  This JSON‑LD block describes the White Hart Bodmin as a local business
-  using Schema.org vocabulary. Search engines can read this data to
-  understand the business’s name, location and contact details. Update
-  the values below if your pub’s information changes.
-  See Google’s LocalBusiness guidelines for required and recommended
-  fields【725761757124204†L855-L904】.
---}}
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "LocalBusiness",
-  "@id": "https://theh.art/bodmin",
-  "name": "The White Hart Bodmin",
-  "url": "https://theh.art/bodmin",
-  "telephone": "07922 214361",
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": "Pool Street",
-    "addressLocality": "Bodmin",
-    "postalCode": "PL31 2HA",
-    "addressCountry": "GB"
-  },
-  "priceRange": "££",
-  "servesCuisine": ["Pub Food", "British"]
-}
-</script>
