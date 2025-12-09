@@ -65,6 +65,7 @@ collect([
     'cmb2/theme-options',
     'cmb2/seo-metabox',
     'performance',
+    'health',
     'seo',
 ])
     ->each(function ($file) {
