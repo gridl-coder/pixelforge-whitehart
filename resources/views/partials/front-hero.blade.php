@@ -14,7 +14,10 @@
         <img
           src="{{ esc_url($heroImage['url']) }}"
           alt="{{ esc_attr($heroImage['alt'] ?? ($hero['title'] ?? get_bloginfo('name', 'display'))) }}"
-          loading="lazy"
+          decoding="async"
+          loading="eager"
+          fetchpriority="high"
+          sizes="100vw"
         >
       </figure>
     @endif

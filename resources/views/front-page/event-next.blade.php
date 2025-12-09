@@ -22,6 +22,8 @@
                class="events-hero__thumbnail img-fluid img-thumbnail img-rounded"
                alt="{{ esc_attr($highlightEvent['title']) }}"
                loading="lazy"
+               decoding="async"
+               sizes="(min-width: 768px) 640px, 90vw"
                itemprop="image">
         </a>
       @endif

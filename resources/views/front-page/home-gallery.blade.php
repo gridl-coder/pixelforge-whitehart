@@ -29,6 +29,8 @@
                  src="{{ esc_url($image['url']) }}"
                  alt="{{ esc_attr($image['alt']) }}"
                  loading="lazy"
+                 decoding="async"
+                 sizes="(min-width: 1200px) 800px, (min-width: 768px) 600px, 90vw"
                  data-lightbox-src="{{ esc_url($image['url']) }}"
                  data-lightbox-caption="{{ esc_attr($image['caption'] ?? '') }}"
                  data-lightbox-gallery="home-gallery"
@@ -57,7 +59,7 @@
       &#8250;
     </button>
     <div class="home-gallery-lightbox__content">
-      <img class="home-gallery-lightbox__image" src="" alt="">
+      <img class="home-gallery-lightbox__image" src="" alt="" loading="lazy" decoding="async">
       <p class="home-gallery-lightbox__caption" data-home-gallery-lightbox-caption></p>
     </div>
   </div>

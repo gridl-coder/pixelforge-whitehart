@@ -3,7 +3,10 @@
     <img class="home-intro-image"
          src="{{ esc_url($homeIntro['headerImage']['url']) }}"
          alt="{{ esc_attr($homeIntro['headerImage']['alt']) }}"
-         loading="lazy"/>
+         loading="eager"
+         decoding="async"
+         fetchpriority="high"
+         sizes="100vw"/>
   @endif
 
 
@@ -35,7 +38,8 @@
                    src="{{ $feature['path'] }}"
                    class="img-fluid"
                    alt=""
-                   loading="lazy">
+                   loading="lazy"
+                   decoding="async">
             </span>
             <span>{{ $feature['label'] }}</span>
           </li>
