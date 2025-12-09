@@ -1,4 +1,4 @@
-<section class="home-intro">
+<section class="home-intro pub-bodmin-hero" itemprop="subjectOf" itemscope itemtype="https://schema.org/WebPage">
   @if (!empty($homeIntro['headerImage']['url']))
     <img class="home-intro-image"
          src="{{ esc_url($homeIntro['headerImage']['url']) }}"
@@ -21,6 +21,10 @@
     @if (!empty($homeIntro['content']))
       {!! $homeIntro['content'] !!}
     @endif
+
+    <p class="home-intro__seo-note lead">
+      {{ __('Your welcoming pub in Bodmin for pub food, Sunday roasts, live music and friendly gatherings.', 'pixelforge') }}
+    </p>
 
     <div class="home-intro-pods">
       <ul class="amenities-list">

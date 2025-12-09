@@ -1,4 +1,5 @@
-<section class="home-gallery" id="home-gallery">
+<section class="home-gallery pub-bodmin-home-gallery" id="pub-bodmin-home-gallery" itemprop="hasPart"
+         itemscope itemtype="https://schema.org/CollectionPage">
   <div class="container">
     <div class="home-gallery__header">
       <h1>
@@ -10,9 +11,10 @@
         <span><x-section-divider/></span>
       </div>
 
-      <p class="home-gallery__copy lead">
-        {{ __('A few snapshots from the bar, our events and food that we serve.', 'pixelforge') }} <br/>
-        {{ __('Drop by, say hello, and make your own memories with us.', 'pixelforge') }}
+      <p class="home-gallery__copy lead" itemprop="description">
+        {{ __('See our Bodmin pub in action: favourite pub food dishes, live music nights, and a lively bar atmosphere.', 'pixelforge') }}
+        <br/>
+        {{ __('Drop by The White Hart Inn in Bodmin for local ales, pub food, and friendly gatherings or order food delivery for cosy nights in.', 'pixelforge') }}
 
       </p>
     </div>
