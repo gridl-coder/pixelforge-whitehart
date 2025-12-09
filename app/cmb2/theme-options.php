@@ -244,4 +244,18 @@ function register_theme_options_metabox(): void
         'type' => 'text_url',
     ]);
 
+    $cmb_options->add_field([
+        'name' => esc_html__('Site Health & Performance', 'pixelforge'),
+        'id' => 'site_health_overview',
+        'type' => 'title',
+        'desc' => esc_html__('Review performance-related checks and open the Site Health dashboard.', 'pixelforge'),
+        'after_row' => function () {
+            $url = admin_url('site-health.php');
+
+            echo '<p>' . esc_html__('WordPress runs PixelForge health tests for Imagick, persistent object cache, and page cache headers.', 'pixelforge') . '</p>';
+            echo '<p>' . esc_html__('Use the button below to open the Site Health screen and view the results under Direct tests.', 'pixelforge') . '</p>';
+            echo '<p><a class="button button-secondary" href="' . esc_url($url) . '">' . esc_html__('Open Site Health', 'pixelforge') . '</a></p>';
+        },
+    ]);
+
 }
