@@ -8,6 +8,7 @@ import laravel from 'laravel-vite-plugin'
 import { wordpressPlugin, wordpressThemeJson } from '@roots/vite-plugin';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const parentResourcesPath = path.resolve(__dirname, '..', '..', 'resources')
 
 const WEIGHT_KEYWORDS = new Map([
   ['thin', 100],
@@ -494,6 +495,9 @@ export default defineConfig({
       '@styles': '/resources/css',
       '@fonts': '/resources/fonts',
       '@images': '/resources/images',
+      '@parent': parentResourcesPath,
+      '@parent-scripts': path.resolve(parentResourcesPath, 'js'),
+      '@parent-styles': path.resolve(parentResourcesPath, 'css'),
       ...Object.fromEntries(
         Array.from(CSS_ENTRY_ALIASES.entries(), ([alias, target]) => [
           alias,

@@ -1,2 +1,3 @@
-// Custom Bootstrap subset focusing on grid, responsive helpers, and forms
-@import './bootstrap/bootstrap';
+// Use the parent theme's Bootstrap subset so vendor styles are served once.
+// Child-specific overrides can be added below this import.
+@import '@parent-styles/bootstrap/bootstrap';

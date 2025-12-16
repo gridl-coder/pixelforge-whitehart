@@ -6,11 +6,11 @@
 @source "../views/";
 @source "../../app/";
 
-@import '../js/slick/slick';
-@import '../js/slick/slick-theme';
+@import '@parent/js/slick/slick';
+@import '@parent/js/slick/slick-theme';
 
-@import "./bootstrap-custom";
 @import "./variables";
+@import "./bootstrap-custom";
 @import "./fonts";
 @import "./modules";
 
