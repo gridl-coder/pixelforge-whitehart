@@ -1,0 +1,142 @@
+@import "./variables";
+@import "./fonts";
+
+$christmas-red: #c73630;
+$christmas-green: #0f3d2e;
+$christmas-gold: #f2e2b3;
+
+body.has-christmas-theme {
+  background: radial-gradient(circle at 15% 20%, rgba($christmas-gold, 0.06) 0, transparent 32%),
+    radial-gradient(circle at 80% 0%, rgba($christmas-red, 0.08) 0, transparent 25%),
+    #0c1c2c;
+  color: #f8fafc;
+}
+
+body.has-christmas-theme::before,
+body.has-christmas-theme::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(2px 2px at 20px 30px, rgba(255, 255, 255, 0.95) 50%, transparent 52%),
+    radial-gradient(1.7px 1.7px at 140px 120px, rgba(255, 255, 255, 0.75) 45%, transparent 55%),
+    radial-gradient(1.4px 1.4px at 60px 200px, rgba(255, 255, 255, 0.65) 45%, transparent 55%),
+    radial-gradient(1.2px 1.2px at 200px 40px, rgba(255, 255, 255, 0.5) 45%, transparent 55%);
+  background-size: 220px 240px, 260px 280px, 180px 200px, 200px 220px;
+  animation: christmas-snow 26s linear infinite;
+  z-index: 2;
+  opacity: 0.9;
+}
+
+body.has-christmas-theme::after {
+  animation-duration: 34s;
+  animation-delay: 4s;
+  opacity: 0.55;
+  filter: blur(0.7px);
+}
+
+@keyframes christmas-snow {
+  from {
+    transform: translate3d(0, -120px, 0);
+  }
+  to {
+    transform: translate3d(0, 180px, 0);
+  }
+}
+
+body.has-christmas-theme #app {
+  position: relative;
+  z-index: 3;
+}
+
+body.has-christmas-theme .main-header {
+  background: rgba(12, 36, 52, 0.95);
+  border-bottom: 2px solid $christmas-red;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+}
+
+body.has-christmas-theme .main-header .main-logo__text {
+  color: $christmas-gold;
+}
+
+body.has-christmas-theme .main-header a {
+  color: #f8fafc;
+}
+
+body.has-christmas-theme .main-nav-list a {
+  color: #f8fafc;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+body.has-christmas-theme .main-nav-list .current-menu-item > a,
+body.has-christmas-theme .main-nav-list a:hover {
+  color: $christmas-gold;
+}
+
+body.has-christmas-theme .nav-toggle__button {
+  color: #f8fafc;
+}
+
+body.has-christmas-theme .home-intro {
+  border-radius: 18px;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba($christmas-green, 0.95), rgba(18, 56, 44, 0.9));
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.5);
+}
+
+body.has-christmas-theme .home-intro-image {
+  filter: brightness(0.6) saturate(0.95);
+}
+
+body.has-christmas-theme .home-intro-inner {
+  background: rgba(12, 28, 38, 0.85);
+  border: 1px solid rgba($christmas-gold, 0.6);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+body.has-christmas-theme .home-intro__heading-prefix,
+body.has-christmas-theme .home-intro__location {
+  color: $christmas-gold;
+  letter-spacing: 0.08em;
+}
+
+body.has-christmas-theme .nav_dec span {
+  background: linear-gradient(90deg, transparent, $christmas-gold, transparent);
+}
+
+body.has-christmas-theme .amenities-list__icon {
+  background: $christmas-red;
+  border-color: rgba($christmas-gold, 0.7);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.35);
+}
+
+body.has-christmas-theme .amenities-list span:last-child {
+  color: $christmas-gold;
+}
+
+body.has-christmas-theme .btn,
+body.has-christmas-theme .main-nav .btn {
+  background-color: $christmas-red;
+  border-color: $christmas-red;
+  color: #fff;
+  box-shadow: 0 8px 20px rgba($christmas-red, 0.35);
+}
+
+body.has-christmas-theme .btn:hover,
+body.has-christmas-theme .main-nav .btn:hover {
+  background-color: darken($christmas-red, 8%);
+  border-color: darken($christmas-red, 8%);
+  color: #fff;
+}
+
+body.has-christmas-theme .mastfooter {
+  background: rgba(10, 24, 35, 0.95);
+  border-top: 2px solid rgba($christmas-gold, 0.7);
+  box-shadow: 0 -12px 32px rgba(0, 0, 0, 0.35);
+}
+
+body.has-christmas-theme .content-info__address {
+  color: $christmas-gold;
+}

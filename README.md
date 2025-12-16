@@ -2,6 +2,19 @@
 
 PixelForge White Hart is a custom WordPress theme built for pubs that need simple content publishing plus a full booking workflow. The theme disables the block editor in favor of classic editing, registers preset pages (Home, About, News, Contact), and ships with booking tools, events, SEO defaults, and seasonal styling toggles.
 
+## Parent/Child Split
+
+The repository now ships with two theme entry points:
+
+- **PixelForge Framework (parent)**: the root theme in this repository that provides the booking engine, SEO tooling, structured data, performance hardening, and other shared functionality.
+- **White Hart Child Theme**: located in `child-themes/white-hart/` and containing all front-end design assets (Blade templates, SCSS/JS sources, compiled public assets, and theme.json; binary image assets should be supplied separately). Activate this theme in WordPress to render the White Hart front-end while inheriting the parent framework.
+
+To activate in WordPress multisite:
+
+1. Install both themes into your `wp-content/themes` directory.
+2. Network-enable the **PixelForge Framework** (parent) and the **White Hart Child Theme**.
+3. Activate the **White Hart Child Theme** on the White Hart site so it inherits the parent booking/SEO features but sources templates and assets from `child-themes/white-hart/`.
+
 ## Requirements
 - WordPress with PHP 8.1+.
 - CMB2 plugin (for theme options and metaboxes).

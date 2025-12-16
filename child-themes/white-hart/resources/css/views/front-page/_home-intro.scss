@@ -1,0 +1,206 @@
+.home-intro {
+
+  position: relative;
+  padding: 10px 10px 45px 10px;
+
+  &:after {
+    background: url('@images/brush-dec.png');
+    background-attachment: scroll;
+    background-origin: content-box;
+    background-position: 50%;
+    background-repeat: repeat;
+    background-size: cover;
+    height: 40px;
+    width: 100%;
+    z-index: 20;
+    content: '';
+    display: block;
+    position: absolute;
+    bottom:0;
+    left: 0;
+    right: 0;
+  }
+
+  @include media-breakpoint-up(md) {
+    padding-top: 30px;
+  }
+
+  &-image {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+    z-index: -1;
+    @include media-breakpoint-up(md) {
+      top: -250px;
+
+    }
+  }
+
+  &-inner {
+    margin: 185px auto 0 auto;
+    max-width: 800px;
+    position: relative;
+    z-index: 101;
+    border-radius: 10px;
+    background: rgba(9, 9, 4, 0.9);
+    border: 1px dashed rgba(255, 255, 255, 0.5);
+    padding: 15px 15px 0 15px;
+
+    @include media-breakpoint-up(md) {
+      margin: 35px auto 35px auto
+    }
+
+      h1 {
+      letter-spacing: 4px;
+      font-weight: 500;
+      text-transform: uppercase;
+
+      @include media-breakpoint-up(md) {
+        margin-bottom: 1rem;
+        font-size: 3.5rem;
+        line-height: 1.4;
+      }
+    }
+
+    p {
+      font-size: 0.8rem;
+      display: block;
+      padding: 0 30px;
+    }
+  }
+
+  &-pods {
+    max-width: 1200px;
+    margin: 30px auto 0 auto;
+    background: url("@images/hart-bg.png") no-repeat -49% -2%;
+
+    @include media-breakpoint-up(md) {
+      background: url("@images/hart-bg.png") no-repeat right 13%;
+    }
+  }
+
+
+  .home-intro__heading-prefix,
+  .home-intro__location {
+    display: block;
+    font-size: 1.3rem;
+  }
+
+  .home-intro__heading-prefix {
+    padding-top: 15px;
+
+  }
+
+}
+
+.parallax-decorations {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  font-family: 'Cormorant Garamond Variable', 'Cormorant Garamond', serif;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+
+  &__item {
+    position: absolute;
+    color: $brand_yellow;
+    opacity: 0.75;
+    text-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+    transform: translate3d(0, 0, 0);
+    will-change: transform;
+  }
+
+  &__item--script {
+    top: 12%;
+    left: 8%;
+    font-size: clamp(1.1rem, 2vw + 0.5rem, 2rem);
+    font-style: italic;
+  }
+
+  &__item--badge {
+    top: 18%;
+    right: 10%;
+    padding: 10px 16px;
+    border: 1px dashed rgba($brand_yellow, 0.5);
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.45);
+    font-size: clamp(0.85rem, 1vw + 0.65rem, 1.2rem);
+  }
+
+  &__item--sparkle {
+    bottom: 16%;
+    right: 22%;
+    font-size: clamp(1.6rem, 2vw + 1rem, 2.4rem);
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.35));
+  }
+
+  @include media-breakpoint-down(md) {
+    &__item--script {
+      top: 16%;
+      left: 12%;
+    }
+
+    &__item--badge {
+      right: 6%;
+    }
+
+    &__item--sparkle {
+      right: 14%;
+    }
+  }
+}
+
+.amenities-list {
+  margin: 0 0 0 0;
+  padding: 0;
+  list-style: none;
+  text-align: center;
+
+
+  @include media-breakpoint-up(md) {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  li {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 10px 20px 10px;
+    font-size: 11px;
+
+    @include media-breakpoint-up(md) {
+      width: 25%;
+      margin: 15px;
+      font-size: 14px;
+    }
+
+    span:last-child {
+      margin-top: 8px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+  }
+}
+
+.amenities-list__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: $brand_dark;
+  color: $brand_yellow;
+  border: 1px dashed rgba(255, 255, 255, 0.5);
+
+  i {
+    font-size: 30px;
+  }
+}
