@@ -1,0 +1,65 @@
+@import url('@fontsource-variable/raleway/index.css');
+@import url('@fontsource-variable/cormorant-garamond/index.css');
+
+@import "tailwindcss" theme(static);
+
+@source "../views/";
+@source "../../app/";
+
+@import '../js/slick/slick';
+@import '../js/slick/slick-theme';
+
+@import "./bootstrap-custom";
+@import "./variables";
+@import "./fonts";
+@import "./modules";
+
+@import "./views/base";
+@import "./views/components/booking-admin";
+@import "./views/components/booking";
+@import "./views/components/global-contact";
+
+@import "./views/sections/header";
+@import "./views/sections/footer";
+@import "./views/front-page/home-intro";
+@import "./views/front-page/home-gallery";
+@import "./views/front-page/home-events";
+@import "./views/front-page/home-menu";
+
+:root {
+  --brand-dark: #{$brand_dark};
+  --brand-yellow: #{$brand_yellow};
+}
+
+body {
+  font-family: 'Raleway Variable', 'Raleway', 'arial', sans-serif;
+  padding-top: 100px;
+  @include media-breakpoint-up(md) {
+    padding-top: 0;
+  }
+}
+
+.btn {
+  background-color: var(--brand-yellow);
+  border-color: var(--brand-yellow);
+  color: var(--brand-dark);
+  font-weight: bold;
+
+  &:hover {
+    background-color: darken($brand_yellow, 15%);
+    color: var(--brand-dark);
+  }
+}
+ h1 .subtitle {
+   color: #cbba57;
+   font-style: italic;
+   font-size: 18px;
+   font-weight: 600;
+   padding-bottom: 10px;
+   position: relative;
+   display: block;
+   letter-spacing: .1em;
+ }
+.amenities-list svg {
+  fill: $brand_yellow;
+}

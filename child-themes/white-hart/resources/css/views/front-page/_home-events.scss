@@ -1,0 +1,154 @@
+.events-hero {
+  position: relative;
+  padding: 40px 15px 60px;
+  text-align: center;
+  color: #090904;
+  background: white;
+
+  &:after {
+    position: absolute;
+    bottom: -40px;
+    left: 0;
+    right: 0;
+    height: 40px;
+    width: 100%;
+    content: '';
+    display: block;
+    background: url('@images/brush-dec_2.png');
+    background-attachment: scroll;
+    background-origin: content-box;
+    background-position: 50%;
+    background-repeat: repeat;
+    background-size: cover;
+    z-index: 20;
+  }
+
+  @include media-breakpoint-up(md) {
+    padding: 80px 15px 120px;
+  }
+
+  &__inner {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  &__subtitle {
+    display: block;
+    padding-bottom: 10px;
+    color: $brand_yellow;
+    font-style: italic;
+    font-size: 22px;
+    font-weight: 600;
+    position: relative;
+  }
+
+  &__thumbnail {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    display: block;
+  }
+
+  &__link {
+    display: inline-block;
+  }
+}
+
+.events-list {
+  position: relative;
+  padding: 90px 15px;
+  background-image: url('@images/events-header-image.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+
+  @include media-breakpoint-up(md) {
+    padding: 120px 60px;
+  }
+
+  &:after {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    width: 100%;
+    content: '';
+    display: block;
+    background: url('@images/brush-dec.png');
+    background-attachment: scroll;
+    background-origin: content-box;
+    background-position: 50%;
+    background-repeat: repeat;
+    background-size: cover;
+    z-index: 20;
+  }
+
+  &__subtitle {
+    color: $brand_yellow;
+    font-style: italic;
+    font-size: 22px;
+    font-weight: 600;
+    padding-bottom: 10px;
+    display: block;
+  }
+
+  &__copy {
+    max-width: 800px;
+    margin: 0 auto 20px;
+  }
+
+  &__grid {
+    row-gap: 25px;
+  }
+
+  &__card {
+    margin-bottom: 15px;
+  }
+
+  &__link {
+    position: relative;
+    display: block;
+  }
+
+  &__image {
+    width: 100%;
+  }
+
+  &__info {
+    text-align: center;
+  }
+
+  &__date {
+    display: inline-block;
+    margin: 15px 0;
+    padding: 5px 8px;
+    background: $brand_yellow;
+    color: black;
+    font-size: 14px;
+    font-weight: bold;
+
+    @include media-breakpoint-up(md) {
+      font-size: 16px;
+    }
+  }
+
+  &__title {
+    font-size: 0.9em;
+
+    @include media-breakpoint-up(md) {
+      font-size: 1.6em;
+    }
+  }
+
+  &__empty {
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+  }
+}
+
+.booking-form-container {
+  padding: 30px 15px;
+
+  @include media-breakpoint-up(md) {
+    padding: 120px 60px;
+  }
+}

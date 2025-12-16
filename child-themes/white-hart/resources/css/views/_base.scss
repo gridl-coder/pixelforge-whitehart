@@ -1,0 +1,122 @@
+
+html {
+  height: 100%;
+  min-height: 100%;
+}
+
+.post-type-archive-events {
+  .stage-intro-header-image {
+    @include media-breakpoint-up(md) {
+      top: -140px
+    }
+  }
+}
+
+body {
+  font-family: $brand_font;
+  font-optical-sizing: auto;
+  font-style: normal;
+  background-color: $brand_dark;
+  min-height: 100%;
+  text-align: center;
+  color: white;
+  font-size: 14px;
+  //margin-top: 90px;
+  @media only screen and (min-width: 565px) {
+    padding-top: 0;
+  }
+}
+
+blockquote {
+  font-size: 1.2rem;
+  margin-bottom: 25px;
+}
+
+.wp-post-image {
+  @extend .img-fluid;
+}
+
+.main-stage {
+  h2, h3, h4 {
+    font-family: $brand_font;
+  }
+}
+
+.lead {
+  font-size: 1.05rem;
+  @include media-breakpoint-up(md) {
+    font-size: 1.25rem;
+  }
+}
+
+br.stage-anchor {
+  display: block;
+  height: 0;
+  width: 0;
+  line-height: 0;
+  margin: 0;
+  padding: 0;
+
+  content: '';
+
+  &:after {
+    content: ''
+  }
+
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: $brand_font_heading;
+}
+
+li, ul {
+  margin: 0;
+  padding: 0;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+ol, ul {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  position: relative;
+  color: #000;
+}
+
+.hart_btn {
+  position: relative;
+  padding: 0 25px;
+  border-radius: 6px;
+  background: darken($brand_yellow, 15%);
+  color: white;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+  height: 54px;
+  line-height: 54px;
+  top: 8px;
+  font-size: 1.3em;
+  cursor: pointer;
+  transition: all .2s ease-in-out;
+  display: inline-block;
+  font-family: $brand_font;
+
+  i {
+    margin-left: 10px;
+    transition: all .2s ease-in-out;
+  }
+
+  &:hover {
+    background: darken($brand_yellow, 20%);
+    color: white;
+  }
+}
+
+.sr-only {
+  display: none;
+}
+.global-contact {
+  color: $brand-dark;
+}
