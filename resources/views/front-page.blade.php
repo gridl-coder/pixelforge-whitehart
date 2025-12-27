@@ -2,6 +2,7 @@
 @section('content')
 
   @while(have_posts())
+
     @php(the_post())
 
     @include('front-page.home-intro')
@@ -10,121 +11,9 @@
 
     @include('front-page.home-menu')
 
-    <div class="booking-form-container">
+    @include('front-page.home-booking')
 
-      <div class="container pt-5" id="table-booking">
-        <h1>
-          <span class="subtitle">Eat at The White Hart.</span>
-          Table Booking
-        </h1>
-
-        <div class="section-separator">
-      <span><svg fill="#cbba57" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 75" width="60" height="60"
-                 aria-hidden="true" focusable="false">
-  <g data-name="Layer 1">
-    <path
-      d="M51,29H42.3103C52.32666,21.657,56,9.986,56,1a1,1,0,0,0-2,0,34.41553,34.41553,0,0,1-.727,6.89282A11.40928,11.40928,0,0,0,50.457,3.293.99989.99989,0,0,0,49.043,4.707a10.35162,10.35162,0,0,1,2.92578,7.82422c0,.00952.00519.0174.00543.02686a33.85354,33.85354,0,0,1-1.45154,3.49377A10.39416,10.39416,0,0,0,47.457,10.293.99989.99989,0,0,0,46.043,11.707c1.623,1.623,2.73669,3.65424,2.7644,7.407a29.90475,29.90475,0,0,1-8.32874,8.7569,13.13361,13.13361,0,0,0-.52991-7.18732,1.0001,1.0001,0,1,0-1.89746.63281c.871,2.61285.9176,4.3855.15521,7.68359h-16.413c-.76239-3.2981-.71576-5.07074.15521-7.68359a1.0001,1.0001,0,0,0-1.89746-.63281,13.13361,13.13361,0,0,0-.52991,7.18732,29.93606,29.93606,0,0,1-8.51465-9.06006c.03571-3.68231,1.05841-5.46191,2.70032-7.10382A.99989.99989,0,0,0,12.293,10.293a10.29142,10.29142,0,0,0-2.97528,5.4057,34.01378,34.01378,0,0,1-1.32245-3.222c.00018-.0083.00476-.0152.00476-.02356,0-3.48486.835-5.874,2.707-7.74609A.99989.99989,0,0,0,9.293,3.293a10.498,10.498,0,0,0-2.6156,4.34076A34.37234,34.37234,0,0,1,6,1,1,1,0,0,0,4,1C4,9.986,7.67334,21.657,17.6897,29H9a.99959.99959,0,0,0-.98633,1.16455c.50342,3.022,1.74854,5.12549,3.70068,6.252,2.20605,1.27344,5.20313,1.28906,9.13135.04248-.81348,8.76807.54053,10.43359,2.09521,12.34717,1.09326,1.34521,2.22363,2.73633,2.81592,7.54395A4.17888,4.17888,0,0,0,29.91113,60h.17773a4.17888,4.17888,0,0,0,4.1543-3.6499c.59229-4.80762,1.72266-6.19873,2.81592-7.54395,1.55469-1.91357,2.90869-3.5791,2.09521-12.34717,3.92871,1.24707,6.92676,1.23193,9.13135-.04248,1.95215-1.12646,3.19727-3.23,3.70068-6.252A.99959.99959,0,0,0,51,29Zm-3.71387,5.68457c-1.90088,1.09814-4.9082.88965-8.93506-.62109a1,1,0,0,0-1.34473,1.04688c1.03467,9.31543-.0835,10.69189-1.49951,12.43457-1.15234,1.418-2.58594,3.18262-3.249,8.561A2.1761,2.1761,0,0,1,30.08887,58h-.17773a2.17611,2.17611,0,0,1-2.16895-1.89453c-.66309-5.37793-2.09668-7.14258-3.249-8.56055-1.416-1.74268-2.53418-3.11914-1.49951-12.43457a1.00018,1.00018,0,0,0-1.34473-1.04687c-4.02637,1.50977-7.03271,1.71875-8.93506.62109A5.63748,5.63748,0,0,1,10.23438,31H49.76563A5.63748,5.63748,0,0,1,47.28613,34.68457Z"></path>
-  </g>
-</svg>
-</span>
-        </div>
-
-
-        <div style="max-width: 840px; margin: 0 auto 50px auto; text-align: left;">
-
-
-            <?= do_shortcode('[pixelforge_table_booking]'); ?>
-          <p class="text-center"><a href="https://whitehartbodmin.square.site/" class="btn mb-3 mt-3" target="_blank"
-                                    rel="noopener noreferrer">Order Food Delivery</a></p>
-
-        </div>
-
-      </div>
-    </div>
-
-
-    <section class="global-contact bodmin-pub-contact" id="home-contact" itemscope itemtype="https://schema.org/BarOrPub">
-
-      <meta itemprop="name" content="The White Hart Inn Bodmin">
-      <meta itemprop="servesCuisine" content="Pub food, Cornish produce, Sunday roasts">
-      <meta itemprop="areaServed" content="Bodmin and Cornwall">
-      <meta itemprop="url" content="{{ esc_url(home_url('/')) }}">
-      <meta itemprop="priceRange" content="££">
-      <meta itemprop="acceptsReservations" content="True">
-      <meta itemprop="hasMenu" content="{{ esc_url(home_url('/#home-menu')) }}">
-
-      <div class="boxed-container mb-4">
-
-        <div class="boxed-content-item">
-
-          <h1>
-            <span class="subtitle">Contact the Hart</span>
-            Get in Touch
-          </h1>
-
-          <p class="lead" style="max-width: 700px; display: block; margin: 30px auto" itemprop="description">If you have questions or
-            if you
-            would just like to chat about our Bodmin pub food, live music nights, or food delivery options,<br>we would love to hear from you.</p>
-
-          <div class="section-separator">
-    <span>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 75" x="0px" y="0px" width="60" height="60">
-    <g data-name="Layer 1">
-        <path
-          d="M51,29H42.3103C52.32666,21.657,56,9.986,56,1a1,1,0,0,0-2,0,34.41553,34.41553,0,0,1-.727,6.89282A11.40928,11.40928,0,0,0,50.457,3.293.99989.99989,0,0,0,49.043,4.707a10.35162,10.35162,0,0,1,2.92578,7.82422c0,.00952.00519.0174.00543.02686a33.85354,33.85354,0,0,1-1.45154,3.49377A10.39416,10.39416,0,0,0,47.457,10.293.99989.99989,0,0,0,46.043,11.707c1.623,1.623,2.73669,3.65424,2.7644,7.407a29.90475,29.90475,0,0,1-8.32874,8.7569,13.13361,13.13361,0,0,0-.52991-7.18732,1.0001,1.0001,0,1,0-1.89746.63281c.871,2.61285.9176,4.3855.15521,7.68359h-16.413c-.76239-3.2981-.71576-5.07074.15521-7.68359a1.0001,1.0001,0,0,0-1.89746-.63281,13.13361,13.13361,0,0,0-.52991,7.18732,29.93606,29.93606,0,0,1-8.51465-9.06006c.03571-3.68231,1.05841-5.46191,2.70032-7.10382A.99989.99989,0,0,0,12.293,10.293a10.29142,10.29142,0,0,0-2.97528,5.4057,34.01378,34.01378,0,0,1-1.32245-3.222c.00018-.0083.00476-.0152.00476-.02356,0-3.48486.835-5.874,2.707-7.74609A.99989.99989,0,0,0,9.293,3.293a10.498,10.498,0,0,0-2.6156,4.34076A34.37234,34.37234,0,0,1,6,1,1,1,0,0,0,4,1C4,9.986,7.67334,21.657,17.6897,29H9a.99959.99959,0,0,0-.98633,1.16455c.50342,3.022,1.74854,5.12549,3.70068,6.252,2.20605,1.27344,5.20313,1.28906,9.13135.04248-.81348,8.76807.54053,10.43359,2.09521,12.34717,1.09326,1.34521,2.22363,2.73633,2.81592,7.54395A4.17888,4.17888,0,0,0,29.91113,60h.17773a4.17888,4.17888,0,0,0,4.1543-3.6499c.59229-4.80762,1.72266-6.19873,2.81592-7.54395,1.55469-1.91357,2.90869-3.5791,2.09521-12.34717,3.92871,1.24707,6.92676,1.23193,9.13135-.04248,1.95215-1.12646,3.19727-3.23,3.70068-6.252A.99959.99959,0,0,0,51,29Zm-3.71387,5.68457c-1.90088,1.09814-4.9082.88965-8.93506-.62109a1,1,0,0,0-1.34473,1.04688c1.03467,9.31543-.0835,10.69189-1.49951,12.43457-1.15234,1.418-2.58594,3.18262-3.249,8.561A2.1761,2.1761,0,0,1,30.08887,58h-.17773a2.17611,2.17611,0,0,1-2.16895-1.89453c-.66309-5.37793-2.09668-7.14258-3.249-8.56055-1.416-1.74268-2.53418-3.11914-1.49951-12.43457a1.00018,1.00018,0,0,0-1.34473-1.04687c-4.02637,1.50977-7.03271,1.71875-8.93506.62109A5.63748,5.63748,0,0,1,10.23438,31H49.76563A5.63748,5.63748,0,0,1,47.28613,34.68457Z"></path>
-    </g>
-</svg>
-    </span>
-          </div>
-          <div class="row">
-            <div class="col-md-4 phone">
-              <a href="tel:07922 214361" itemprop="telephone">
-                        <span class="icon">
-                           <svg fill="#cbba57" width="60" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.0.0-alpha3 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) --><path
-                               d="M256 0c-141.4 0-256 114.6-256 256s114.6 256 256 256s256-114.6 256-256S397.4 0 256 0zM419.1 256.1L392.5 299.9c-3.988 6.396-11.99 9.015-19.06 6.253l-54.82-21.92c-6.441-2.596-10.41-9.16-9.717-16.06l3.446-34.61C275.9 221.1 236.1 221.1 199.6 233.6l3.447 34.61c.7402 6.885-3.243 13.5-9.717 16.06L138.5 306.2c-7.037 2.797-15.1 .1003-19.06-6.253L92.05 256.1C88.16 249.9 89.06 241.9 94.25 236.7c89.18-89.18 234.3-89.2 323.5 .0002C422.9 241.9 423.8 249.9 419.1 256.1z"/></svg>
-
-                        </span>
-                <span itemprop="telephone">07922 214361</span>
-              </a>
-
-            </div>
-
-            <div class="col-md-4 address" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
-              <a
-                href="https://www.google.com/maps?gs_lcrp=EgZjaHJvbWUqBggAEEUYOzIGCAAQRRg7Mg0IARAuGK8BGMcBGIAEMgcIAhAAGIAEMgYIAxBFGDsyEwgEEC4YrwEYxwEYgAQYmAUYmQUyBggFEEUYPDIGCAYQRRg8MgYIBxBFGD3SAQg1MjY1ajBqN6gCALACAA&amp;um=1&amp;ie=UTF-8&amp;fb=1&amp;gl=uk&amp;sa=X&amp;geocode=KV0KWv9CemtIMZKmgmZ6Qkkg&amp;daddr=Pool+St,+Bodmin+PL31+2HA"
-                target="_blank"
-                itemprop="map">
-                        <span class="icon">
-<svg fill="#cbba57" width="60" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Pro 6.0.0-alpha3 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) --><path
-    d="M265.4 233.4c-12.5 12.5-12.5 32.75 0 45.25s32.75 12.5 45.25 0s12.5-32.77 0-45.25C298.1 220.9 277.9 220.9 265.4 233.4zM288 0C146.6 0 32 114.6 32 256c0 141.4 114.6 256 256 256s256-114.6 256-256C544 114.6 429.4 0 288 0zM414.1 156l-65.97 144.4c-2.719 5.969-9.778 13.02-15.75 15.76l-144.3 65.97c-16.66 7.609-33.81-9.547-26.19-26.2l65.97-144.3c2.719-5.984 9.781-13.05 15.78-15.78l144.3-65.97C404.6 122.3 421.8 139.4 414.1 156z"/></svg>
-                        </span>
-                <span>The White Hart<br>
-                            <small itemprop="streetAddress">Pool St</small>,
-                            <small itemprop="addressLocality">Bodmin</small>,
-                            <small itemprop="postalCode">PL31 2HA</small>
-                          </span>
-                <meta itemprop="addressRegion" content="Cornwall">
-                <meta itemprop="addressCountry" content="UK">
-              </a>
-            </div>
-            <div class="col-md-4 email">
-              <a href="mailto:info@theh.art" itemprop="email">
-                        <span class="icon">
-<svg fill="#cbba57" width="60" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.0.0-alpha3 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) --><path
-    d="M256 0C114.6 0 0 114.6 0 256s114.6 256 256 256s256-114.6 256-256S397.4 0 256 0zM384 320c0 17.67-14.33 32-32 32H160c-17.67 0-32-14.33-32-32V238l122.1 48.82C251.1 287.6 253.1 288 256 288s4.031-.375 5.938-1.141L384 238V320zM384 203.6l-128 51.2L128 203.6V192c0-17.67 14.33-32 32-32h192c17.67 0 32 14.33 32 32V203.6z"/></svg>
-                        </span>
-                <span itemprop="email">bodmin@theh.art</span>
-              </a>
-            </div>
-
-          </div>
-          <div class="nav_dec" style="margin-top: 30px;"><span style=" display: inline-block;"></span></div>
-
-
-        </div>
-
-      </div>
-    </section>
+    @include('front-page.home-contact')
 
   @endwhile
 @endsection

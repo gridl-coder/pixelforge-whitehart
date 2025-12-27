@@ -1,9 +1,23 @@
 .global-contact {
-
-  padding: 15px;
+  position: relative;
+  padding: 15px 15px 60px 15px;
   color: $brand-dark;
   // font-size: 1.25rem;
   background: white;
+
+  &:after {
+    position: absolute;
+    // bottom: -40px;
+    left: 0;
+    right: 0;
+    height: 40px;
+    width: 100%;
+    content: '';
+    display: block;
+    background: url('@images/brush-dec_2.png') 50% 0 / cover repeat;
+    z-index: 20;
+    margin-top: 59px;
+  }
 
   @include media-breakpoint-up(md) {
     padding: 60px;
@@ -23,14 +37,12 @@
 
   h1 {
     .subtitle {
-      color: $brand-yellow;
-      font-style: italic;
-      font-size: 18px;
-      font-weight: 600;
-      padding-bottom: 10px;
-      position: relative;
       display: block;
-      letter-spacing: 0.1em;
+      color: #cbba57;
+      font-style: italic;
+      font-size: 20px;
+      font-weight: 500;
+      padding-bottom: 8px;
     }
   }
 
@@ -43,10 +55,12 @@
 
   span {
     display: block;
+
     &.icon {
       margin-bottom: 10px;
     }
   }
+
   a {
     font-size: 1.4em;
     font-weight: bold;
@@ -56,6 +70,7 @@
       margin-bottom: 0;
     }
   }
+
   .section-separator {
     margin-bottom: 30px;
   }

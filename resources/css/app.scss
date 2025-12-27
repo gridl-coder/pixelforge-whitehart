@@ -31,6 +31,10 @@
   --brand-yellow: #{$brand_yellow};
 }
 
+.color--red {
+  color: darkred;
+}
+
 body {
   font-family: 'Raleway Variable', 'Raleway', 'arial', sans-serif;
   padding-top: 100px;
@@ -51,14 +55,13 @@ body {
   }
 }
  h1 .subtitle {
+   display: block;
    color: #cbba57;
    font-style: italic;
-   font-size: 18px;
-   font-weight: 600;
-   padding-bottom: 10px;
-   position: relative;
-   display: block;
-   letter-spacing: .1em;
+   font-size: 20px;
+   font-weight: 500;
+   padding-bottom: 8px;
+   letter-spacing: -0.5px;
  }
 .amenities-list svg {
   fill: $brand_yellow;

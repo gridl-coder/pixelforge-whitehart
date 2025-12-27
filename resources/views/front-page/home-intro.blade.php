@@ -9,7 +9,7 @@
          {{-- Provide a responsive srcset for modern browsers when available --}}
          @if (!empty($homeIntro['headerImage']['srcset']))
            srcset="{{ $homeIntro['headerImage']['srcset'] }}"
-           sizes="{{ $homeIntro['headerImage']['sizes'] ?? '100vw' }}"
+         sizes="{{ $homeIntro['headerImage']['sizes'] ?? '100vw' }}"
          @else
            sizes="100vw"
          @endif
@@ -19,7 +19,7 @@
          @endif
          @if (!empty($homeIntro['headerImage']['height']))
            height="{{ $homeIntro['headerImage']['height'] }}"
-         @endif
+      @endif
     />
   @endif
 
@@ -34,18 +34,14 @@
 
     <div class="nav_dec"><span></span></div>
 
-    @if (!empty($homeIntro['content']))
-      {!! $homeIntro['content'] !!}
-    @endif
+    <?= wpautop(get_the_content()); ?>
 
-    <p class="home-intro__seo-note lead">
-      {{ __('Your welcoming pub in Bodmin for pub food, Sunday roasts, live music and friendly gatherings.', 'pixelforge') }}
-    </p>
+  </div>
 
-    <div class="home-intro-pods">
-      <ul class="amenities-list">
-        @foreach ($homeIntro['features'] as $feature)
-          <li>
+  <div class="home-intro-pods">
+    <ul class="amenities-list">
+      @foreach ($homeIntro['features'] as $feature)
+        <li>
             <span class="amenities-list__icon" aria-hidden="true">
               <img width="30"
                    height="30"
@@ -55,11 +51,9 @@
                    loading="lazy"
                    decoding="async">
             </span>
-            <span>{{ $feature['label'] }}</span>
-          </li>
-        @endforeach
-      </ul>
-    </div>
+          <span>{{ $feature['label'] }}</span>
+        </li>
+      @endforeach
+    </ul>
   </div>
-
 </section>

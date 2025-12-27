@@ -3,7 +3,7 @@
   <div class="container">
     <div class="home-gallery__header">
       <h1>
-        <span class="home-gallery__subtitle">{{ $homeGallery['subtitle'] }}</span>
+        <span class="home-gallery__subtitle subtitle">{{ $homeGallery['subtitle'] }}</span>
         {{ $homeGallery['title'] }}
       </h1>
 

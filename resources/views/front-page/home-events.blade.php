@@ -9,7 +9,7 @@
 <section class="events-list" itemprop="subEvents">
   <div class="container">
     <h1>
-      <span class="events-list__subtitle">{{ __('Live Music in Bodmin, Sport, DJ’s & More.', 'pixelforge') }}</span>
+      <span class="events-list__subtitle subtitle">{{ __('Live Music in Bodmin, Sport, DJ’s & More.', 'pixelforge') }}</span>
       {{ __('Upcoming Events at our Bodmin Pub', 'pixelforge') }}
     </h1>
 

@@ -32,16 +32,6 @@
     margin: 0 auto;
   }
 
-  &__subtitle {
-    display: block;
-    padding-bottom: 10px;
-    color: $brand_yellow;
-    font-style: italic;
-    font-size: 22px;
-    font-weight: 600;
-    position: relative;
-  }
-
   &__thumbnail {
     width: 100%;
     max-width: 500px;
@@ -81,15 +71,6 @@
     background-repeat: repeat;
     background-size: cover;
     z-index: 20;
-  }
-
-  &__subtitle {
-    color: $brand_yellow;
-    font-style: italic;
-    font-size: 22px;
-    font-weight: 600;
-    padding-bottom: 10px;
-    display: block;
   }
 
   &__copy {
@@ -150,5 +131,20 @@
 
   @include media-breakpoint-up(md) {
     padding: 120px 60px;
+  }
+}
+.home-events__gallery {
+  &:after {
+    position: absolute;
+   // bottom: -40px;
+    left: 0;
+    right: 0;
+    height: 40px;
+    width: 100%;
+    content: '';
+    display: block;
+    background: url('@images/brush-dec_2.png') 50% 0 / cover repeat;
+    z-index: 20;
+    margin-top: -1px;
   }
 }

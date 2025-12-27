@@ -7,6 +7,22 @@
   }
 
   .booking-form-container {
+    position: relative;
+
+    &:after {
+      position: absolute;
+      // bottom: -40px;
+      left: 0;
+      right: 0;
+      height: 40px;
+      width: 100%;
+      content: '';
+      display: block;
+      background: url('@images/brush-dec.png') 50% 0 / cover repeat;
+      z-index: 20;
+      margin-top: 81px;
+    }
+
     .container {
       @include media-breakpoint-up(md) {
         padding: 0;
@@ -318,20 +334,18 @@
     &__day {
       padding: 3px 6px;
       border-radius: 10px;
-      border: 1px solid rgba(#fff, 0.12);
-      background: rgba(#fff, 0.06);
-      color: rgba(#fff, 0.65);
-      font-weight: 600;
-      font-size: 0.8rem;
+      font-weight: 300;
+      font-size: 0.7rem;
+      background: #cbba5733;
+      border-color: #cbba5766;
+      color: #cbba57;
+      margin: 0 2px;
 
-      &.is-allowed {
-        background: rgba($brand_yellow, 0.2);
-        border-color: rgba($brand_yellow, 0.4);
-        color: $brand_yellow;
-      }
-
-      &.is-blocked {
+      &--inactive {
         opacity: 0.45;
+        border: 1px solid rgba(#fff, 0.12);
+        background: rgba(#fff, 0.06);
+        color: rgba(#fff, 0.65);
       }
     }
 

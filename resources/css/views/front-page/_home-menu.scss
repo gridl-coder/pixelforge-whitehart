@@ -1,6 +1,7 @@
 .our-menus {
   background: url("@images/tables-background.jpg") no-repeat center center transparent;
 }
+
 .food-banner {
   background: white;
   padding-top: 30px;
@@ -20,7 +21,7 @@
   }
 }
 
-.menu-times-main strong{
+.menu-times-main strong {
   display: block;
   @include media-breakpoint-up(md) {
     display: inline-block;
@@ -47,19 +48,6 @@
 
   .nav_dec:before, .nav_dec:after {
     border-top: 1px dotted rgba(0, 0, 0, 0.2);
-  }
-
-  h1 {
-    .subtitle {
-      color: $brand-yellow;
-      font-style: italic;
-      font-size: 22px;
-      font-weight: 600;
-      padding-bottom: 10px;
-      position: relative;
-      display: block;
-      //letter-spacing: 0.1em;
-    }
   }
 
   .menu-section {

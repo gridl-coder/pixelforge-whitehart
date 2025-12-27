@@ -16,76 +16,79 @@
     content: '';
     display: block;
     position: absolute;
-    bottom:0;
+    bottom: 0;
     left: 0;
     right: 0;
   }
 
   @include media-breakpoint-up(md) {
-    padding-top: 30px;
+    padding-top: 150px;
+    padding-bottom: 100px;
   }
 
   &-image {
     position: absolute;
-    top: 0;
     right: 0;
     left: 0;
+    top: -28px;
     width: 100%;
     z-index: -1;
+    height: auto;
     @include media-breakpoint-up(md) {
-      top: -250px;
+      top: -117px;
+      height: unset;
 
     }
   }
 
   &-inner {
-    margin: 185px auto 0 auto;
+    margin: 125px auto 30px auto;
     max-width: 800px;
     position: relative;
     z-index: 101;
     border-radius: 10px;
-    background: rgba(9, 9, 4, 0.9);
     border: 1px dashed rgba(255, 255, 255, 0.5);
     padding: 15px 15px 0 15px;
+    background: rgba(9, 9, 4, 0.9) url("@images/hart-bg.png") no-repeat -49% -2%;
 
     @include media-breakpoint-up(md) {
+      background: rgba(9, 9, 4, 0.9) url("@images/hart-bg.png") no-repeat right 13%;
       margin: 35px auto 35px auto
     }
 
-      h1 {
+    h1 {
       letter-spacing: 4px;
       font-weight: 500;
       text-transform: uppercase;
 
       @include media-breakpoint-up(md) {
         margin-bottom: 1rem;
-        font-size: 3.5rem;
+        font-size: 2.5rem;
         line-height: 1.4;
       }
     }
 
     p {
-      font-size: 0.8rem;
+
       display: block;
-      padding: 0 30px;
+      @include media-breakpoint-up(md) {
+        font-size: 0.8rem;
+        padding: 0 30px;
+      }
     }
   }
 
   &-pods {
     max-width: 1200px;
     margin: 30px auto 0 auto;
-    background: url("@images/hart-bg.png") no-repeat -49% -2%;
 
-    @include media-breakpoint-up(md) {
-      background: url("@images/hart-bg.png") no-repeat right 13%;
-    }
   }
 
 
   .home-intro__heading-prefix,
   .home-intro__location {
     display: block;
-    font-size: 1.3rem;
+    font-size: 1rem;
   }
 
   .home-intro__heading-prefix {
@@ -174,9 +177,9 @@
     font-size: 11px;
 
     @include media-breakpoint-up(md) {
-      width: 25%;
-      margin: 15px;
-      font-size: 14px;
+      width: 123px;
+      margin: 5px;
+      font-size: 12px;
     }
 
     span:last-child {
