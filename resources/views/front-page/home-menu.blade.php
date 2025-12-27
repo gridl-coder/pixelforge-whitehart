@@ -14,17 +14,10 @@
 
         <div class="boxed-content-item text-start">
           <div class="row">
-            <div class="col-md-8 col-12">
-              <h1>{{ __('Food Service Times', 'pixelforge') }}</h1>
-              @foreach ($serviceTimes as $time)
-                <p itemprop="openingHours"><strong>{{ $time['label'] }}</strong><br/>{{ $time['hours'] }}</p>
-              @endforeach
 
-
-            </div>
 
             @if (!empty($foodBannerSlider))
-              <div class="col-md-4 food-banner-image text-center">
+              <div class="col-md-6 food-banner-image text-center">
 
                 <div class="carousel-slider" data-food-banner-slider>
                   @foreach ($foodBannerSlider as $slide)
@@ -50,14 +43,21 @@
 
               </div>
             @endif
+            <div class="col-md-6 col-12">
+              <h1 class="mt-5">{{ __('Food Service Times', 'pixelforge') }}</h1>
+              @foreach ($serviceTimes as $time)
+                <p itemprop="openingHours"><strong>{{ $time['label'] }}</strong><br/>{{ $time['hours'] }}</p>
+              @endforeach
+              <p>
+                <a href="#table-booking" class="btn mb-3 mt-3">Book a table</a>
+                <a href="https://whitehartbodmin.square.site/" class="btn mb-3 mt-3" target="_blank"
+                   rel="noopener noreferrer">Order Food Delivery</a>
+              </p>
 
+            </div>
 
           </div>
-          <p class="text-center">
-            <a href="#table-booking" class="btn mb-3 mt-3">Book a table</a>
-            <a href="https://whitehartbodmin.square.site/" class="btn mb-3 mt-3" target="_blank"
-               rel="noopener noreferrer">Order Food Delivery</a>
-          </p>
+
         </div>
 
       </div>
@@ -106,7 +106,8 @@
         Main Menu
       </h1>
 
-      <p class="lead" style="max-width: 700px; display: block; margin: 30px auto" itemprop="description"> At The White Hart Inn you’ll
+      <p class="lead" style="max-width: 700px; display: block; margin: 30px auto" itemprop="description"> At The White
+        Hart Inn you’ll
         find a hearty Food Menu alongside a well - stocked and lively bar, large screen TV, pool table and
         live music on occasion for a vibrant social experience .</p>
 
@@ -137,51 +138,74 @@
 
           <div class="col-md-6">
 
-            <div class="menu-section menu-section--left" itemscope itemtype="https://schema.org/MenuSection" itemprop="hasMenuSection">
+            <div class="menu-section menu-section--left" itemscope itemtype="https://schema.org/MenuSection"
+                 itemprop="hasMenuSection">
 
               <h3 itemprop="name">Breakfast </h3>
               <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
-                <h4 itemprop="name">Small Breakfast <span class="price" itemprop="offers" itemscope itemtype="https://schema.org/Offer"><meta itemprop="priceCurrency" content="GBP"><span itemprop="price">£9.50</span></span></h4>
-                <p itemprop="description">Sausage, Bacon, Egg (Fried, Poached or Scrambled), Beans, Tomatoes, Mushrooms, Hash Brown &
+                <h4 itemprop="name">Small Breakfast <span class="price" itemprop="offers" itemscope
+                                                          itemtype="https://schema.org/Offer"><meta
+                      itemprop="priceCurrency" content="GBP"><span itemprop="price">£9.50</span></span></h4>
+                <p itemprop="description">Sausage, Bacon, Egg (Fried, Poached or Scrambled), Beans, Tomatoes, Mushrooms,
+                  Hash Brown &
                   Toast.</p>
               </div>
 
               <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
-                <h4 itemprop="name">Large Breakfast <span class="price" itemprop="offers" itemscope itemtype="https://schema.org/Offer"><meta itemprop="priceCurrency" content="GBP"><span itemprop="price">£12.50</span></span></h4>
-                <p itemprop="description">2 Sausages, 2 Bacon, 2 Eggs (Fried, Poached or Scrambled), Tomatoes, Mushrooms, Hash Browns, Bubble &
+                <h4 itemprop="name">Large Breakfast <span class="price" itemprop="offers" itemscope
+                                                          itemtype="https://schema.org/Offer"><meta
+                      itemprop="priceCurrency" content="GBP"><span itemprop="price">£12.50</span></span></h4>
+                <p itemprop="description">2 Sausages, 2 Bacon, 2 Eggs (Fried, Poached or Scrambled), Tomatoes,
+                  Mushrooms, Hash Browns, Bubble &
                   Squeak, Beans,
                   Black Pudding & Toast</p>
               </div>
 
               <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
-                <h4 itemprop="name">Tradesmans Breakfast <span class="price" itemprop="offers" itemscope itemtype="https://schema.org/Offer"><meta itemprop="priceCurrency" content="GBP"><span itemprop="price">£15.50</span></span></h4>
-                <p itemprop="description">3 Sausages, 3 Bacon, 3 Eggs (Fried, Poached or Scrambled), Tomatoes, Mushrooms, Hash Browns, Bubble &
+                <h4 itemprop="name">Tradesmans Breakfast <span class="price" itemprop="offers" itemscope
+                                                               itemtype="https://schema.org/Offer"><meta
+                      itemprop="priceCurrency" content="GBP"><span itemprop="price">£15.50</span></span></h4>
+                <p itemprop="description">3 Sausages, 3 Bacon, 3 Eggs (Fried, Poached or Scrambled), Tomatoes,
+                  Mushrooms, Hash Browns, Bubble &
                   Squeak, Beans,
                   Black Pudding & Toast</p>
               </div>
 
               <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
-                <h4 itemprop="name">Vegetarian Breakfast <span class="price" itemprop="offers" itemscope itemtype="https://schema.org/Offer"><meta itemprop="priceCurrency" content="GBP"><span itemprop="price">£9.00</span></span></h4>
-                <p itemprop="description">Vegetarian Sausage, 2 Eggs (Fried, Poached or Scrambled), Tomatoes, Mushrooms, Hash Browns, Bubble &
+                <h4 itemprop="name">Vegetarian Breakfast <span class="price" itemprop="offers" itemscope
+                                                               itemtype="https://schema.org/Offer"><meta
+                      itemprop="priceCurrency" content="GBP"><span itemprop="price">£9.00</span></span></h4>
+                <p itemprop="description">Vegetarian Sausage, 2 Eggs (Fried, Poached or Scrambled), Tomatoes, Mushrooms,
+                  Hash Browns, Bubble &
                   Squeak, Beans.</p>
               </div>
 
               <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
-                <h4 itemprop="name">Eggs Benedict <span class="price" itemprop="offers" itemscope itemtype="https://schema.org/Offer"><meta itemprop="priceCurrency" content="GBP"><span itemprop="price">£7.00</span></span></h4>
-                <p itemprop="description">Poached Eggs & Ham served on Toast, topped with Homemade Hollandaise Sauce.</p>
+                <h4 itemprop="name">Eggs Benedict <span class="price" itemprop="offers" itemscope
+                                                        itemtype="https://schema.org/Offer"><meta
+                      itemprop="priceCurrency" content="GBP"><span itemprop="price">£7.00</span></span></h4>
+                <p itemprop="description">Poached Eggs & Ham served on Toast, topped with Homemade Hollandaise
+                  Sauce.</p>
               </div>
               <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
-                <h4 itemprop="name">Eggs Florentine <span class="price" itemprop="offers" itemscope itemtype="https://schema.org/Offer"><meta itemprop="priceCurrency" content="GBP"><span itemprop="price">£6.50</span></span></h4>
-                <p itemprop="description">Poached Eggs served on Toast, topped with Spinach & Homemade Hollandaise Sauce.</p>
+                <h4 itemprop="name">Eggs Florentine <span class="price" itemprop="offers" itemscope
+                                                          itemtype="https://schema.org/Offer"><meta
+                      itemprop="priceCurrency" content="GBP"><span itemprop="price">£6.50</span></span></h4>
+                <p itemprop="description">Poached Eggs served on Toast, topped with Spinach & Homemade Hollandaise
+                  Sauce.</p>
               </div>
 
               <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
-                <h4 itemprop="name">Smoked Kipper <span class="price" itemprop="offers" itemscope itemtype="https://schema.org/Offer"><meta itemprop="priceCurrency" content="GBP"><span itemprop="price">£6.00</span></span></h4>
+                <h4 itemprop="name">Smoked Kipper <span class="price" itemprop="offers" itemscope
+                                                        itemtype="https://schema.org/Offer"><meta
+                      itemprop="priceCurrency" content="GBP"><span itemprop="price">£6.00</span></span></h4>
                 <p itemprop="description">Smoked Kipper served with a Poached egg and slice of Toast.</p>
               </div>
 
               <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
-                <h4 itemprop="name">Smoked Haddock <span class="price" itemprop="offers" itemscope itemtype="https://schema.org/Offer"><meta itemprop="priceCurrency" content="GBP"><span itemprop="price">£6.00</span></span></h4>
+                <h4 itemprop="name">Smoked Haddock <span class="price" itemprop="offers" itemscope
+                                                         itemtype="https://schema.org/Offer"><meta
+                      itemprop="priceCurrency" content="GBP"><span itemprop="price">£6.00</span></span></h4>
                 <p itemprop="description">Smoked Haddock served with a Poached egg and slice of Toast.</p>
               </div>
             </div>
@@ -189,68 +213,104 @@
           </div>
 
           <div class="col-md-6">
-            <div class=" menu-section menu-section--right" itemscope itemtype="https://schema.org/MenuSection" itemprop="hasMenuSection">
+            <div class=" menu-section menu-section--right" itemscope itemtype="https://schema.org/MenuSection"
+                 itemprop="hasMenuSection">
               <h3 itemprop="name">Kids Breakfast</h3>
               <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
-                <h4 itemprop="name">Pancakes with Maple <span class="price" itemprop="offers" itemscope itemtype="https://schema.org/Offer"><meta itemprop="priceCurrency" content="GBP"><span itemprop="price">£5.00</span></span></h4>
+                <h4 itemprop="name">Pancakes with Maple <span class="price" itemprop="offers" itemscope
+                                                              itemtype="https://schema.org/Offer"><meta
+                      itemprop="priceCurrency" content="GBP"><span itemprop="price">£5.00</span></span></h4>
                 <p itemprop="description">Add Bacon for £1</p>
               </div>
               <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
-                <h4 itemprop="name">Kids 3 Item Breakfast <span class="price" itemprop="offers" itemscope itemtype="https://schema.org/Offer"><meta itemprop="priceCurrency" content="GBP"><span itemprop="price">£5.50</span></span></h4>
+                <h4 itemprop="name">Kids 3 Item Breakfast <span class="price" itemprop="offers" itemscope
+                                                                itemtype="https://schema.org/Offer"><meta
+                      itemprop="priceCurrency" content="GBP"><span itemprop="price">£5.50</span></span></h4>
                 <p itemprop="description">Choose 3 items from the Breakfast Menu</p>
               </div>
 
               <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
-                <h4 itemprop="name">Kids Beans on Toast <span class="price" itemprop="offers" itemscope itemtype="https://schema.org/Offer"><meta itemprop="priceCurrency" content="GBP"><span itemprop="price">£4.00</span></span></h4>
+                <h4 itemprop="name">Kids Beans on Toast <span class="price" itemprop="offers" itemscope
+                                                              itemtype="https://schema.org/Offer"><meta
+                      itemprop="priceCurrency" content="GBP"><span itemprop="price">£4.00</span></span></h4>
               </div>
               <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
-                <h4 itemprop="name">Kids Cheese on Toast <span class="price" itemprop="offers" itemscope itemtype="https://schema.org/Offer"><meta itemprop="priceCurrency" content="GBP"><span itemprop="price">£4.00</span></span></h4>
+                <h4 itemprop="name">Kids Cheese on Toast <span class="price" itemprop="offers" itemscope
+                                                               itemtype="https://schema.org/Offer"><meta
+                      itemprop="priceCurrency" content="GBP"><span itemprop="price">£4.00</span></span></h4>
               </div>
               <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
-                <h4 itemprop="name">Kids Egg on Toast <span class="price" itemprop="offers" itemscope itemtype="https://schema.org/Offer"><meta itemprop="priceCurrency" content="GBP"><span itemprop="price">£4.00</span></span></h4>
+                <h4 itemprop="name">Kids Egg on Toast <span class="price" itemprop="offers" itemscope
+                                                            itemtype="https://schema.org/Offer"><meta
+                      itemprop="priceCurrency" content="GBP"><span itemprop="price">£4.00</span></span></h4>
               </div>
 
             </div>
 
-            <div class="menu-section menu-section--right" itemscope itemtype="https://schema.org/MenuSection" itemprop="hasMenuSection">
+            <div class="menu-section menu-section--right" itemscope itemtype="https://schema.org/MenuSection"
+                 itemprop="hasMenuSection">
 
               <h3 itemprop="name"> Sandwiches / Toasties / Paninis </h3>
               <p><small itemprop="description"> Served with Side Salad & Tortilla Chips .</small></p>
               <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
-                <h4 itemprop="name"> Tuna Mayo <span class="price" itemprop="offers" itemscope itemtype="https://schema.org/Offer"><meta itemprop="priceCurrency" content="GBP"><span itemprop="price">£5.95</span></span></h4>
+                <h4 itemprop="name"> Tuna Mayo <span class="price" itemprop="offers" itemscope
+                                                     itemtype="https://schema.org/Offer"><meta itemprop="priceCurrency"
+                                                                                               content="GBP"><span
+                      itemprop="price">£5.95</span></span></h4>
               </div>
               <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
-                <h4 itemprop="name"> BLT <span class="price" itemprop="offers" itemscope itemtype="https://schema.org/Offer"><meta itemprop="priceCurrency" content="GBP"><span itemprop="price">£5.95</span></span></h4>
+                <h4 itemprop="name"> BLT <span class="price" itemprop="offers" itemscope
+                                               itemtype="https://schema.org/Offer"><meta itemprop="priceCurrency"
+                                                                                         content="GBP"><span
+                      itemprop="price">£5.95</span></span></h4>
               </div>
               <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
-                <h4 itemprop="name"> Bacon, Brie &amp; Cranberry <span class="price" itemprop="offers" itemscope itemtype="https://schema.org/Offer"><meta itemprop="priceCurrency" content="GBP"><span itemprop="price">£5.95</span></span></h4>
+                <h4 itemprop="name"> Bacon, Brie &amp; Cranberry <span class="price" itemprop="offers" itemscope
+                                                                       itemtype="https://schema.org/Offer"><meta
+                      itemprop="priceCurrency" content="GBP"><span itemprop="price">£5.95</span></span></h4>
               </div>
               <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
-                <h4 itemprop="name"> Breakfast Club <span class="price" itemprop="offers" itemscope itemtype="https://schema.org/Offer"><meta itemprop="priceCurrency" content="GBP"><span itemprop="price">£5.95</span></span></h4>
+                <h4 itemprop="name"> Breakfast Club <span class="price" itemprop="offers" itemscope
+                                                          itemtype="https://schema.org/Offer"><meta
+                      itemprop="priceCurrency" content="GBP"><span itemprop="price">£5.95</span></span></h4>
               </div>
               <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
-                <h4 itemprop="name"> Ham &amp; Cheese <span class="price" itemprop="offers" itemscope itemtype="https://schema.org/Offer"><meta itemprop="priceCurrency" content="GBP"><span itemprop="price">£5.95</span></span></h4>
+                <h4 itemprop="name"> Ham &amp; Cheese <span class="price" itemprop="offers" itemscope
+                                                            itemtype="https://schema.org/Offer"><meta
+                      itemprop="priceCurrency" content="GBP"><span itemprop="price">£5.95</span></span></h4>
               </div>
 
             </div>
 
-            <div class="menu-section menu-section--right" itemscope itemtype="https://schema.org/MenuSection" itemprop="hasMenuSection">
+            <div class="menu-section menu-section--right" itemscope itemtype="https://schema.org/MenuSection"
+                 itemprop="hasMenuSection">
 
               <h3 itemprop="name"> Snack Boxes with Chips </h3>
               <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
-                <h4 itemprop="name"> Chicken Strips <span class="price" itemprop="offers" itemscope itemtype="https://schema.org/Offer"><meta itemprop="priceCurrency" content="GBP"><span itemprop="price">£4.95</span></span></h4>
+                <h4 itemprop="name"> Chicken Strips <span class="price" itemprop="offers" itemscope
+                                                          itemtype="https://schema.org/Offer"><meta
+                      itemprop="priceCurrency" content="GBP"><span itemprop="price">£4.95</span></span></h4>
               </div>
               <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
-                <h4 itemprop="name"> Cod Bites <span class="price" itemprop="offers" itemscope itemtype="https://schema.org/Offer"><meta itemprop="priceCurrency" content="GBP"><span itemprop="price">£4.95</span></span></h4>
+                <h4 itemprop="name"> Cod Bites <span class="price" itemprop="offers" itemscope
+                                                     itemtype="https://schema.org/Offer"><meta itemprop="priceCurrency"
+                                                                                               content="GBP"><span
+                      itemprop="price">£4.95</span></span></h4>
               </div>
               <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
-                <h4 itemprop="name"> Popcorn Chicken <span class="price" itemprop="offers" itemscope itemtype="https://schema.org/Offer"><meta itemprop="priceCurrency" content="GBP"><span itemprop="price">£4.95</span></span></h4>
+                <h4 itemprop="name"> Popcorn Chicken <span class="price" itemprop="offers" itemscope
+                                                           itemtype="https://schema.org/Offer"><meta
+                      itemprop="priceCurrency" content="GBP"><span itemprop="price">£4.95</span></span></h4>
               </div>
               <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
-                <h4 itemprop="name"> BBQ Chicken Wings <span class="price" itemprop="offers" itemscope itemtype="https://schema.org/Offer"><meta itemprop="priceCurrency" content="GBP"><span itemprop="price">£4.95</span></span></h4>
+                <h4 itemprop="name"> BBQ Chicken Wings <span class="price" itemprop="offers" itemscope
+                                                             itemtype="https://schema.org/Offer"><meta
+                      itemprop="priceCurrency" content="GBP"><span itemprop="price">£4.95</span></span></h4>
               </div>
               <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
-                <h4 itemprop="name"> Sweet Chilli Chicken Wings <span class="price" itemprop="offers" itemscope itemtype="https://schema.org/Offer"><meta itemprop="priceCurrency" content="GBP"><span itemprop="price">£4.95</span></span></h4>
+                <h4 itemprop="name"> Sweet Chilli Chicken Wings <span class="price" itemprop="offers" itemscope
+                                                                      itemtype="https://schema.org/Offer"><meta
+                      itemprop="priceCurrency" content="GBP"><span itemprop="price">£4.95</span></span></h4>
 
               </div>
             </div>

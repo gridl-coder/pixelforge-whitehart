@@ -12,10 +12,7 @@
       </div>
 
       <p class="home-gallery__copy lead" itemprop="description">
-        {{ __('See our Bodmin pub in action: favourite pub food dishes, live music nights, and a lively bar atmosphere.', 'pixelforge') }}
-        <br/>
-        {{ __('Drop by The White Hart Inn in Bodmin for local ales, pub food, and friendly gatherings or order food delivery for cosy nights in.', 'pixelforge') }}
-
+        See some photos of our historic pub in Bodmin, our events, theme nights and more.
       </p>
     </div>
   </div>

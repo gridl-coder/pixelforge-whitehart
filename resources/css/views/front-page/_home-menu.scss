@@ -1,12 +1,22 @@
 .our-menus {
-  background: url("@images/tables-background.jpg") no-repeat center center transparent;
+  @include media-breakpoint-up(md) {
+    background: url("@images/tables-background.jpg") no-repeat center center transparent;
+  }
 }
 
 .food-banner {
-  background: white;
   padding-top: 30px;
   padding-bottom: 30px;
   color: $brand_dark;
+  background: white;
+  @include media-breakpoint-up(md) {
+    background: white url("@images/hart-food-dessert.jpg") no-repeat right center;
+  }
+
+  .boxed-container {
+    max-width: 900px;
+    margin: 60px auto;
+  }
 
   .nav_dec {
     margin: 15px 0;
@@ -31,9 +41,12 @@
 .stage-menu {
   padding: 15px;
   color: $brand-dark;
-  background: url("@images/hart-food-starter.jpg");
-  // font-size: 1.25rem;
   background: white;
+  @include media-breakpoint-up(md) {
+
+    background: white url("@images/hart-food-starter.jpg") no-repeat left center;
+  }
+  // font-size: 1.25rem;
 
   @include media-breakpoint-up(md) {
     padding: 60px;
