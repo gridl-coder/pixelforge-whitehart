@@ -63,7 +63,7 @@ class HomeIntro extends Composer
                 'location' => is_string($location) ? trim($location) : '',
                 'headerImage' => $headerImage,
                 'content' => $content,
-                'features' => $this->features(),
+                'features' => $this->features($postId),
             ],
         ];
     }
@@ -191,8 +191,29 @@ class HomeIntro extends Composer
         return null;
     }
 
-    private function features(): array
+    private function features(int $postId): array
     {
+        $amenities = get_post_meta($postId, 'home_amenities', true);
+
+        if (is_array($amenities) && !empty($amenities)) {
+            return array_map(function ($amenity) {
+                $icon = $amenity['icon'] ?? '';
+                $label = $amenity['title'] ?? '';
+                $description = $amenity['description'] ?? '';
+                $image1 = $this->resolveMediaUrl($amenity['image_1_id'] ?? $amenity['image_1'] ?? null);
+                $image2 = $this->resolveMediaUrl($amenity['image_2_id'] ?? $amenity['image_2'] ?? null);
+
+                return [
+                    'icon' => $icon,
+                    'label' => $label,
+                    'path' => esc_url(get_theme_file_uri("resources/icons/{$icon}.svg")),
+                    'description' => $description,
+                    'image1' => $image1,
+                    'image2' => $image2,
+                ];
+            }, $amenities);
+        }
+
         return array_map(function (array $feature): array {
             $icon = $feature['icon'];
 
@@ -200,6 +221,9 @@ class HomeIntro extends Composer
                 'icon' => $icon,
                 'label' => __($feature['label'], 'pixelforge'),
                 'path' => esc_url(get_theme_file_uri("resources/icons/{$icon}.svg")),
+                'description' => '',
+                'image1' => null,
+                'image2' => null,
             ];
         }, self::FEATURES);
     }

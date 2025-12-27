@@ -1,16 +1,21 @@
-.our-menus {
+.pub-bodmin__menus {
   @include media-breakpoint-up(md) {
     background: url("@images/tables-background.jpg") no-repeat center center transparent;
   }
 }
 
-.food-banner {
+.pub-bodmin__food-banner {
   padding-top: 30px;
   padding-bottom: 30px;
   color: $brand_dark;
   background: white;
   @include media-breakpoint-up(md) {
     background: white url("@images/hart-food-dessert.jpg") no-repeat right center;
+  }
+
+  .carousel-slider__slide {
+    aspect-ratio: 3 / 4; // Add aspect ratio
+    background-color: #f0f0f0; // Placeholder background
   }
 
   .boxed-container {
@@ -38,7 +43,7 @@
   }
 }
 
-.stage-menu {
+.pub-bodmin__stage-menu {
   padding: 15px;
   color: $brand-dark;
   background: white;
@@ -64,7 +69,7 @@
     border-top: 1px dotted rgba(0, 0, 0, 0.2);
   }
 
-  .menu-section {
+  .pub-bodmin__menu-section {
     text-align: left;
     margin-bottom: 30px;
     @include media-breakpoint-up(md) {

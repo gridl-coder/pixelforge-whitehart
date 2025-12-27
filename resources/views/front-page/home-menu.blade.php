@@ -1,13 +1,13 @@
-<section class="food-banner" id="home-menu" itemscope itemtype="https://schema.org/BarOrPub">
+<section class="pub-bodmin__food-banner" id="home-menu" itemscope itemtype="https://schema.org/BarOrPub">
 
   <meta itemprop="name" content="The White Hart Inn">
   <meta itemprop="servesCuisine" content="Pub food, Cornish produce, Sunday roasts">
   <meta itemprop="hasMenu" content="{{ esc_url(home_url('/#home-menu')) }}">
 
-  <div class="container food-banner__container">
+  <div class="container pub-bodmin__food-banner__container">
 
 
-    <div class=" food-banner-content">
+    <div class="pub-bodmin__food-banner-content">
 
       <div class="boxed-container boxed-container--muted">
 
@@ -17,23 +17,36 @@
 
 
             @if (!empty($foodBannerSlider))
-              <div class="col-md-6 food-banner-image text-center">
+              <div class="col-md-6 pub-bodmin__food-banner-image text-center">
 
                 <div class="carousel-slider" data-food-banner-slider>
                   @foreach ($foodBannerSlider as $slide)
                     <figure class="carousel-slider__slide">
-                      <img
-                        class="img-fluid"
-                        src="{{ esc_url($slide['url']) }}"
-                        alt="{{ esc_attr($slide['alt']) }}"
-                        loading="lazy"
-                        decoding="async"
-                        sizes="(min-width: 992px) 320px, 80vw"
-                        data-lightbox-src="{{ esc_url($slide['url']) }}"
-                        data-lightbox-caption="{{ esc_attr($slide['caption'] ?? '') }}"
-                        data-lightbox-gallery="food-banner"
-                        data-lightbox-id="{{ $loop->index }}"
-                      />
+                      @if (!empty($slide['id']))
+                        {!! wp_get_attachment_image($slide['id'], 'medium_large', false, [
+                            'class' => 'img-fluid',
+                            'loading' => 'lazy',
+                            'decoding' => 'async',
+                            'sizes' => '(min-width: 992px) 320px, 80vw',
+                            'data-lightbox-src' => esc_url($slide['url']),
+                            'data-lightbox-caption' => esc_attr($slide['caption'] ?? ''),
+                            'data-lightbox-gallery' => 'food-banner',
+                            'data-lightbox-id' => $loop->index,
+                        ]) !!}
+                      @else
+                        <img
+                          class="img-fluid"
+                          src="{{ esc_url($slide['url']) }}"
+                          alt="{{ esc_attr($slide['alt']) }}"
+                          loading="lazy"
+                          decoding="async"
+                          sizes="(min-width: 992px) 320px, 80vw"
+                          data-lightbox-src="{{ esc_url($slide['url']) }}"
+                          data-lightbox-caption="{{ esc_attr($slide['caption'] ?? '') }}"
+                          data-lightbox-gallery="food-banner"
+                          data-lightbox-id="{{ $loop->index }}"
+                        />
+                      @endif
                       @if (!empty($slide['caption']))
                         <figcaption>{{ $slide['caption'] }}</figcaption>
                       @endif
@@ -65,7 +78,7 @@
   </div>
 </section>
 
-<div class="our-menus">
+<div class="pub-bodmin__menus">
   <div class="brush-dec2"></div>
   <div class="container text-center pt-5 pb-5">
     <h1>
@@ -76,7 +89,7 @@
                  aria-hidden="true" focusable="false">
   <g data-name="Layer 1">
     <path
-      d="M51,29H42.3103C52.32666,21.657,56,9.986,56,1a1,1,0,0,0-2,0,34.41553,34.41553,0,0,1-.727,6.89282A11.40928,11.40928,0,0,0,50.457,3.293.99989.99989,0,0,0,49.043,4.707a10.35162,10.35162,0,0,1,2.92578,7.82422c0,.00952.00519.0174.00543.02686a33.85354,33.85354,0,0,1-1.45154,3.49377A10.39416,10.39416,0,0,0,47.457,10.293.99989.99989,0,0,0,46.043,11.707c1.623,1.623,2.73669,3.65424,2.7644,7.407a29.90475,29.90475,0,0,1-8.32874,8.7569,13.13361,13.13361,0,0,0-.52991-7.18732,1.0001,1.0001,0,1,0-1.89746.63281c.871,2.61285.9176,4.3855.15521,7.68359h-16.413c-.76239-3.2981-.71576-5.07074.15521-7.68359a1.0001,1.0001,0,0,0-1.89746-.63281,13.13361,13.13361,0,0,0-.52991,7.18732,29.93606,29.93606,0,0,1-8.51465-9.06006c.03571-3.68231,1.05841-5.46191,2.70032-7.10382A.99989.99989,0,0,0,12.293,10.293a10.29142,10.29142,0,0,0-2.97528,5.4057,34.01378,34.01378,0,0,1-1.32245-3.222c.00018-.0083.00476-.0152.00476-.02356,0-3.48486.835-5.874,2.707-7.74609A.99989.99989,0,0,0,9.293,3.293a10.498,10.498,0,0,0-2.6156,4.34076A34.37234,34.37234,0,0,1,6,1,1,1,0,0,0,4,1C4,9.986,7.67334,21.657,17.6897,29H9a.99959.99959,0,0,0-.98633,1.16455c.50342,3.022,1.74854,5.12549,3.70068,6.252,2.20605,1.27344,5.20313,1.28906,9.13135.04248-.81348,8.76807.54053,10.43359,2.09521,12.34717,1.09326,1.34521,2.22363,2.73633,2.81592,7.54395A4.17888,4.17888,0,0,0,29.91113,60h.17773a4.17888,4.17888,0,0,0,4.1543-3.6499c.59229-4.80762,1.72266-6.19873,2.81592-7.54395,1.55469-1.91357,2.90869-3.5791,2.09521-12.34717,3.92871,1.24707,6.92676,1.23193,9.13135-.04248,1.95215-1.12646,3.19727-3.23,3.70068-6.252A.99959.99959,0,0,0,51,29Zm-3.71387,5.68457c-1.90088,1.09814-4.9082.88965-8.93506-.62109a1,1,0,0,0-1.34473,1.04688c1.03467,9.31543-.0835,10.69189-1.49951,12.43457-1.15234,1.418-2.58594,3.18262-3.249,8.561A2.1761,2.1761,0,0,1,30.08887,58h-.17773a2.17611,2.17611,0,0,1-2.16895-1.89453c-.66309-5.37793-2.09668-7.14258-3.249-8.56055-1.416-1.74268-2.53418-3.11914-1.49951-12.43457a1.00018,1.00018,0,0,0-1.34473-1.04687c-4.02637,1.50977-7.03271,1.71875-8.93506.62109A5.63748,5.63748,0,0,1,10.23438,31H49.76563A5.63748,5.63748,0,0,1,47.28613,34.68457Z"></path>
+      d="M51,29H42.3103C52.32666,21.657,56,9.986,56,1a1,1,0,0,0-2,0,34.41553,34.41553,0,0,1-.727,6.89282A11.40928,11.40928,0,0,0,50.457,3.293.99989.99989,0,0,0,49.043,4.707a10.35162,10.35162,0,0,1,2.92578,7.82422c0,.00952.00519.0174.00543.02686a33.85354,33.85354,0,0,1-1.45154,3.49377A10.39416,10.39416,0,0,0,47.457,10.293.99989.99989,0,0,0,46.043,11.707c1.623,1.623,2.73669,3.65424,2.7644,7.407a29.90475,29.90475,0,0,1-8.32874,8.7569,13.13361,13.13361,0,0,0-.52991-7.18732,1.0001,1.0001,0,1,0-1.89746.63281c.871,2.61285.9176,4.3855.15521,7.68359h-16.413c-.76239-3.2981-.71576-5.07074.15521-7.68359a1.0001,1.0001,0,0,0-1.89746-.63281,13.13361,13.13361,0,0,0-.52991,7.18732,29.93606,29.93606,0,0,1-8.51465-9.06006c.03571-3.68231,1.05841-5.46191,2.70032-7.10382A.99989.99989,0,0,0,12.293,10.293a10.29142,10.29142,0,0,0-2.97528,5.4057,34.01378,34.01378,0,0,1-1.32245-3.222c.00018-.0083.00476-.0152.00476-.02356,0-3.48486.835-5.874,2.707-7.74609A.99989.99989,0,0,0,9.293,3.293a10.498,10.498,0,0,0-2.6156,4.34076A34.37234,34.37234,0,0,1,6,1,1,1,0,0,0,4,1C4,9.986,7.67334,21.657,17.6897,29H9a.99959.99959,0,0,0-.98633,1.16455c.50342,3.022,1.74854,5.12549,3.70068,6.252,2.20605,1.27344,5.20313,1.28906,9.13135.04248-.81348,8.76807.54053,10.43359,2.09521,12.34717,1.09326,1.34521,2.22363,2.73633,2.81592,7.54395A4.17888,4.17888,0,0,0,29.91113,60h.17773a4.17888,4.17888,0,0,0,4.1543-3.6499c.59229-4.80762,1.72266-6.19873,2.81592-7.54395,1.55469-1.91357,2.90869-3.5791,2.09521-12.34717,3.92871,1.24707,6.92676,1.23193,9.13135-.04248,1.95215-1.12646,3.19727-3.23,3.70068-6.252A.99959.99959,0,0,0,51,29Zm-3.71387,5.68457c-1.90088,1.09814-4.9082.88965-8.93506-.62109a1,1,0,0,0-1.34473,1.04688c1.03467,9.31543-.0835,10.69189-1.49951,12.43457-1.15234,1.418-2.58594,3.18262-3.249,8.561A2.1761,2.1761,0,0,1,30.08887,58h-.17773a2.17611,2.17611,0,0,1-2.16895-1.89453c-.66309-5.37793-2.09668-7.14258-3.249-8.56055-1.416-1.74268-2.53418-3.11914-1.49951-12.43457a1.00018,1.00018,0,0,0-1.34473-1.04687c-4.02637,1.50977-7.03271,1.71875-8.93506.62109A5.63748,5.63748,0,0,1,10.23438,31H49.76563A5.63748,5.63748,0,0,1,47.28613,34.68457Z"/>
   </g>
 </svg>
 </span>
@@ -92,7 +105,7 @@
 </div>
 
 
-<section class="stage-menu" itemscope itemtype="https://schema.org/Menu">
+<section class="pub-bodmin__stage-menu" itemscope itemtype="https://schema.org/Menu">
 
   <meta itemprop="name" content="Main Menu">
   <meta itemprop="inLanguage" content="en-GB">
@@ -132,17 +145,17 @@
       </p>
       <div class="nav_dec"><span></span></div>
 
-      <div class="menu--main menu">
+      <div class="pub-bodmin__menu--main pub-bodmin__menu">
 
         <div class="row">
 
           <div class="col-md-6">
 
-            <div class="menu-section menu-section--left" itemscope itemtype="https://schema.org/MenuSection"
+            <div class="pub-bodmin__menu-section pub-bodmin__menu-section--left" itemscope itemtype="https://schema.org/MenuSection"
                  itemprop="hasMenuSection">
 
-              <h3 itemprop="name">Breakfast </h3>
-              <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
+              <h2 itemprop="name">Breakfast </h2>
+              <div class="pub-bodmin__menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
                 <h4 itemprop="name">Small Breakfast <span class="price" itemprop="offers" itemscope
                                                           itemtype="https://schema.org/Offer"><meta
                       itemprop="priceCurrency" content="GBP"><span itemprop="price">£9.50</span></span></h4>
@@ -151,7 +164,7 @@
                   Toast.</p>
               </div>
 
-              <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
+              <div class="pub-bodmin__menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
                 <h4 itemprop="name">Large Breakfast <span class="price" itemprop="offers" itemscope
                                                           itemtype="https://schema.org/Offer"><meta
                       itemprop="priceCurrency" content="GBP"><span itemprop="price">£12.50</span></span></h4>
@@ -161,7 +174,7 @@
                   Black Pudding & Toast</p>
               </div>
 
-              <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
+              <div class="pub-bodmin__menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
                 <h4 itemprop="name">Tradesmans Breakfast <span class="price" itemprop="offers" itemscope
                                                                itemtype="https://schema.org/Offer"><meta
                       itemprop="priceCurrency" content="GBP"><span itemprop="price">£15.50</span></span></h4>
@@ -171,7 +184,7 @@
                   Black Pudding & Toast</p>
               </div>
 
-              <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
+              <div class="pub-bodmin__menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
                 <h4 itemprop="name">Vegetarian Breakfast <span class="price" itemprop="offers" itemscope
                                                                itemtype="https://schema.org/Offer"><meta
                       itemprop="priceCurrency" content="GBP"><span itemprop="price">£9.00</span></span></h4>
@@ -180,14 +193,14 @@
                   Squeak, Beans.</p>
               </div>
 
-              <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
+              <div class="pub-bodmin__menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
                 <h4 itemprop="name">Eggs Benedict <span class="price" itemprop="offers" itemscope
                                                         itemtype="https://schema.org/Offer"><meta
                       itemprop="priceCurrency" content="GBP"><span itemprop="price">£7.00</span></span></h4>
                 <p itemprop="description">Poached Eggs & Ham served on Toast, topped with Homemade Hollandaise
                   Sauce.</p>
               </div>
-              <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
+              <div class="pub-bodmin__menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
                 <h4 itemprop="name">Eggs Florentine <span class="price" itemprop="offers" itemscope
                                                           itemtype="https://schema.org/Offer"><meta
                       itemprop="priceCurrency" content="GBP"><span itemprop="price">£6.50</span></span></h4>
@@ -195,14 +208,14 @@
                   Sauce.</p>
               </div>
 
-              <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
+              <div class="pub-bodmin__menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
                 <h4 itemprop="name">Smoked Kipper <span class="price" itemprop="offers" itemscope
                                                         itemtype="https://schema.org/Offer"><meta
                       itemprop="priceCurrency" content="GBP"><span itemprop="price">£6.00</span></span></h4>
                 <p itemprop="description">Smoked Kipper served with a Poached egg and slice of Toast.</p>
               </div>
 
-              <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
+              <div class="pub-bodmin__menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
                 <h4 itemprop="name">Smoked Haddock <span class="price" itemprop="offers" itemscope
                                                          itemtype="https://schema.org/Offer"><meta
                       itemprop="priceCurrency" content="GBP"><span itemprop="price">£6.00</span></span></h4>
@@ -213,33 +226,33 @@
           </div>
 
           <div class="col-md-6">
-            <div class=" menu-section menu-section--right" itemscope itemtype="https://schema.org/MenuSection"
+            <div class=" pub-bodmin__menu-section pub-bodmin__menu-section--right" itemscope itemtype="https://schema.org/MenuSection"
                  itemprop="hasMenuSection">
-              <h3 itemprop="name">Kids Breakfast</h3>
-              <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
+              <h2 itemprop="name">Kids Breakfast</h2>
+              <div class="pub-bodmin__menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
                 <h4 itemprop="name">Pancakes with Maple <span class="price" itemprop="offers" itemscope
                                                               itemtype="https://schema.org/Offer"><meta
                       itemprop="priceCurrency" content="GBP"><span itemprop="price">£5.00</span></span></h4>
                 <p itemprop="description">Add Bacon for £1</p>
               </div>
-              <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
+              <div class="pub-bodmin__menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
                 <h4 itemprop="name">Kids 3 Item Breakfast <span class="price" itemprop="offers" itemscope
                                                                 itemtype="https://schema.org/Offer"><meta
                       itemprop="priceCurrency" content="GBP"><span itemprop="price">£5.50</span></span></h4>
                 <p itemprop="description">Choose 3 items from the Breakfast Menu</p>
               </div>
 
-              <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
+              <div class="pub-bodmin__menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
                 <h4 itemprop="name">Kids Beans on Toast <span class="price" itemprop="offers" itemscope
                                                               itemtype="https://schema.org/Offer"><meta
                       itemprop="priceCurrency" content="GBP"><span itemprop="price">£4.00</span></span></h4>
               </div>
-              <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
+              <div class="pub-bodmin__menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
                 <h4 itemprop="name">Kids Cheese on Toast <span class="price" itemprop="offers" itemscope
                                                                itemtype="https://schema.org/Offer"><meta
                       itemprop="priceCurrency" content="GBP"><span itemprop="price">£4.00</span></span></h4>
               </div>
-              <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
+              <div class="pub-bodmin__menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
                 <h4 itemprop="name">Kids Egg on Toast <span class="price" itemprop="offers" itemscope
                                                             itemtype="https://schema.org/Offer"><meta
                       itemprop="priceCurrency" content="GBP"><span itemprop="price">£4.00</span></span></h4>
@@ -247,34 +260,34 @@
 
             </div>
 
-            <div class="menu-section menu-section--right" itemscope itemtype="https://schema.org/MenuSection"
+            <div class="pub-bodmin__menu-section pub-bodmin__menu-section--right" itemscope itemtype="https://schema.org/MenuSection"
                  itemprop="hasMenuSection">
 
-              <h3 itemprop="name"> Sandwiches / Toasties / Paninis </h3>
+              <h2 itemprop="name"> Sandwiches / Toasties / Paninis </h2>
               <p><small itemprop="description"> Served with Side Salad & Tortilla Chips .</small></p>
-              <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
+              <div class="pub-bodmin__menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
                 <h4 itemprop="name"> Tuna Mayo <span class="price" itemprop="offers" itemscope
                                                      itemtype="https://schema.org/Offer"><meta itemprop="priceCurrency"
                                                                                                content="GBP"><span
                       itemprop="price">£5.95</span></span></h4>
               </div>
-              <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
+              <div class="pub-bodmin__menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
                 <h4 itemprop="name"> BLT <span class="price" itemprop="offers" itemscope
                                                itemtype="https://schema.org/Offer"><meta itemprop="priceCurrency"
                                                                                          content="GBP"><span
                       itemprop="price">£5.95</span></span></h4>
               </div>
-              <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
+              <div class="pub-bodmin__menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
                 <h4 itemprop="name"> Bacon, Brie &amp; Cranberry <span class="price" itemprop="offers" itemscope
                                                                        itemtype="https://schema.org/Offer"><meta
                       itemprop="priceCurrency" content="GBP"><span itemprop="price">£5.95</span></span></h4>
               </div>
-              <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
+              <div class="pub-bodmin__menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
                 <h4 itemprop="name"> Breakfast Club <span class="price" itemprop="offers" itemscope
                                                           itemtype="https://schema.org/Offer"><meta
                       itemprop="priceCurrency" content="GBP"><span itemprop="price">£5.95</span></span></h4>
               </div>
-              <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
+              <div class="pub-bodmin__menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
                 <h4 itemprop="name"> Ham &amp; Cheese <span class="price" itemprop="offers" itemscope
                                                             itemtype="https://schema.org/Offer"><meta
                       itemprop="priceCurrency" content="GBP"><span itemprop="price">£5.95</span></span></h4>
@@ -282,32 +295,32 @@
 
             </div>
 
-            <div class="menu-section menu-section--right" itemscope itemtype="https://schema.org/MenuSection"
+            <div class="pub-bodmin__menu-section pub-bodmin__menu-section--right" itemscope itemtype="https://schema.org/MenuSection"
                  itemprop="hasMenuSection">
 
-              <h3 itemprop="name"> Snack Boxes with Chips </h3>
-              <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
+              <h2 itemprop="name"> Snack Boxes with Chips </h2>
+              <div class="pub-bodmin__menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
                 <h4 itemprop="name"> Chicken Strips <span class="price" itemprop="offers" itemscope
                                                           itemtype="https://schema.org/Offer"><meta
                       itemprop="priceCurrency" content="GBP"><span itemprop="price">£4.95</span></span></h4>
               </div>
-              <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
+              <div class="pub-bodmin__menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
                 <h4 itemprop="name"> Cod Bites <span class="price" itemprop="offers" itemscope
                                                      itemtype="https://schema.org/Offer"><meta itemprop="priceCurrency"
                                                                                                content="GBP"><span
                       itemprop="price">£4.95</span></span></h4>
               </div>
-              <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
+              <div class="pub-bodmin__menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
                 <h4 itemprop="name"> Popcorn Chicken <span class="price" itemprop="offers" itemscope
                                                            itemtype="https://schema.org/Offer"><meta
                       itemprop="priceCurrency" content="GBP"><span itemprop="price">£4.95</span></span></h4>
               </div>
-              <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
+              <div class="pub-bodmin__menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
                 <h4 itemprop="name"> BBQ Chicken Wings <span class="price" itemprop="offers" itemscope
                                                              itemtype="https://schema.org/Offer"><meta
                       itemprop="priceCurrency" content="GBP"><span itemprop="price">£4.95</span></span></h4>
               </div>
-              <div class="menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
+              <div class="pub-bodmin__menu-item" itemscope itemtype="https://schema.org/MenuItem" itemprop="hasMenuItem">
                 <h4 itemprop="name"> Sweet Chilli Chicken Wings <span class="price" itemprop="offers" itemscope
                                                                       itemtype="https://schema.org/Offer"><meta
                       itemprop="priceCurrency" content="GBP"><span itemprop="price">£4.95</span></span></h4>
@@ -333,5 +346,3 @@
     </div>
   </div>
 </section>
-
-<div class="brush-dec2"></div>

@@ -52,8 +52,6 @@ Application::configure()
 collect([
     'setup',
     'filters',
-    'post-types/events',
-    'post-types/bookings',
     'cmb2/bootstrap',
     'cmb2/helpers',
     'cmb2/home-metabox',

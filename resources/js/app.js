@@ -228,7 +228,7 @@ const initHomeGalleryLightbox = () => {
     return;
   }
 
-  const lightboxImage = lightbox.querySelector('.home-gallery-lightbox__image');
+  const lightboxImage = lightbox.querySelector('.pub-bodmin__gallery-lightbox__image');
   const lightboxCaption = lightbox.querySelector('[data-home-gallery-lightbox-caption]');
   const closeButtons = lightbox.querySelectorAll('[data-home-gallery-lightbox-close]');
   const previousButton = lightbox.querySelector('[data-home-gallery-lightbox-prev]');
@@ -924,6 +924,87 @@ const initBookingMenuSliders = async () => {
   });
 };
 
+const initAmenitiesOverlay = () => {
+  const overlay = document.getElementById('amenity-overlay');
+  if (!overlay) return;
+
+  const closeButton = overlay.querySelector('.pub-bodmin__amenity-overlay__close');
+  const titleEl = overlay.querySelector('.pub-bodmin__amenity-overlay__title');
+  const descEl = overlay.querySelector('.pub-bodmin__amenity-overlay__description');
+  const img1El = overlay.querySelector('.pub-bodmin__amenity-overlay__image--1');
+  const img2El = overlay.querySelector('.pub-bodmin__amenity-overlay__image--2');
+
+  const closeOverlay = () => {
+    overlay.hidden = true;
+    document.body.style.overflow = '';
+  };
+
+  const openOverlay = (data) => {
+    titleEl.textContent = data.title;
+    descEl.textContent = data.description;
+
+    if (data.image1 && data.image1.url) {
+      img1El.src = data.image1.url;
+      img1El.alt = data.image1.alt || '';
+      img1El.hidden = false;
+    } else {
+      img1El.hidden = true;
+    }
+
+    if (data.image2 && data.image2.url) {
+      img2El.src = data.image2.url;
+      img2El.alt = data.image2.alt || '';
+      img2El.hidden = false;
+    } else {
+      img2El.hidden = true;
+    }
+
+    overlay.hidden = false;
+    document.body.style.overflow = 'hidden';
+  };
+
+  document.querySelectorAll('.pub-bodmin__amenities-list__button').forEach(item => {
+    item.addEventListener('click', () => {
+      const title = item.getAttribute('data-amenity-title');
+      const description = item.getAttribute('data-amenity-description');
+      const image1 = JSON.parse(item.getAttribute('data-amenity-image1') || 'null');
+      const image2 = JSON.parse(item.getAttribute('data-amenity-image2') || 'null');
+
+      if (description) {
+          openOverlay({ title, description, image1, image2 });
+      }
+    });
+  });
+
+  closeButton.addEventListener('click', closeOverlay);
+
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) closeOverlay();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !overlay.hidden) closeOverlay();
+  });
+};
+
+const lazyInitBookingForm = () => {
+    const bookingForm = document.querySelector('.booking-form');
+    if (!bookingForm) {
+        return;
+    }
+
+    const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                initBookingForms();
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { rootMargin: '200px' });
+
+    observer.observe(bookingForm);
+};
+
 
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
@@ -931,14 +1012,16 @@ if (document.readyState === 'loading') {
     initBookingMenuSliders().catch((error) => console.error('Failed to init booking menu slider', error));
     initHomeGalleryCarousel().catch((error) => console.error('Failed to init home gallery slider', error));
     initHomeGalleryLightbox();
-    initBookingForms();
+    lazyInitBookingForm();
     initSmoothAnchorScroll();
+    initAmenitiesOverlay();
   });
 } else {
   initFoodBannerSlider().catch((error) => console.error('Failed to init food banner slider', error));
   initBookingMenuSliders().catch((error) => console.error('Failed to init booking menu slider', error));
   initHomeGalleryCarousel().catch((error) => console.error('Failed to init home gallery slider', error));
   initHomeGalleryLightbox();
-  initBookingForms();
+  lazyInitBookingForm();
   initSmoothAnchorScroll();
+  initAmenitiesOverlay();
 }

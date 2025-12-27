@@ -145,7 +145,22 @@ add_action('after_setup_theme', function () {
      * @link https://developer.wordpress.org/reference/functions/add_theme_support/#customize-selective-refresh-widgets
      */
     add_theme_support('customize-selective-refresh-widgets');
+
+    // Remove core actions that generate duplicate tags
+    remove_filter('wp_robots', 'wp_robots_max_image_preview_large');
+    remove_action('wp_head', 'rel_canonical');
 }, 20);
+
+/**
+ * Clean up wp_head and dequeue unnecessary styles.
+ */
+add_action('wp_enqueue_scripts', function () {
+    // Since the block editor is disabled, we can remove these styles.
+    wp_dequeue_style('global-styles');
+    wp_dequeue_style('wp-block-library');
+    wp_dequeue_style('wp-block-library-theme');
+    wp_dequeue_style('classic-theme-styles');
+}, 100);
 
 /**
  * Register the theme sidebars.
@@ -304,3 +319,9 @@ add_action('after_switch_theme', function () {
 
     set_theme_mod('nav_menu_locations', $locations);
 });
+
+add_action('init', [\PixelForge\PostTypes\BookingSection::class, 'register']);
+add_action('init', [\PixelForge\PostTypes\BookingTable::class, 'register']);
+add_action('init', [\PixelForge\PostTypes\BookingMenu::class, 'register']);
+add_action('init', [\PixelForge\PostTypes\TableBooking::class, 'register']);
+add_action('init', [\PixelForge\PostTypes\Events::class, 'register']);

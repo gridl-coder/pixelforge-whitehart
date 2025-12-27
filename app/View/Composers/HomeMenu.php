@@ -56,10 +56,11 @@ class HomeMenu extends Composer
     private function normalizeSlide($value): ?array
     {
         $defaultAlt = __(self::DEFAULT_ALT, 'pixelforge');
+        $attachmentId = null;
 
         if (is_array($value)) {
             $url = $value['url'] ?? $value['image'] ?? null;
-            $attachmentId = $value['id'] ?? $value['ID'] ?? null;
+            $attachmentId = $value['id'] ?? $value['ID'] ?? $value['image_id'] ?? null;
             $alt = isset($value['alt']) ? sanitize_text_field($value['alt']) : ($value['title'] ?? $defaultAlt);
 
             if (! $url && $attachmentId) {
@@ -68,6 +69,7 @@ class HomeMenu extends Composer
 
             if ($url) {
                 return [
+                    'id' => $attachmentId,
                     'url' => esc_url_raw($url),
                     'alt' => $alt ?: $defaultAlt,
                     'caption' => isset($value['caption']) ? sanitize_text_field($value['caption']) : '',
@@ -76,10 +78,12 @@ class HomeMenu extends Composer
         }
 
         if (is_numeric($value)) {
-            $url = wp_get_attachment_image_url((int) $value, 'large');
+            $attachmentId = (int) $value;
+            $url = wp_get_attachment_image_url($attachmentId, 'large');
 
             if ($url) {
                 return [
+                    'id' => $attachmentId,
                     'url' => esc_url_raw($url),
                     'alt' => $defaultAlt,
                     'caption' => '',
@@ -92,6 +96,7 @@ class HomeMenu extends Composer
 
             if (filter_var($url, FILTER_VALIDATE_URL)) {
                 return [
+                    'id' => null,
                     'url' => $url,
                     'alt' => $defaultAlt,
                     'caption' => '',

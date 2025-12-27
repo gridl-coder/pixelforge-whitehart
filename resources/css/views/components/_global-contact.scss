@@ -3,7 +3,8 @@
   padding: 15px 15px 60px 15px;
   color: $brand-dark;
   // font-size: 1.25rem;
-  background: white;
+  background: white url("@images/white-hart-pub-bodmin-map.jpg") center center;
+  background-size: cover;
 
   &:after {
     position: absolute;
