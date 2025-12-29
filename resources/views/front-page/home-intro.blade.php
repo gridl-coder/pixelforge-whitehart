@@ -1,29 +1,7 @@
 <section class="pub-bodmin__intro pub-bodmin-hero" itemprop="subjectOf" itemscope itemtype="https://schema.org/WebPage">
-  @if (!empty($homeIntro['headerImage']['url']))
-    <img class="pub-bodmin__intro-image"
-         src="{{ esc_url($homeIntro['headerImage']['url']) }}"
-         alt="{{ esc_attr($homeIntro['headerImage']['alt']) }}"
-         loading="eager"
-         decoding="async"
-         fetchpriority="high"
-         {{-- Provide a responsive srcset for modern browsers when available --}}
-         @if (!empty($homeIntro['headerImage']['srcset']))
-           srcset="{{ $homeIntro['headerImage']['srcset'] }}"
-         sizes="{{ $homeIntro['headerImage']['sizes'] ?? '100vw' }}"
-         @else
-           sizes="100vw"
-         @endif
-         {{-- Provide explicit width and height if available to reduce CLS --}}
-         @if (!empty($homeIntro['headerImage']['width']))
-           width="{{ $homeIntro['headerImage']['width'] }}"
-         @endif
-         @if (!empty($homeIntro['headerImage']['height']))
-           height="{{ $homeIntro['headerImage']['height'] }}"
-      @endif
-    />
-  @endif
 
-  <div class="pub-bodmin__intro-inner">
+
+  <div class="pub-bodmin__intro-inner" fetchpriority="high">
     <h1>
       <span class="pub-bodmin__intro__heading-prefix">{{ __('Welcome to', 'pixelforge') }}</span>
       The White Hart
@@ -78,4 +56,27 @@
       </div>
     </div>
   </div>
+  @if (!empty($homeIntro['headerImage']['url']))
+    <img class="pub-bodmin__intro-image"
+         src="{{ esc_url($homeIntro['headerImage']['url']) }}"
+         alt="{{ esc_attr($homeIntro['headerImage']['alt']) }}"
+         loading="eager"
+         decoding="async"
+
+         {{-- Provide a responsive srcset for modern browsers when available --}}
+         @if (!empty($homeIntro['headerImage']['srcset']))
+           srcset="{{ $homeIntro['headerImage']['srcset'] }}"
+         sizes="{{ $homeIntro['headerImage']['sizes'] ?? '100vw' }}"
+         @else
+           sizes="100vw"
+         @endif
+         {{-- Provide explicit width and height if available to reduce CLS --}}
+         @if (!empty($homeIntro['headerImage']['width']))
+           width="{{ $homeIntro['headerImage']['width'] }}"
+         @endif
+         @if (!empty($homeIntro['headerImage']['height']))
+           height="{{ $homeIntro['headerImage']['height'] }}"
+      @endif
+    />
+  @endif
 </section>

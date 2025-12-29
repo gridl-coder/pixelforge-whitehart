@@ -86,7 +86,7 @@
     }
 
 
-    h3 {
+    h2 {
       font-weight: bold;
       margin-bottom: 15px;
       font-family: $brand_font_heading;
@@ -100,7 +100,7 @@
       text-align: center !important;
     }
 
-    h4 {
+    h3 {
       @extend .clearfix;
       text-transform: uppercase;
       font-size: 13px;

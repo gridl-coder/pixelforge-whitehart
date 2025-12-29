@@ -8,6 +8,7 @@
   <meta itemprop="priceRange" content="£">
   <meta itemprop="acceptsReservations" content="True">
   <meta itemprop="hasMenu" content="{{ esc_url(home_url('/#home-menu')) }}">
+  <meta itemprop="image" content="https://theh.art/bodmin/wp-content/uploads/sites/2/2025/12/bar-view-1.webp">
 
   <div class="boxed-container mb-4">
 

@@ -61,6 +61,7 @@ collect([
     'booking',
     'booking-admin',
     'cmb2/theme-options',
+    'cmb2/server-load-panel',
     'cmb2/seo-metabox',
     'performance',
     'health',

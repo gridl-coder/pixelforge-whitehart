@@ -180,7 +180,7 @@ function render_booking_menus_shortcode(): string
             . esc_html($timeLabel) . '</p>';
 
         if ($thumbnail) {
-            $output .= '<div class="booking-menu-shortcode__thumb"><a target="_blank" href="' . $thumbnailLink . '">' . $thumbnail . '</a></div>';
+            $output .= '<div class="booking-menu-shortcode__thumb"><a title="view menu" target="_blank" href="' . $thumbnailLink . '">' . $thumbnail . '</a></div>';
         }
 
         $output .= '</div>';

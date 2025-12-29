@@ -120,3 +120,31 @@ a {
 .global-contact {
   color: $brand-dark;
 }
+
+.back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  width: 50px;
+  height: 50px;
+  background-color: var(--brand-yellow);
+  color: var(--brand-dark);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: opacity 0.3s, visibility 0.3s;
+
+  &[hidden] {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  &:hover {
+    background-color: darken($brand_yellow, 10%);
+  }
+}

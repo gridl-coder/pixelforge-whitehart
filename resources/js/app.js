@@ -1005,6 +1005,25 @@ const lazyInitBookingForm = () => {
     observer.observe(bookingForm);
 };
 
+const initBackToTop = () => {
+  const backToTopButton = document.getElementById('back-to-top');
+  if (!backToTopButton) return;
+
+  const scrollFunction = () => {
+    if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+      backToTopButton.hidden = false;
+    } else {
+      backToTopButton.hidden = true;
+    }
+  };
+
+  window.onscroll = scrollFunction;
+
+  backToTopButton.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+};
+
 
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
@@ -1015,6 +1034,7 @@ if (document.readyState === 'loading') {
     lazyInitBookingForm();
     initSmoothAnchorScroll();
     initAmenitiesOverlay();
+    initBackToTop();
   });
 } else {
   initFoodBannerSlider().catch((error) => console.error('Failed to init food banner slider', error));
@@ -1024,4 +1044,5 @@ if (document.readyState === 'loading') {
   lazyInitBookingForm();
   initSmoothAnchorScroll();
   initAmenitiesOverlay();
+  initBackToTop();
 }
